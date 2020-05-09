@@ -5,10 +5,6 @@ execute if entity @s[name="Blue Saber"] run say -1 Hit Bomb
 execute if entity @s[name="Blue Saber"] at @s run kill @e[type=armor_stand,distance=..0.05]
 execute if entity @s[name="Blue Saber"] run kill @s
 
-
-execute at @e[type=armor_stand,tag=fakePlayerEyes,tag=blockBeat] if entity @s[distance=..0.3] run say -1 Hit Bomb
-execute at @e[type=armor_stand,tag=fakePlayerEyes,tag=blockBeat] if entity @s[distance=..0.3] at @s run kill @e[type=armor_stand,tag=node,distance=..0.05]
-execute at @e[type=armor_stand,tag=fakePlayerEyes,tag=blockBeat] if entity @s[distance=..0.3] run kill @s
-
-
-#execute at @e[type=armor_stand,tag=playerOrgin] if entity @p[scores={SongUUID=1111,IsPlayerSneeking=1..}] run say sneeking!
+execute at @e[type=armor_stand,tag=fakePlayerEyes,tag=blockBeat] if entity @s[distance=..0.21] run say -1 Hit Bomb
+execute at @e[type=armor_stand,tag=fakePlayerEyes,tag=blockBeat] if entity @s[distance=..0.21] at @s run kill @e[type=armor_stand,tag=node,distance=..0.05]
+execute at @e[type=armor_stand,tag=fakePlayerEyes,tag=blockBeat] if entity @s[distance=..0.21] run kill @s

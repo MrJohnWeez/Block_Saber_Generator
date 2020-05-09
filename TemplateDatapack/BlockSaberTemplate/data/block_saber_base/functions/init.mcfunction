@@ -26,41 +26,29 @@ scoreboard players set #CONST3 Const_3 3
 
 execute as MrJohnWeez run function block_saber_base:play
 
-#Dropping the red saber restarts the song
-
-#Use motion instead of teleporting
-#Must also then face
-
-
-
-
-
-#bpm = beats per minute
-#bps = beats per second
-#mpb = meters per beat
-#tps = ticks per second
-#mps = meters per second
-#mpt = meters per tick
-
-#The max mpt minecraft can handle without hitbox errors is 
-#There are 16.8 meters per beat in minecraft
-#20tps in one second
-
-#60bpm / 60s = 1bps
-#16.8mpb * 1bps = 16.8mps
-#16.8mps / 20tps = 0.84mpt
-
-
-
-
 #TODO:
-#Make walls invisible
-#Make bomb model
-#Test eye level and detections
+#-Texture spectual_arrow to stop
 
 
 
-#Questions:
-#Does a bomb disapear if face hits it
-#Does bomb disapear if sword hits it
-#Does the red wall slowly kill you bases on that white bar?
+
+
+# bpm = beats per minute
+# bps = beats per second
+# mpb = meters per beat
+# tps = ticks per second
+# mps = meters per second
+# mpt = meters per tick
+
+# The max mpt minecraft can handle without hitbox errors is 2mps ish?
+
+# 24 (notes per beat) * 0.21 (distance of a single note block) = 5.04 (mpb)
+# 5.04 (mpb) / 20 (tps) = 0.252 (mps)
+# 2 (max mps) / 0.252 (mps) = 7.93650793651 (bps)
+# 7.93650793651 (bps) * 60 (bpm)  = 476.19 (bpm)
+
+
+# Questions:
+# -Does a bomb disapear if face hits it
+# -Does bomb disapear if sword hits it
+# -Does the red wall slowly kill you bases on that white bar?

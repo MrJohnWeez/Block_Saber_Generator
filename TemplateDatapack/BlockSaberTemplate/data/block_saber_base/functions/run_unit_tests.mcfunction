@@ -1,5 +1,52 @@
 #Demo all note types and features
 
+
+
+
+execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~0.45 ~-0.3 ~
+execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
+
+execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~0.15 ~-0.3 ~
+execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
+
+execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~-0.15 ~-0.3 ~
+execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
+
+execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~-0.45 ~-0.3 ~
+execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
+
+
+execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~0.45 ~ ~
+execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
+
+execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~0.15 ~ ~
+execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
+
+execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~-0.15 ~ ~
+execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
+
+execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~-0.45 ~ ~
+execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
+
+
+execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~0.45 ~0.3 ~
+execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
+
+execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~0.15 ~0.3 ~
+execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
+
+execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~-0.15 ~0.3 ~
+execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
+
+execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~-0.45 ~0.3 ~
+execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
+
+
+#change node spawn to next row
+execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeSpawnOrgin] ~ ~ ~-3
+
+
+
 execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~0.45 ~-0.3 ~
 execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:blue_up_left
 
@@ -172,44 +219,5 @@ execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:box
 
 
 
-#change node spawn to next row
-execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeSpawnOrgin] ~ ~ ~-3
 
-execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~0.45 ~-0.3 ~
-execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
-
-execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~0.15 ~-0.3 ~
-execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
-
-execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~-0.15 ~-0.3 ~
-execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
-
-execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~-0.45 ~-0.3 ~
-execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
-
-
-execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~0.45 ~ ~
-execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
-
-execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~0.15 ~ ~
-execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
-
-execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~-0.15 ~ ~
-execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
-
-execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~-0.45 ~ ~
-execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
-
-
-execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~0.45 ~0.3 ~
-execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
-
-execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~0.15 ~0.3 ~
-execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
-
-execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~-0.15 ~0.3 ~
-execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
-
-execute at @e[type=armor_stand,tag=nodeSpawnOrgin] run teleport @e[type=armor_stand,tag=nodeCursor] ~-0.45 ~0.3 ~
-execute as @e[type=armor_stand,tag=nodeCursor] run function block_types:bomb
 

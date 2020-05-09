@@ -1,0 +1,67 @@
+{
+    "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
+    "textures": {
+        "particle": "minecraft:blocks/red_side",
+        "bomb": "minecraft:blocks/bomb",
+        "red_saber": "minecraft:blocks/red_saber"
+    },
+    "display": {
+        "gui": {
+            "rotation": [ 246, 57, 64 ],
+            "translation": [ 2, -1, 0 ],
+            "scale": [ 0.625, 0.625, 0.625 ]
+        },
+        "ground": {
+            "rotation": [ 0, 0, 0 ],
+            "translation": [ 0, 3, 0 ],
+            "scale": [ 0.25, 0.25, 0.25 ]
+        },
+        "fixed": {
+            "rotation": [ 0, 180, 0 ],
+            "translation": [ 0, -5, 0 ],
+            "scale": [ 0.5, 0.5, 0.5 ]
+        },
+        "head": {
+            "rotation": [ 0, 180, 0 ],
+            "translation": [ 0, 0, 0 ],
+            "scale": [ 1, 1, 1 ]
+        },
+        "firstperson_righthand": {
+            "rotation": [ 0, 293, 0 ],
+            "translation": [ 0, 2.5, 0 ],
+            "scale": [ 0.4, 0.4, 0.4 ]
+        },
+        "thirdperson_righthand": {
+            "rotation": [ 0, 305, 0 ],
+            "translation": [ 0, 1.5, 0 ],
+            "scale": [ 0.375, 0.375, 0.375 ]
+        }
+    },
+    "elements": [
+        {
+            "name": "Handle",
+            "from": [ 6, -5, 6 ], 
+            "to": [ 10, 5, 10 ], 
+            "faces": {
+                "north": { "texture": "#bomb", "uv": [ 0, 0, 4, 10 ] },
+                "east": { "texture": "#bomb", "uv": [ 0, 0, 4, 10 ] },
+                "south": { "texture": "#bomb", "uv": [ 0, 0, 4, 10 ] },
+                "west": { "texture": "#bomb", "uv": [ 0, 0, 4, 10 ] },
+                "up": { "texture": "#bomb", "uv": [ 0, 0, 4, 4 ] },
+                "down": { "texture": "#bomb", "uv": [ 0, 0, 4, 4 ] }
+            }
+        },
+        {
+            "name": "Saber",
+            "from": [ 7, 5, 7 ], 
+            "to": [ 9, 32, 9 ], 
+            "faces": {
+                "north": { "texture": "#red_saber", "uv": [ 0, 0, 16, 16 ] },
+                "east": { "texture": "#red_saber", "uv": [ 0, 0, 16, 16 ] },
+                "south": { "texture": "#red_saber", "uv": [ 0, 0, 16, 16 ] },
+                "west": { "texture": "#red_saber", "uv": [ 0, 0, 16, 16 ] },
+                "up": { "texture": "#red_saber", "uv": [ 0, 0, 2, 2 ] }
+            }
+        }
+    ]
+}
