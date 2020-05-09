@@ -1,6 +1,6 @@
-execute if score @s NoteHealth > #CONST10 Var1 run say +1 Correct Right
-execute if score @s NoteHealth > #CONST10 Var1 at @s run kill @e[type=armor_stand,distance=..0.3]
-execute if score @s NoteHealth > #CONST10 Var1 run kill @s
-execute if score @s NoteHealth < #CONST10 Var1 run say -1 Wrong Right
-execute if score @s NoteHealth < #CONST10 Var1 at @s run kill @e[type=armor_stand,distance=..0.3]
-execute if score @s NoteHealth < #CONST10 Var1 run kill @s
+execute if entity @s[name="Blue Saber"] run say +1 Correct Right
+execute if entity @s[name="Blue Saber"] at @s run kill @e[type=armor_stand,distance=..0.05]
+execute if entity @s[name="Blue Saber"] run kill @s
+execute if score @s NoteHealth < #CONST3 Const_3 run say -1 Wrong Right!
+execute if score @s NoteHealth < #CONST3 Const_3 at @s run kill @e[type=armor_stand,distance=..0.05]
+execute if score @s NoteHealth < #CONST3 Const_3 run kill @s

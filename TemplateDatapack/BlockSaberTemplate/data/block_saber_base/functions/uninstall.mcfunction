@@ -1,6 +1,6 @@
 scoreboard objectives remove NoteHealth
 scoreboard objectives remove PlayerUUID
-scoreboard objectives remove Const_10
+scoreboard objectives remove Const_3
 
 scoreboard objectives remove HighBlockHeight
 scoreboard objectives remove MidBlockHeight

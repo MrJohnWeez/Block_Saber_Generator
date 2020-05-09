@@ -5,11 +5,6 @@ execute at @e[type=armor_stand,tag=playerOrgin] as @p[scores={SongUUID=1111}] ru
 
 execute as @e[tag=note] store result score @s NoteHealth run data get entity @s Health
 
-scoreboard players operation #TEST NoteHealth = @e[tag=note,limit=1] NoteHealth
-
-
-
-
 execute as @e[tag=noteBlue] run function block_saber_base:check_right_hit_notes
 execute as @e[tag=noteRed] run function block_saber_base:check_left_hit_notes
 execute as @e[tag=noteBomb] run function block_saber_base:check_bomb_collide

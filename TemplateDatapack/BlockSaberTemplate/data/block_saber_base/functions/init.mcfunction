@@ -8,7 +8,7 @@ team modify NoCollide deathMessageVisibility never
 
 scoreboard objectives add NoteHealth dummy
 scoreboard objectives add PlayerUUID dummy
-scoreboard objectives add Const_10 dummy
+scoreboard objectives add Const_3 dummy
 
 scoreboard objectives add TempVar1 dummy
 
@@ -21,7 +21,7 @@ scoreboard objectives add IsPlayerSneeking minecraft.custom:minecraft.sneak_time
 scoreboard objectives add AirTime dummy
 
 #Set constants
-scoreboard players set #CONST10 Const_10 10
+scoreboard players set #CONST3 Const_3 3
 
 
 execute as MrJohnWeez run function block_saber_base:play
@@ -53,16 +53,10 @@ execute as MrJohnWeez run function block_saber_base:play
 
 
 
-
-
-
-
-
-
-#Play around with the smaller note idea
-
-
-
+#TODO:
+#Make walls invisible
+#Make bomb model
+#Test eye level and detections
 
 
 

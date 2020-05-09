@@ -1,1 +1,1 @@
-execute at @s run teleport @s ^ ^ ^0.42
+execute at @s run teleport @s ^ ^ ^0.03
