@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using System.Collections;
 
 /// <summary>
 /// Simple class that allows buttons to have custom sounds

@@ -18,6 +18,7 @@ public class FileManager : MonoBehaviour
 
 	private string _zipFilePath = "";
 	private string _datapackOutputPath = "";
+	private Converter _converter = null;
 
 	#region UnityCallbacks
 	private void Start()
@@ -65,7 +66,8 @@ public class FileManager : MonoBehaviour
 	{
 		if (AreSelectedPathsValid())
 		{
-			Debug.Log("Started Generating...");
+			_converter = new Converter(_zipFilePath, _datapackOutputPath);
+			_converter.GenerateDatapack();
 		}
 	}
 

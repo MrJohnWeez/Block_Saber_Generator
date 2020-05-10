@@ -87,6 +87,7 @@ public class SafeFileManagement
 		return inFileName;
 	}
 
+	
 
 	/// <summary>
 	/// Get Files within given directory
@@ -244,6 +245,18 @@ public class SafeFileManagement
 	}
 
 	/// <summary>
+	/// Get lowest folder name within the given path
+	/// </summary>
+	/// <param name="inFolderPath">Path of a folder</param>
+	/// <returns>Lowest folder name</returns>
+	public static string GetFolderName(string inFolderPath)
+	{
+		string fullPath = Path.GetFullPath(SafeFileManagement.GetFileName(inFolderPath)).TrimEnd(Path.DirectorySeparatorChar);
+		string projectName = Path.GetFileName(fullPath);
+		return projectName;
+	}
+
+	/// <summary>
 	/// Copy entire directory to a different location
 	/// </summary>
 	/// <param name="sourceDirName">The folder to copy files from</param>
@@ -383,6 +396,11 @@ public class SafeFileManagement
 		}
 
 		return Directory.Exists(destDirName);
+	}
+
+	public static void DeleteDirectory(string directoryPath)
+	{
+		Directory.Delete(directoryPath);
 	}
 
 	#endregion DirecotryManagement
