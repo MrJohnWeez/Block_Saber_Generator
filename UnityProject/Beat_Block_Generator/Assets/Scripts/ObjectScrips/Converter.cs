@@ -27,10 +27,10 @@ public class Converter
 	private string _zipPath = "";
 	private string _datapackOutputPath = "";
 	private string _tempUnZipPath = "";
+	private List<BeatMapData> _beatMapData = new List<BeatMapData>();
 
 	public Converter(string zipPath, string datapackOutputPath)
 	{
-
 		_zipPath = zipPath;
 		_datapackOutputPath = datapackOutputPath;
 	}
@@ -46,8 +46,10 @@ public class Converter
 			Debug.Log("Converting files...");
 			ConvertFiles();
 
+			Debug.Log("Parsing files...");
+			ParseJson();
 
-			//SafeFileManagement.DeleteDirectory(_tempUnZipPath);
+			SafeFileManagement.DeleteDirectory(_tempUnZipPath);
 			Debug.Log("Done.");
 		}
 
@@ -65,16 +67,38 @@ public class Converter
 	/// <summary>
 	/// Convert egg file to ogg
 	/// </summary>
-	/// <returns>True if successful</returns>
-	private bool ConvertFiles()
+	private void ConvertFiles()
 	{
-		string[] songPath = Directory.GetFiles(_tempFilePath, "*.egg", SearchOption.AllDirectories);
-		if (songPath.Length > 0)
+		string[] files = Directory.GetFiles(_tempFilePath, "*.egg*", SearchOption.AllDirectories);
+
+		foreach(string path in files)
 		{
-			string firstSongPath = songPath[0];
-			string newName = firstSongPath.Replace(".egg", ".ogg");
-			return SafeFileManagement.MoveFile(firstSongPath, newName);
+			string newName = path.Replace(".egg", ".ogg");
+			SafeFileManagement.MoveFile(path, newName);
 		}
-		return false;
+	}
+
+	private void ParseJson()
+	{
+		string infoPath = Path.Combine(_tempUnZipPath, "Info.dat");
+		PackInfo packInfo = JsonUtility.FromJson<PackInfo>(SafeFileManagement.GetFileContents(infoPath));
+		Debug.Log(packInfo._version);
+
+		_beatMapData.Clear();
+
+		foreach (_difficultyBeatmapSets difficultyBeatmapSets in packInfo._difficultyBeatmapSets)
+		{
+			foreach(_difficultyBeatmaps difficultyBeatmaps in difficultyBeatmapSets._difficultyBeatmaps)
+			{
+				string songData = Path.Combine(_tempUnZipPath, difficultyBeatmaps._beatmapFilename);
+				BeatMapData beatMapData = JsonUtility.FromJson<BeatMapData>(SafeFileManagement.GetFileContents(songData));
+				_beatMapData.Add(beatMapData);
+			}
+		}
+
+		foreach(BeatMapData bmd in _beatMapData)
+		{
+			Debug.Log(bmd._notes.Length);
+		}
 	}
 }

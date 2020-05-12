@@ -400,7 +400,7 @@ public class SafeFileManagement
 
 	public static void DeleteDirectory(string directoryPath)
 	{
-		Directory.Delete(directoryPath);
+		Directory.Delete(directoryPath, true);
 	}
 
 	#endregion DirecotryManagement
