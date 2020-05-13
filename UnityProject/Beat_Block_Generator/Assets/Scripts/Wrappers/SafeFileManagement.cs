@@ -153,8 +153,8 @@ public class SafeFileManagement
 	/// <summary>
 	/// Safely copies a file to a new destination
 	/// </summary>
-	/// <param name="fileInfo">Source File</param>
-	/// <param name="destFileName">Destination file</param>
+	/// <param name="fileInfo">Source file info</param>
+	/// <param name="destFileName">Destination file path</param>
 	/// <param name="overWirteFile">Should file be overwitten</param>
 	/// <param name="retryAttempts">Number of attemps to retry move</param>
 	/// <returns>True if sucessful</returns>
@@ -184,6 +184,19 @@ public class SafeFileManagement
 		}
 
 		return File.Exists(destFileName);
+	}
+
+	/// <summary>
+	/// Safely copies a file to a new destination
+	/// </summary>
+	/// <param name="fromFileName">Source file path</param>
+	/// <param name="destFileName">Destination file path</param>
+	/// <param name="overWirteFile">Should file be overwitten</param>
+	/// <param name="retryAttempts">Number of attemps to retry move</param>
+	/// <returns>True if sucessful</returns>
+	public static bool CopyFileTo(string fromFileName, string destFileName, bool overWirteFile = false, int retryAttempts = 0)
+	{
+		return CopyFileTo(new FileInfo(fromFileName), destFileName, overWirteFile, retryAttempts);
 	}
 
 	/// <summary>

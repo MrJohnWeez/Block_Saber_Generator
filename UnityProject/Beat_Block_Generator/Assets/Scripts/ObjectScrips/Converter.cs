@@ -6,28 +6,18 @@ using System;
 
 public class Converter
 {
-	private readonly string[] _excludeExtensions = { ".meta" };
-
-	private const int C_numberOfIORetryAttempts = 5;
-
-	// Datapack hardcoded names
-	private const string C_Data = "data";
-	private const string C_Minecraft = "minecraft";
-	private const string C_Functions = "functions";
-	private const string C_McFunction = ".mcfunction";
-	private const string C_Tags = "tags";
-	private const string C_FakePlayerChar = "#";
-	private const string C_Slash = "/";
-
+	// Paths
 	private string _tempFilePath = Application.temporaryCachePath;
-	private string _unityDataPath = Application.dataPath;
-
-	private Dictionary<string, string> _keyVars = new Dictionary<string, string>();
-
 	private string _zipPath = "";
 	private string _datapackOutputPath = "";
 	private string _tempUnZipPath = "";
-	private List<BeatMapData> _beatMapData = new List<BeatMapData>();
+
+	// Map Pack info
+
+	private PackInfo _packInfo;
+	private List<BeatMapSong> _beatMapSongList = new List<BeatMapSong>();
+
+	
 
 	public Converter(string zipPath, string datapackOutputPath)
 	{
@@ -35,28 +25,41 @@ public class Converter
 		_datapackOutputPath = datapackOutputPath;
 	}
 
-	public void GenerateDatapack()
+	public void GenerateMinecraftResources()
 	{
 		if(File.Exists(_zipPath) && Directory.Exists(_datapackOutputPath))
 		{
 			Debug.Log(_tempFilePath);
 			Debug.Log("Decompressing files...");
 			UnZipFile();
+			
+			Debug.Log("Parsing files...");
+			ParseBeatSaberDat();
 
 			Debug.Log("Converting files...");
-			ConvertFiles();
+			ConvertSoundFile();
+			ConvertImageFiles();
 
-			Debug.Log("Parsing files...");
-			ParseJson();
+			if (_beatMapSongList.Count > 0 && _packInfo != null)
+			{
+				Debug.Log("Generating Resource pack...");
+				ResourcepackGenerator resourcepackGenerator = new ResourcepackGenerator(_tempUnZipPath, _packInfo, _datapackOutputPath);
+				resourcepackGenerator.Generate();
 
-			SafeFileManagement.DeleteDirectory(_tempUnZipPath);
+				Debug.Log("Generating Data pack...");
+				DatapackGenerator datapackGenerator = new DatapackGenerator(_tempUnZipPath, _packInfo, _beatMapSongList, _datapackOutputPath);
+				datapackGenerator.Generate();
+			}
+
+			Debug.Log("Deleting Temp files...");
+			//SafeFileManagement.DeleteDirectory(_tempUnZipPath);
 			Debug.Log("Done.");
-		}
-
-
-		//string pathOfDatapackTemplate = Path.Combine(dataStats.unityDataPath, "StreamingAssets", "CopyTemplate");
+		}		
 	}
 
+	/// <summary>
+	/// Unzip the beatsaber map pack into a temp directory
+	/// </summary>
 	private void UnZipFile()
 	{
 		_tempUnZipPath = Path.Combine(_tempFilePath, SafeFileManagement.GetFolderName(_zipPath) + SafeFileManagement.GetDateNow());
@@ -67,38 +70,50 @@ public class Converter
 	/// <summary>
 	/// Convert egg file to ogg
 	/// </summary>
-	private void ConvertFiles()
+	private void ConvertSoundFile()
 	{
-		string[] files = Directory.GetFiles(_tempFilePath, "*.egg*", SearchOption.AllDirectories);
+		string[] files = Directory.GetFiles(_tempUnZipPath, "*.egg*", SearchOption.AllDirectories);
 
 		foreach(string path in files)
 		{
 			string newName = path.Replace(".egg", ".ogg");
+			_packInfo._songFilename = _packInfo._songFilename.Replace(".egg", ".ogg");
 			SafeFileManagement.MoveFile(path, newName);
 		}
 	}
 
-	private void ParseJson()
+	/// <summary>
+	/// Convert images file to png
+	/// </summary>
+	private void ConvertImageFiles()
+	{
+		string[] files = Directory.GetFiles(_tempUnZipPath, "*.jpg*", SearchOption.AllDirectories);
+
+		foreach (string path in files)
+		{
+			string newName = path.Replace(".jpg", ".png");
+			_packInfo._coverImageFilename = _packInfo._coverImageFilename.Replace(".jpg", ".png");
+			SafeFileManagement.MoveFile(path, newName);
+		}
+	}
+
+	/// <summary>
+	/// Read dat files as json files and load into struct
+	/// </summary>
+	private void ParseBeatSaberDat()
 	{
 		string infoPath = Path.Combine(_tempUnZipPath, "Info.dat");
-		PackInfo packInfo = JsonUtility.FromJson<PackInfo>(SafeFileManagement.GetFileContents(infoPath));
-		Debug.Log(packInfo._version);
+		_packInfo = JsonUtility.FromJson<PackInfo>(SafeFileManagement.GetFileContents(infoPath));
+		_beatMapSongList.Clear();
 
-		_beatMapData.Clear();
-
-		foreach (_difficultyBeatmapSets difficultyBeatmapSets in packInfo._difficultyBeatmapSets)
+		foreach (_difficultyBeatmapSets difficultyBeatmapSets in _packInfo._difficultyBeatmapSets)
 		{
 			foreach(_difficultyBeatmaps difficultyBeatmaps in difficultyBeatmapSets._difficultyBeatmaps)
 			{
 				string songData = Path.Combine(_tempUnZipPath, difficultyBeatmaps._beatmapFilename);
 				BeatMapData beatMapData = JsonUtility.FromJson<BeatMapData>(SafeFileManagement.GetFileContents(songData));
-				_beatMapData.Add(beatMapData);
+				_beatMapSongList.Add(new BeatMapSong(beatMapData, difficultyBeatmaps));
 			}
-		}
-
-		foreach(BeatMapData bmd in _beatMapData)
-		{
-			Debug.Log(bmd._notes.Length);
 		}
 	}
 }

@@ -23,7 +23,10 @@ public class FileManager : MonoBehaviour
 	#region UnityCallbacks
 	private void Start()
 	{
+		_zipFilePath = "C:\\Users\\John\\Desktop\\72808dcf1d5e2f3b4d08ba98cec32d39d696ba91.zip";
+		_datapackOutputPath = "C:\\Users\\John\\Desktop";
 		AreSelectedPathsValid();
+		ConvertAndCreateDatapack();
 	}
 
 	#endregion UnityCallbacks
@@ -67,7 +70,7 @@ public class FileManager : MonoBehaviour
 		if (AreSelectedPathsValid())
 		{
 			_converter = new Converter(_zipFilePath, _datapackOutputPath);
-			_converter.GenerateDatapack();
+			_converter.GenerateMinecraftResources();
 		}
 	}
 
