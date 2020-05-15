@@ -3,103 +3,99 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class ResourcepackGenerator
+public class ResourcepackGenerator : GeneratorBase
 {
-	private readonly string[] _excludeExtensions = { ".meta" };
-	private const int C_numberOfIORetryAttempts = 5;
+	// Extension types
+	private const string C_Ogg = ".ogg";
 
-	// Names
+	// File Names
+	private const string C_PackIcon = "pack.png";
+	private const string C_SoundsJson = "sounds.json";
+
+	// Folder Names
 	private const string C_TemplateName = @"SONG_AUTHOR - SONG_NAME";
-	private const string C_PackIconName = "pack.png";
-	private const string C_PackMetaName = "pack.mcmeta";
-
-
+	private const string C_Assets = "assets";
+	private const string C_Sounds = "sounds";
+	private const string C_Custom = "custom";
 
 	// Paths
-	private string _pathOfResourcepackTemplate = Path.Combine(Application.dataPath, "StreamingAssets", "TemplateResourcepack");
-	
-	private string _unzippedFolderPath = "";
-	private string _newResourcepackPath = "";
-	private string _datapackOutputPath = "";
-
-	private Dictionary<string, string> _keyVars = new Dictionary<string, string>();
-
-	private PackInfo _packInfo;
+	private string _pathOfResourcepackTemplate = Path.Combine(C_StreamingAssets, "TemplateResourcepack");
 
 	public ResourcepackGenerator(string unzippedFolderPath, PackInfo packInfo, string datapackOutputPath)
 	{
 		this._unzippedFolderPath = unzippedFolderPath;
 		this._packInfo = packInfo;
-		this._datapackOutputPath = datapackOutputPath;
-		SetKeyVars();
+		this._outputPath = datapackOutputPath;
+		Init();
 	}
 
-	public void Generate()
+	public override bool Generate()
 	{
-		if(Directory.Exists(_unzippedFolderPath) && _packInfo != null)
+		if (Directory.Exists(_unzippedFolderPath) && _packInfo != null)
 		{
 			Debug.Log("Copying Template...");
-			if (CopyTemplate())
+			if (CopyTemplate(_pathOfResourcepackTemplate, _unzippedFolderPath))
 			{
 				Debug.Log("Copying Image Icon...");
 				CopyMapIcon();
 
-				Debug.Log("Change meta data...");
-				EditMcMeta();
-
-				Debug.Log("Copying song...");
+				Debug.Log("Copying Song...");
 				CopySong();
 
-				Debug.Log("Copying and deleting resourcepack...");
-				CopyAndDeleteTemp();
+				Debug.Log("Creating Zip...");
+				CreateArchive(_rootFolderPath, _fullOutputPath);
+
+				Debug.Log("Resource Pack Done");
+				return true;
 			}
-		}
-	}
-
-	private void SetKeyVars()
-	{
-		_keyVars["MAPPER_NAME"] = _packInfo._levelAuthorName;
-		_keyVars["BEATS_PER_MINUTE"] = _packInfo._beatsPerMinute.ToString();
-	}
-
-	private bool CopyTemplate()
-	{
-		if(SafeFileManagement.DirectoryCopy(_pathOfResourcepackTemplate, _unzippedFolderPath, true, _excludeExtensions, C_numberOfIORetryAttempts))
-		{
-			string copiedTemplatePath = Path.Combine(_unzippedFolderPath, C_TemplateName);
-			string resourcepackName = _packInfo._songAuthorName + " - " + _packInfo._songName + " " + _packInfo._songSubName;
-			_newResourcepackPath = Path.Combine(_unzippedFolderPath, resourcepackName);
-			return SafeFileManagement.MoveDirectory(copiedTemplatePath, _newResourcepackPath, C_numberOfIORetryAttempts);
 		}
 		return false;
 	}
 
+	protected override bool CopyTemplate(string sourceDirName, string destDirName)
+	{
+		if(base.CopyTemplate(sourceDirName, destDirName))
+		{
+			string copiedTemplatePath = Path.Combine(destDirName, C_TemplateName);
+			_rootFolderPath = Path.Combine(destDirName, _packName);
+			return SafeFileManagement.MoveDirectory(copiedTemplatePath, _rootFolderPath, C_numberOfIORetryAttempts);
+		}
+		return false;
+	}
+
+	protected override void Init()
+	{
+		base.Init();
+		_packName = _packInfo._songAuthorName + " - " + _packInfo._songName + " " + _packInfo._songSubName;
+		_longNameID = _packName.MakeMinecraftSafe();
+		_fullOutputPath = Path.Combine(_outputPath, _packName + C_Zip);
+		_keyVars["SONG"] = _longNameID;
+	}
+
+	/// <summary>
+	/// Copy the cover icon in the beat map to the minecraft resource pack icon
+	/// </summary>
+	/// <returns>True if successful</returns>
 	private bool CopyMapIcon()
 	{
 		string mapIcon = Path.Combine(_unzippedFolderPath, _packInfo._coverImageFilename);
-		string packIcon = Path.Combine(_newResourcepackPath, C_PackIconName);
+		string packIcon = Path.Combine(_rootFolderPath, C_PackIcon);
 		return SafeFileManagement.CopyFileTo(mapIcon, packIcon, true, C_numberOfIORetryAttempts);
 	}
 
-	private void EditMcMeta()
+	/// <summary>
+	/// Copy the song file from the beat map into the resource pack
+	/// </summary>
+	/// <returns>True if successful</returns>
+	private bool CopySong()
 	{
-		string metaPath = Path.Combine(_newResourcepackPath, C_PackMetaName);
-		string metaText = SafeFileManagement.GetFileContents(metaPath);
-		foreach(string key in _keyVars.Keys)
+		string mapSong = Path.Combine(_unzippedFolderPath, _packInfo._songFilename);
+		string minecraftNamespace = Path.Combine(_rootFolderPath, C_Assets, C_Minecraft);
+		string packSong = Path.Combine(minecraftNamespace, C_Sounds, C_Custom, _longNameID + C_Ogg);
+		if(SafeFileManagement.CopyFileTo(mapSong, packSong, true, C_numberOfIORetryAttempts))
 		{
-			metaText = metaText.Replace(key, _keyVars[key]);
+			UpdateFileWithKeys(Path.Combine(minecraftNamespace, C_SoundsJson));
 		}
-
-		SafeFileManagement.SetFileContents(metaPath, metaText);
-	}
-
-	private void CopySong()
-	{
-
-	}
-
-	private void CopyAndDeleteTemp()
-	{
-
+		return false;
 	}
 }

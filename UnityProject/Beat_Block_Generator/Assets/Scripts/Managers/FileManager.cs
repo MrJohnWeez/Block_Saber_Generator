@@ -26,7 +26,7 @@ public class FileManager : MonoBehaviour
 		_zipFilePath = "C:\\Users\\John\\Desktop\\72808dcf1d5e2f3b4d08ba98cec32d39d696ba91.zip";
 		_datapackOutputPath = "C:\\Users\\John\\Desktop";
 		AreSelectedPathsValid();
-		ConvertAndCreateDatapack();
+		ConvertAndCreateResources();
 	}
 
 	#endregion UnityCallbacks
@@ -65,7 +65,7 @@ public class FileManager : MonoBehaviour
 	/// <summary>
 	/// Convert and generate a datapack if the input and output paths are valid
 	/// </summary>
-	public void ConvertAndCreateDatapack()
+	public void ConvertAndCreateResources()
 	{
 		if (AreSelectedPathsValid())
 		{

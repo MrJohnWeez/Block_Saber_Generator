@@ -1,6 +1,7 @@
 ﻿// Created by MrJohnWeez
 // March 2020
 //
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 /// <summary>
@@ -53,5 +54,20 @@ public static class StringExtensions
 	public static bool IsEmpty(this string value)
 	{
 		return (string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value));
+	}
+
+	/// <summary>
+	/// Converts a string to a minecraft safe string
+	/// </summary>
+	/// <param name="value">String to convert</param>
+	/// <returns>A same minecraft string</returns>
+	public static string MakeMinecraftSafe(this string value)
+	{
+		value = value.ToLower();
+		Regex rgx = new Regex("[^a-z0-9_)( -]");
+		value = rgx.Replace(value, "");
+		rgx = new Regex("[^a-z0-9_-]");
+		value = rgx.Replace(value, "_");
+		return value;
 	}
 }

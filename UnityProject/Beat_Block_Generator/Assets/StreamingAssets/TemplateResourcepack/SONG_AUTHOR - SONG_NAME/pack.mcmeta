@@ -1,6 +1,6 @@
 {
    "pack":{
 	  "pack_format":5,
-	  "description":"Mapper: MAPPER_NAME bpm: BEATS_PER_MINUTE"
+	  "description":"Adds Block Saber notes and song"
    }
 }
