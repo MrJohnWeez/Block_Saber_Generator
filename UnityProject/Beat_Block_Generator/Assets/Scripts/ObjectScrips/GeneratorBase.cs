@@ -65,20 +65,18 @@ public class GeneratorBase
 		Archive.Compress(sourcePath, outputFullPath);
 	}
 
-	
-
 	/// <summary>
 	/// Replace any keys within a file from a dictionary
 	/// </summary>
 	/// <param name="filePath">path of file to replace keys in</param>
 	protected void UpdateFileWithKeys(string filePath)
 	{
-		string metaText = SafeFileManagement.GetFileContents(filePath);
+		string textInfo = SafeFileManagement.GetFileContents(filePath);
 		foreach (string key in _keyVars.Keys)
 		{
-			metaText = metaText.Replace(key, _keyVars[key]);
+			textInfo = textInfo.Replace(key, _keyVars[key]);
 		}
 
-		SafeFileManagement.SetFileContents(filePath, metaText);
+		SafeFileManagement.SetFileContents(filePath, textInfo);
 	}
 }

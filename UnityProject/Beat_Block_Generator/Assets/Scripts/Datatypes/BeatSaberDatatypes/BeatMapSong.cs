@@ -4,8 +4,8 @@ using UnityEngine;
 
 public struct BeatMapSong
 {
-	BeatMapData beatMapData;
-	_difficultyBeatmaps difficultyBeatmaps;
+	public BeatMapData beatMapData;
+	public _difficultyBeatmaps difficultyBeatmaps;
 
 	public BeatMapSong(BeatMapData beatMapData, _difficultyBeatmaps difficultyBeatmaps)
 	{

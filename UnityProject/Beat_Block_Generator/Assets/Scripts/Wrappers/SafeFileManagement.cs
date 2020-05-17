@@ -131,6 +131,10 @@ public class SafeFileManagement
 		return files;
 	}
 
+
+	
+
+
 	/// <summary>
 	/// Get File paths within a directory
 	/// </summary>
@@ -149,6 +153,26 @@ public class SafeFileManagement
 		return fileNameList.ToArray();
 	}
 
+	/// <summary>
+	/// Get directory paths within a directory
+	/// </summary>
+	/// <param name="sourceDirName">Source directory</param>
+	/// <param name="retryAttempts">Number of attemps to retry get</param>
+	/// <returns>Full name paths string array and Empty list if error</returns>
+	public static string[] GetDirectoryPaths(string sourceDirName, int retryAttempts = 0)
+	{
+		DirectoryInfo[] directories = GetDirectoryInfo(sourceDirName, retryAttempts);
+		List<string> dirNameList = new List<string>();
+		if(directories != null && directories.Length > 0)
+		{
+			foreach (DirectoryInfo dir in directories)
+			{
+				dirNameList.Add(dir.FullName);
+			}
+			return dirNameList.ToArray();
+		}
+		return new string[0];
+	}
 
 	/// <summary>
 	/// Safely copies a file to a new destination
@@ -236,9 +260,70 @@ public class SafeFileManagement
 
 		return File.Exists(destFileName);
 	}
+
+	public static bool AppendFile(string filePath, string content)
+	{
+		bool wasSuccessful = false;
+		try
+		{
+			using (var sw = new StreamWriter(filePath, true))
+			{
+				sw.WriteLine(content);
+			}
+			wasSuccessful = true;
+		}
+		catch (Exception e)
+		{
+			Debug.Log("The file could not be appended to:\nError: \n" + e.Message.ToString());
+		}
+		return wasSuccessful;
+	}
+
 	#endregion FileManagement
 
 	#region DirecotryManagement
+	/// <summary>
+	/// Get Directoies within given directory
+	/// </summary>
+	/// <param name="sourceDirName">Source directory</param>
+	/// <param name="retryAttempts">Number of attemps to retry get</param>
+	/// <returns>FileInfo array and Null if errors</returns>
+	public static DirectoryInfo[] GetDirectoryInfo(string sourceDirName, int retryAttempts = 0)
+	{
+		DirectoryInfo[] files = null;
+
+
+		if (Directory.Exists(sourceDirName))
+		{
+			DirectoryInfo dir = new DirectoryInfo(sourceDirName);
+
+			int currAttempts = 0;
+			bool didMove = false;
+			while (!didMove && currAttempts <= retryAttempts)
+			{
+				try
+				{
+					files = dir.GetDirectories();
+					didMove = true;
+				}
+				catch (UnauthorizedAccessException accessDenied)
+				{
+					currAttempts++;
+					Debug.Log(accessDenied.Message);
+					Thread.Sleep(50);   // Wait for 50ms before checking again
+					continue;
+				}
+				catch (Exception e)
+				{
+					Debug.Log(e.Message);
+					currAttempts = retryAttempts + 1;
+				}
+			}
+		}
+
+		return files;
+	}
+
 	/// <summary>
 	/// Opens a native file browers and retunrs a path selcted
 	/// </summary>
