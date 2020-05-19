@@ -51,8 +51,9 @@ public class Converter
 				datapackGenerator.Generate();
 			}
 
-			//Debug.Log("Deleting Temp files...");
-			//SafeFileManagement.DeleteDirectory(_tempUnZipPath);
+			Debug.Log("Deleting Temp files...");
+			SafeFileManagement.DeleteDirectory(_tempUnZipPath);
+
 			Debug.Log("Done.");
 		}		
 	}

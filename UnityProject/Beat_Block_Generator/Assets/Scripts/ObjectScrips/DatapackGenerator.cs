@@ -10,8 +10,8 @@ public class DatapackGenerator : GeneratorBase
 																{
 																	"red_up",
 																	"red_down",
-																	"red_right",
 																	"red_left",
+																	"red_right",
 																	"red_up_left",
 																	"red_up_right",
 																	"red_down_left",
@@ -22,8 +22,8 @@ public class DatapackGenerator : GeneratorBase
 																{
 																	"blue_up",
 																	"blue_down",
-																	"blue_right",
 																	"blue_left",
+																	"blue_right",
 																	"blue_up_left",
 																	"blue_up_right",
 																	"blue_down_left",
@@ -78,7 +78,6 @@ public class DatapackGenerator : GeneratorBase
 	private string _pathOfDatapackTemplate = Path.Combine(C_StreamingAssets, "TemplateDatapack");
 
 	private List<BeatMapSong> _beatMapSongList;
-	private string _datapackOutputPath = "";
 
 	private double _metersPerTick = 0;
 
@@ -88,7 +87,7 @@ public class DatapackGenerator : GeneratorBase
 		this._unzippedFolderPath = unzippedFolderPath;
 		this._packInfo = packInfo;
 		this._beatMapSongList = beatMapSongList;
-		this._datapackOutputPath = datapackOutputPath;
+		this._outputPath = datapackOutputPath;
 		Init();
 	}
 
@@ -104,6 +103,8 @@ public class DatapackGenerator : GeneratorBase
 				Debug.Log("Generating main datapack files...");
 				GenerateMCBeatData();
 
+				Debug.Log("Zipping files...");
+				CreateArchive(_datapackRootPath, _fullOutputPath);
 
 				Debug.Log("Datapack Done");
 				return true;
@@ -144,8 +145,7 @@ public class DatapackGenerator : GeneratorBase
 		_keyVars["BEATS_PER_MINUTE"] = _packInfo._beatsPerMinute.ToString();
 		_keyVars["SONGUUID"] = Random.Range(-999999999, 999999999).ToString();
 		_keyVars["MOVESPEED"] = _metersPerTick.ToString();
-
-		Debug.Log("moveSpeed: " + _metersPerTick);
+		_keyVars["SONG"] = (_packInfo._songAuthorName + " - " + _packInfo._songName + " " + _packInfo._songSubName).MakeMinecraftSafe();
 	}
 
 	/// <summary>
@@ -203,7 +203,8 @@ public class DatapackGenerator : GeneratorBase
 			while (noteIndex < notes.Length)
 			{
 				currentLevel++;
-				string commandLevelFileName = string.Format("{0}{1}{2}{3}", difficultyName, C_LvlName, currentLevel, C_McFunction);
+				string commandLevelName = string.Format("{0}{1}{2}", difficultyName, C_LvlName, currentLevel);
+				string commandLevelFileName = string.Format("{0}{1}", commandLevelName, C_McFunction);
 				string commandLevelFilePath = Path.Combine(_blockSaberSongFunctionsPath, commandLevelFileName);
 				string currentCommands = "";
 
@@ -219,7 +220,7 @@ public class DatapackGenerator : GeneratorBase
 													prevCurrentTick,
 													currentTick,
 													C_BlockSaberSong,
-													commandLevelFileName);
+													commandLevelName);
 				SafeFileManagement.AppendFile(commandBasePath, baseCommand);
 				prevCurrentTick = currentTick + 1;
 			}
@@ -228,10 +229,7 @@ public class DatapackGenerator : GeneratorBase
 
 	private double CalculateMoveSpeed(float beatsPerMinute)
 	{
-		double beatsPerSecond = beatsPerMinute / 60.0d;
-		double metersPerBeat = beatsPerSecond * 0.21;
-		double metersPerTick = metersPerBeat / 20;
-		return metersPerTick;
+		return beatsPerMinute / 60.0d * 24 * 0.21 / 20;
 	}
 
 	private string NodeDataToCommands(_notes node, double moveSpeed, float bpm, ref int wholeTick)
@@ -247,7 +245,7 @@ public class DatapackGenerator : GeneratorBase
 		double fractionMeters = fractionTick * _metersPerTick;
 
 		return string.Format("{0}{1}{2}{3}",
-							NodePositionCommand(wholeTick, node._lineLayer * 0.45d, node._lineIndex * 0.3d, -fractionMeters),
+							NodePositionCommand(wholeTick, node._lineIndex * 0.3d, node._lineLayer * 0.3d, -fractionMeters),
 							System.Environment.NewLine,
 							NodeTypeCommand(wholeTick, node),
 							System.Environment.NewLine);
@@ -265,7 +263,7 @@ public class DatapackGenerator : GeneratorBase
 	private string NodeTypeCommand(int tick, _notes node)
 	{
 
-		return string.Format("execute if score @s TickCount matches {0} as @e[type = armor_stand, tag = nodeCursor] run function block_types: {1}",
+		return string.Format("execute if score @s TickCount matches {0} as @e[type = armor_stand, tag = nodeCursor] run function block_types:{1}",
 							tick,
 							noteTypes[node._type][node._cutDirection]);
 	}
