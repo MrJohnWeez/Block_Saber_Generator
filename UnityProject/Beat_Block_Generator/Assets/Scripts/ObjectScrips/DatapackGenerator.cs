@@ -52,6 +52,7 @@ public class DatapackGenerator : GeneratorBase
 	private const string C_TemplateName = "BlockSaberTemplate";
 	private const string C_BlockSaberBase = "block_saber_base";
 	private const string C_BlockSaberSong = "block_saber_song";
+	private const string C_Chat = "chat";
 
 	// File names
 	private const string C_EasyFunction = "easy.mcfunction";
@@ -61,6 +62,10 @@ public class DatapackGenerator : GeneratorBase
 	private const string C_ExpertPlusFunction = "expert_plus.mcfunction";
 	private const string C_PlayFunction = "play.mcfunction";
 	private const string C_SpawnNotesBaseFunction = "spawn_notes_base.mcfunction";
+	private const string C_InitFunction = "init.mcfunction";
+	private const string C_Difficulties = "difficulties.mcfunction";
+	private const string C_TemplateStrings = "TemplateStrings.json";
+
 
 	// Part names
 	private const string C_LvlName = "_lvl_";
@@ -69,6 +74,7 @@ public class DatapackGenerator : GeneratorBase
 	private string _datapackRootPath = "";
 	private string _blockSaberBaseFunctionsPath = "";
 	private string _blockSaberSongFunctionsPath = "";
+	private string _blockSaberChatFunctionsPath = "";
 	private string _spawnNotesBasePath = "";
 
 	// Counters
@@ -80,6 +86,9 @@ public class DatapackGenerator : GeneratorBase
 	private List<BeatMapSong> _beatMapSongList;
 
 	private double _metersPerTick = 0;
+	private string _UUIDHex = "";
+	private TemplateStrings _templateStrings = null;
+	private double _offset = 0.0;
 
 
 	public DatapackGenerator(string unzippedFolderPath, PackInfo packInfo, List<BeatMapSong> beatMapSongList, string datapackOutputPath)
@@ -127,6 +136,11 @@ public class DatapackGenerator : GeneratorBase
 	protected override void Init()
 	{
 		base.Init();
+		// minecraft data
+		string _pathOfTemplateStrings = Path.Combine(C_StreamingAssets, C_TemplateStrings);
+		_templateStrings = JsonUtility.FromJson<TemplateStrings>(SafeFileManagement.GetFileContents(_pathOfTemplateStrings));
+
+
 		// Names
 		_longNameID = _packInfo._songAuthorName + " - " + _packInfo._songName + " " + _packInfo._songSubName;
 		_packName = C_BlockSaber + _packInfo._songAuthorName + " - " + _packInfo._songName + " " + _packInfo._songSubName;
@@ -136,15 +150,25 @@ public class DatapackGenerator : GeneratorBase
 		_fullOutputPath = Path.Combine(_outputPath, _packName + C_Zip);
 		_blockSaberBaseFunctionsPath = Path.Combine(_datapackRootPath, C_Data, C_BlockSaberBase, C_Functions);
 		_blockSaberSongFunctionsPath = Path.Combine(_datapackRootPath, C_Data, C_BlockSaberSong, C_Functions);
+		_blockSaberChatFunctionsPath = Path.Combine(_datapackRootPath, C_Data, C_Chat, C_Functions);
 		_spawnNotesBasePath = Path.Combine(_blockSaberBaseFunctionsPath, C_SpawnNotesBaseFunction);
 
 		_metersPerTick = CalculateMoveSpeed(_packInfo._beatsPerMinute);
+
+		_UUIDHex = Random.Range(-999999999, 999999999).ToString("X");
+		_offset = _metersPerTick * -21;
 
 		// Keys
 		_keyVars["MAPPER_NAME"] = _packInfo._levelAuthorName;
 		_keyVars["BEATS_PER_MINUTE"] = _packInfo._beatsPerMinute.ToString();
 		_keyVars["SONGUUID"] = Random.Range(-999999999, 999999999).ToString();
 		_keyVars["MOVESPEED"] = _metersPerTick.ToString();
+		_keyVars["SONGTITLE"] = _packInfo._songName + " " + _packInfo._songSubName;
+		_keyVars["SONGARTIST"] = _packInfo._songAuthorName;
+
+		_keyVars["OFFSET"] = string.Format("{0:F18}", _offset);
+		_offset = double.Parse(_keyVars["OFFSET"]);
+
 		_keyVars["SONG"] = (_packInfo._songAuthorName + " - " + _packInfo._songName + " " + _packInfo._songSubName).MakeMinecraftSafe();
 	}
 
@@ -175,6 +199,13 @@ public class DatapackGenerator : GeneratorBase
 
 	private void GenerateMCBeatData()
 	{
+		string difficultiesFunctionPath = Path.Combine(_blockSaberChatFunctionsPath, C_Difficulties);
+		string initFunctionPath = Path.Combine(_blockSaberBaseFunctionsPath, C_InitFunction);
+		int difficultyID = 1;
+		double prevNodeTime = 0;
+		int nodeRowID = 1;
+
+
 		foreach (BeatMapSong song in _beatMapSongList)
 		{
 			string difficultyName = song.difficultyBeatmaps._difficulty.MakeMinecraftSafe();
@@ -197,7 +228,39 @@ public class DatapackGenerator : GeneratorBase
 			_obstacles[] obstacles = song.beatMapData._obstacles;
 
 			int noteIndex = 0;
+			string modeID = _UUIDHex + difficultyID.ToString();
 
+			string playCommands = string.Format("scoreboard players set @s Difficulty {0}{1}execute as @s run function block_saber_base:play",
+												difficultyID,
+												System.Environment.NewLine);
+
+
+			string scoreboardCommand = string.Format("scoreboard objectives add {0} dummy{1}execute as @a unless score @s {0} = @s {0} run scoreboard players set @s {0} 0",
+													modeID,
+													System.Environment.NewLine);
+
+			SafeFileManagement.AppendFile(initFunctionPath, scoreboardCommand);
+
+
+			string difficultyCommand1 = _templateStrings._difficultyChat;
+			difficultyCommand1 = difficultyCommand1.Replace("DIFFNAME", modeID);
+			difficultyCommand1 = difficultyCommand1.Replace("VALUE", "1");
+			difficultyCommand1 = difficultyCommand1.Replace("DIFFICULTY", difficultyName);
+			difficultyCommand1 = difficultyCommand1.Replace("COLOR", "green");
+
+			string difficultyCommand2 = _templateStrings._difficultyChat;
+			difficultyCommand2 = difficultyCommand2.Replace("DIFFNAME", modeID);
+			difficultyCommand2 = difficultyCommand2.Replace("VALUE", "0");
+			difficultyCommand2 = difficultyCommand2.Replace("DIFFICULTY", difficultyName);
+			difficultyCommand2 = difficultyCommand2.Replace("COLOR", "red");
+
+			SafeFileManagement.AppendFile(difficultiesFunctionPath, difficultyCommand1 + System.Environment.NewLine + difficultyCommand2);
+
+
+
+
+			string playPath = Path.Combine(_blockSaberSongFunctionsPath, difficultyName + "_play" + C_McFunction);
+			SafeFileManagement.SetFileContents(playPath, playCommands);
 
 			// Main note generation
 			while (noteIndex < notes.Length)
@@ -210,8 +273,15 @@ public class DatapackGenerator : GeneratorBase
 
 				while (noteIndex < notes.Length && currentNumberOfCommands < C_CommandLimit)
 				{
-					currentCommands += NodeDataToCommands(notes[noteIndex], _metersPerTick, _packInfo._beatsPerMinute, ref currentTick);
-					currentNumberOfCommands += 2;
+					if (prevNodeTime != notes[noteIndex]._time)
+					{
+						prevNodeTime = notes[noteIndex]._time;
+						nodeRowID++;
+					}
+
+					currentCommands += NodeDataToCommands(notes[noteIndex], _metersPerTick, _packInfo._beatsPerMinute, nodeRowID, ref currentTick);
+					prevNodeTime = notes[noteIndex]._time;
+					currentNumberOfCommands += 3;
 					noteIndex++;
 				}
 
@@ -224,7 +294,10 @@ public class DatapackGenerator : GeneratorBase
 				SafeFileManagement.AppendFile(commandBasePath, baseCommand);
 				prevCurrentTick = currentTick + 1;
 			}
+			difficultyID++;
 		}
+
+		SafeFileManagement.AppendFile(difficultiesFunctionPath, _templateStrings._mainMenuBack);
 	}
 
 	private double CalculateMoveSpeed(float beatsPerMinute)
@@ -232,7 +305,7 @@ public class DatapackGenerator : GeneratorBase
 		return beatsPerMinute / 60.0d * 24 * 0.21 / 20;
 	}
 
-	private string NodeDataToCommands(_notes node, double moveSpeed, float bpm, ref int wholeTick)
+	private string NodeDataToCommands(_notes node, double moveSpeed, float bpm, int nodeRowID, ref int wholeTick)
 	{
 		//_lineIndex = col
 		//_lineLayer = row
@@ -244,8 +317,15 @@ public class DatapackGenerator : GeneratorBase
 		double fractionTick = exactTick % beatsPerTick;
 		double fractionMeters = fractionTick * _metersPerTick;
 
-		return string.Format("{0}{1}{2}{3}",
+		string scoreCommand = string.Format("execute if score @s TickCount matches {0} at @e[type=armor_stand,tag=playerOrgin] as @p[scores={{SongUUID={1}}}] run scoreboard players set @s NodeRowID {2}",
+											wholeTick,
+											_keyVars["SONGUUID"],
+											nodeRowID);
+		
+		return string.Format("{0}{1}{2}{3}{4}{5}",
 							NodePositionCommand(wholeTick, node._lineIndex * 0.3d, node._lineLayer * 0.3d, -fractionMeters),
+							System.Environment.NewLine,
+							scoreCommand,
 							System.Environment.NewLine,
 							NodeTypeCommand(wholeTick, node),
 							System.Environment.NewLine);

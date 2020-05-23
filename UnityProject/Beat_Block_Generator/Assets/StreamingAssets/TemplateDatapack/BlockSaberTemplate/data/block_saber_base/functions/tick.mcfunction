@@ -1,5 +1,8 @@
 #> Main Update Loop at 20tps
 
+execute as @e[type=armor_stand,tag=showTitle,tag=blockBeat,tag=!SONGUUID] run function block_saber_base:display_title
+
+
 # Add tick count and spawn notes
 execute at @e[type=armor_stand,tag=playerOrgin] as @p[scores={SongUUID=SONGUUID}] run function block_saber_base:spawn_notes_base
 
@@ -23,4 +26,6 @@ execute as @e[tag=node] run function block_saber_base:move_note
 # Clear frame vars
 execute at @e[type=armor_stand,tag=playerOrgin] run scoreboard players set @p[scores={SongUUID=SONGUUID,IsPlayerSneeking=1..}] IsPlayerSneeking 0
 execute at @e[type=armor_stand,tag=playerOrgin] as @p[scores={SongUUID=SONGUUID}] run function block_saber_base:check_for_falling
+
+
 
