@@ -13,6 +13,7 @@ scoreboard players set #TEST NoteHealth 0
 
 effect give @s saturation 1000000 20 true
 effect give @s resistance 1000000 20 true
+gamemode adventure @s
 
 #Spawn main points
 execute at @s run summon armor_stand ~ ~ ~ {Tags:[playerOrgin,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}

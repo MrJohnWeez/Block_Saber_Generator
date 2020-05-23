@@ -10,4 +10,4 @@ replaceitem entity @s hotbar.0 minecraft:dead_fire_coral_block{Unbreakable:1b,Hi
 replaceitem entity @s hotbar.8 minecraft:spectral_arrow{Unbreakable:1b,HideFlags:63,CanDestroy:["minecraft:air"],CanPlaceOn:["minecraft:air"]} 1
 
 execute at @e[type=armor_stand,tag=playerOrgin] as @e[type=item,name="Red Saber",distance=..3] as @p[scores={SongUUID=SONGUUID}] run function block_saber_base:play
-execute at @e[type=armor_stand,tag=playerOrgin] as @e[type=item,name="Stop Game",distance=..3] as @p[scores={SongUUID=SONGUUID}] run function block_saber_base:stop
+execute at @e[type=armor_stand,tag=playerOrgin] as @e[type=item,name="Stop Game",distance=..3] as @p[scores={SongUUID=SONGUUID}] run function block_saber_base:stop_main_menu

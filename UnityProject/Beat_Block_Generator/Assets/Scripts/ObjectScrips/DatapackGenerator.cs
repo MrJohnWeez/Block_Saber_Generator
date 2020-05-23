@@ -228,6 +228,7 @@ public class DatapackGenerator : GeneratorBase
 			_obstacles[] obstacles = song.beatMapData._obstacles;
 
 			int noteIndex = 0;
+			int obsicleIndex = 0;
 			string modeID = _UUIDHex + difficultyID.ToString();
 
 			string playCommands = string.Format("scoreboard players set @s Difficulty {0}{1}execute as @s run function block_saber_base:play",
@@ -263,7 +264,7 @@ public class DatapackGenerator : GeneratorBase
 			SafeFileManagement.SetFileContents(playPath, playCommands);
 
 			// Main note generation
-			while (noteIndex < notes.Length)
+			while (noteIndex < notes.Length || obsicleIndex < obstacles.Length)
 			{
 				currentLevel++;
 				string commandLevelName = string.Format("{0}{1}{2}", difficultyName, C_LvlName, currentLevel);
@@ -271,18 +272,59 @@ public class DatapackGenerator : GeneratorBase
 				string commandLevelFilePath = Path.Combine(_blockSaberSongFunctionsPath, commandLevelFileName);
 				string currentCommands = "";
 
-				while (noteIndex < notes.Length && currentNumberOfCommands < C_CommandLimit)
+				while((noteIndex < notes.Length || obsicleIndex < obstacles.Length) && currentNumberOfCommands < C_CommandLimit)
 				{
-					if (prevNodeTime != notes[noteIndex]._time)
-					{
-						prevNodeTime = notes[noteIndex]._time;
-						nodeRowID++;
-					}
+					double noteTime = noteIndex < notes.Length ? notes[noteIndex]._time : -1;
+					double obsicleTime = obsicleIndex < obstacles.Length ? obstacles[obsicleIndex]._time : -1;
 
-					currentCommands += NodeDataToCommands(notes[noteIndex], _metersPerTick, _packInfo._beatsPerMinute, nodeRowID, ref currentTick);
-					prevNodeTime = notes[noteIndex]._time;
-					currentNumberOfCommands += 3;
-					noteIndex++;
+					if(obsicleTime != -1 && noteTime != -1)
+					{
+						// Both notes still
+						if (noteTime < obsicleTime)
+						{
+							if (prevNodeTime != notes[noteIndex]._time)
+							{
+								prevNodeTime = notes[noteIndex]._time;
+								nodeRowID++;
+							}
+
+							currentCommands += NodeDataToCommands(notes[noteIndex], _packInfo._beatsPerMinute, _metersPerTick, nodeRowID, ref currentTick);
+							prevNodeTime = notes[noteIndex]._time;
+							currentNumberOfCommands += 3;
+							noteIndex++;
+						}
+						else if (obsicleTime < noteTime)
+						{
+							int numberOfAddedCommands = 0;
+							string newCommands = ObsicleDataToCommands(obstacles[obsicleIndex], _packInfo._beatsPerMinute, _metersPerTick, ref numberOfAddedCommands, ref currentTick);
+							currentCommands += string.Format("{0}{1}", newCommands, System.Environment.NewLine);
+							currentNumberOfCommands += numberOfAddedCommands;
+							obsicleIndex++;
+						}
+					}
+					else if(noteTime > 0)
+					{
+						// Just notes left
+						if (prevNodeTime != notes[noteIndex]._time)
+						{
+							prevNodeTime = notes[noteIndex]._time;
+							nodeRowID++;
+						}
+
+						currentCommands += NodeDataToCommands(notes[noteIndex], _packInfo._beatsPerMinute, _metersPerTick, nodeRowID, ref currentTick);
+						prevNodeTime = notes[noteIndex]._time;
+						currentNumberOfCommands += 3;
+						noteIndex++;
+
+					}
+					else if (obsicleTime > 0)
+					{
+						// Just obsicles left
+						int numberOfAddedCommands = 0;
+						currentCommands += ObsicleDataToCommands(obstacles[obsicleIndex], _packInfo._beatsPerMinute, _metersPerTick, ref numberOfAddedCommands, ref currentTick);
+						currentNumberOfCommands += numberOfAddedCommands;
+						obsicleIndex++;
+					}
 				}
 
 				SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands);
@@ -300,12 +342,55 @@ public class DatapackGenerator : GeneratorBase
 		SafeFileManagement.AppendFile(difficultiesFunctionPath, _templateStrings._mainMenuBack);
 	}
 
+	private string ObsicleDataToCommands(_obstacles obstacle, float bpm, double metersPerTick, ref int numberOfAddedCommands, ref int wholeTick)
+	{
+		string commandList = "";
+
+		double beatsPerTick = bpm / 60.0d / 20;
+		double exactTick = obstacle._time / beatsPerTick;
+
+		wholeTick = (int)Mathf.Floor((float)exactTick);
+		double fractionTick = exactTick % beatsPerTick;
+		double fractionMeters = fractionTick * metersPerTick;
+		
+		// Calculate the LWH of the rectangular prism to generate
+		int lengthOfWallInNotes = (int)Mathf.Floor((float)(obstacle._duration * 24)) + 1;
+		int widthOfWallInNotes = obstacle._width;
+		int heightOfWallInNotes = obstacle._type == 0 ? 3 : 1;
+
+		for(int height = 0; height < heightOfWallInNotes; height++)
+		{
+			for (int length = 0; length < lengthOfWallInNotes; length++)
+			{
+				for (int width = 0; width < widthOfWallInNotes; width++)
+				{
+					string positionCommand = string.Format("execute if score @s TickCount matches {0} at @e[type = armor_stand, tag = nodeSpawnOrgin] run teleport @e[type = armor_stand, tag = nodeCursor] ~{1} ~{2} ~{3:F18}",
+							wholeTick,
+							0.3 * obstacle._lineIndex + 0.3d * width,
+							0.6d - 0.3d * height,
+							-fractionMeters - 0.21 * length);
+
+					string spawnWallNode = string.Format("execute if score @s TickCount matches {0} as @e[type = armor_stand, tag = nodeCursor] run function block_types:box",
+							wholeTick);
+					commandList += string.Format("{0}{1}{2}{3}",
+												positionCommand,
+												System.Environment.NewLine,
+												spawnWallNode,
+												System.Environment.NewLine);
+					numberOfAddedCommands += 2;
+				}
+			}
+		}
+		
+		return commandList;
+	}
+	
 	private double CalculateMoveSpeed(float beatsPerMinute)
 	{
 		return beatsPerMinute / 60.0d * 24 * 0.21 / 20;
 	}
 
-	private string NodeDataToCommands(_notes node, double moveSpeed, float bpm, int nodeRowID, ref int wholeTick)
+	private string NodeDataToCommands(_notes node, float bpm, double metersPerTick, int nodeRowID, ref int wholeTick)
 	{
 		//_lineIndex = col
 		//_lineLayer = row
@@ -315,7 +400,7 @@ public class DatapackGenerator : GeneratorBase
 
 		wholeTick = (int)Mathf.Floor((float)exactTick);
 		double fractionTick = exactTick % beatsPerTick;
-		double fractionMeters = fractionTick * _metersPerTick;
+		double fractionMeters = fractionTick * metersPerTick;
 
 		string scoreCommand = string.Format("execute if score @s TickCount matches {0} at @e[type=armor_stand,tag=playerOrgin] as @p[scores={{SongUUID={1}}}] run scoreboard players set @s NodeRowID {2}",
 											wholeTick,
