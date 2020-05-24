@@ -6,66 +6,23 @@ using UnityEngine;
 public class DatapackGenerator : GeneratorBase
 {
 	private const int C_CommandLimit = 10000;
-	private readonly string[][] noteTypes = new string[4][] {new string[9]
-																{
-																	"red_up",
-																	"red_down",
-																	"red_left",
-																	"red_right",
-																	"red_up_left",
-																	"red_up_right",
-																	"red_down_left",
-																	"red_down_right",
-																	"red_dot"
-																},
-																new string[9]
-																{
-																	"blue_up",
-																	"blue_down",
-																	"blue_left",
-																	"blue_right",
-																	"blue_up_left",
-																	"blue_up_right",
-																	"blue_down_left",
-																	"blue_down_right",
-																	"blue_dot"
-																},
-																new string[9],
-																new string[9]
-																{
-																	"","","","","","","","","bomb"
-																}
-															};
 
 	// Extension names
 	private const string C_McFunction = ".mcfunction";
 
-	// Symbols
-	private const string C_FakePlayerChar = "#";
-	private const string C_Slash = "/";
-
 	// Folder Names
 	private const string C_Data = "data";
 	private const string C_Functions = "functions";
-	private const string C_BlockSaber = "Block_Saber_";
-	private const string C_Tags = "tags";
+	private const string C_Datapack = "DataPack_";
 	private const string C_TemplateName = "BlockSaberTemplate";
-	private const string C_BlockSaberBase = "block_saber_base";
-	private const string C_BlockSaberSong = "block_saber_song";
-	private const string C_Chat = "chat";
+	private const string C_BlockSaberBase = "_block_saber_base";
+	private const string C_FolderUUID = "folder_uuid";
 
 	// File names
-	private const string C_EasyFunction = "easy.mcfunction";
-	private const string C_NormalFunction = "normal.mcfunction";
-	private const string C_HardFunction = "hard.mcfunction";
-	private const string C_ExpertFunction = "expert.mcfunction";
-	private const string C_ExpertPlusFunction = "expert_plus.mcfunction";
-	private const string C_PlayFunction = "play.mcfunction";
 	private const string C_SpawnNotesBaseFunction = "spawn_notes_base.mcfunction";
 	private const string C_InitFunction = "init.mcfunction";
 	private const string C_Difficulties = "difficulties.mcfunction";
 	private const string C_TemplateStrings = "TemplateStrings.json";
-
 
 	// Part names
 	private const string C_LvlName = "_lvl_";
@@ -73,13 +30,8 @@ public class DatapackGenerator : GeneratorBase
 	// Paths
 	private string _datapackRootPath = "";
 	private string _blockSaberBaseFunctionsPath = "";
-	private string _blockSaberSongFunctionsPath = "";
-	private string _blockSaberChatFunctionsPath = "";
 	private string _spawnNotesBasePath = "";
-
-	// Counters
-	private int _difficulty = 0;
-
+	private string _folder_uuidFunctionsPath = "";
 
 	private string _pathOfDatapackTemplate = Path.Combine(C_StreamingAssets, "TemplateDatapack");
 
@@ -89,7 +41,6 @@ public class DatapackGenerator : GeneratorBase
 	private string _UUIDHex = "";
 	private TemplateStrings _templateStrings = null;
 	private double _offset = 0.0;
-
 
 	public DatapackGenerator(string unzippedFolderPath, PackInfo packInfo, List<BeatMapSong> beatMapSongList, string datapackOutputPath)
 	{
@@ -140,36 +91,33 @@ public class DatapackGenerator : GeneratorBase
 		string _pathOfTemplateStrings = Path.Combine(C_StreamingAssets, C_TemplateStrings);
 		_templateStrings = JsonUtility.FromJson<TemplateStrings>(SafeFileManagement.GetFileContents(_pathOfTemplateStrings));
 
-
 		// Names
-		_longNameID = _packInfo._songAuthorName + " - " + _packInfo._songName + " " + _packInfo._songSubName;
-		_packName = C_BlockSaber + _packInfo._songAuthorName + " - " + _packInfo._songName + " " + _packInfo._songSubName;
+		_folder_uuid = SafeFileManagement.GetFileName(Path.GetFileName(_unzippedFolderPath)).MakeMinecraftSafe();
+		_packName = C_Datapack + _folder_uuid;
+		_UUIDHex = Random.Range(-999999999, 999999999).ToString("X");
 
 		// Paths
 		_datapackRootPath = Path.Combine(_unzippedFolderPath, _packName);
 		_fullOutputPath = Path.Combine(_outputPath, _packName + C_Zip);
 		_blockSaberBaseFunctionsPath = Path.Combine(_datapackRootPath, C_Data, C_BlockSaberBase, C_Functions);
-		_blockSaberSongFunctionsPath = Path.Combine(_datapackRootPath, C_Data, C_BlockSaberSong, C_Functions);
-		_blockSaberChatFunctionsPath = Path.Combine(_datapackRootPath, C_Data, C_Chat, C_Functions);
-		_spawnNotesBasePath = Path.Combine(_blockSaberBaseFunctionsPath, C_SpawnNotesBaseFunction);
+		_folder_uuidFunctionsPath = Path.Combine(_datapackRootPath, C_Data, _folder_uuid, C_Functions);
+		_spawnNotesBasePath = Path.Combine(_folder_uuidFunctionsPath, C_SpawnNotesBaseFunction);
 
+		// Values
 		_metersPerTick = CalculateMoveSpeed(_packInfo._beatsPerMinute);
-
-		_UUIDHex = Random.Range(-999999999, 999999999).ToString("X");
 		_offset = _metersPerTick * -21;
 
 		// Keys
 		_keyVars["MAPPER_NAME"] = _packInfo._levelAuthorName;
 		_keyVars["BEATS_PER_MINUTE"] = _packInfo._beatsPerMinute.ToString();
-		_keyVars["SONGUUID"] = Random.Range(-999999999, 999999999).ToString();
+		_keyVars["SONGID"] = Random.Range(-999999999, 999999999).ToString();
 		_keyVars["MOVESPEED"] = _metersPerTick.ToString();
 		_keyVars["SONGTITLE"] = _packInfo._songName + " " + _packInfo._songSubName;
 		_keyVars["SONGARTIST"] = _packInfo._songAuthorName;
-
 		_keyVars["OFFSET"] = string.Format("{0:F18}", _offset);
 		_offset = double.Parse(_keyVars["OFFSET"]);
-
-		_keyVars["SONG"] = (_packInfo._songAuthorName + " - " + _packInfo._songName + " " + _packInfo._songSubName).MakeMinecraftSafe();
+		_keyVars["SONG"] = _folder_uuid;
+		_keyVars["folder_uuid"] = _folder_uuid;
 	}
 
 	/// <summary>
@@ -178,6 +126,11 @@ public class DatapackGenerator : GeneratorBase
 	/// <param name="folderPath">In folder path</param>
 	private void UpdateAllCopiedFiles(string folderPath, bool checkSubDirectories = false)
 	{
+		// Must change the folder names before searching for keys
+		string songname_uuidFolder = Path.Combine(_datapackRootPath, C_Data, C_FolderUUID);
+		string newPath = Path.Combine(_datapackRootPath, C_Data, _folder_uuid);
+		SafeFileManagement.MoveDirectory(songname_uuidFolder, newPath, C_numberOfIORetryAttempts);
+
 		if (checkSubDirectories)
 		{
 			string[] dirs = SafeFileManagement.GetDirectoryPaths(folderPath, C_numberOfIORetryAttempts);
@@ -199,69 +152,59 @@ public class DatapackGenerator : GeneratorBase
 
 	private void GenerateMCBeatData()
 	{
-		string difficultiesFunctionPath = Path.Combine(_blockSaberChatFunctionsPath, C_Difficulties);
+		string difficultiesFunctionPath = Path.Combine(_folder_uuidFunctionsPath, C_Difficulties);
 		string initFunctionPath = Path.Combine(_blockSaberBaseFunctionsPath, C_InitFunction);
 		int difficultyID = 1;
 		double prevNodeTime = 0;
 		int nodeRowID = 1;
-
-
+		int difficulty = 0;
+		
 		foreach (BeatMapSong song in _beatMapSongList)
 		{
 			string difficultyName = song.difficultyBeatmaps._difficulty.MakeMinecraftSafe();
 			Debug.Log("Generating song for mode: " + difficultyName);
 
-			_difficulty++;
-			string spawnNotesBaseCommand = string.Format("execute if score @s Difficulty matches {0} as @s run function block_saber_song:{1}",
-														_difficulty,
+			difficulty++;
+			string spawnNotesBaseCommand = string.Format("execute if score @s Difficulty matches {0} as @s run function {1}:{2}",
+														difficulty,
+														_folder_uuid,
 														difficultyName);
 			SafeFileManagement.AppendFile(_spawnNotesBasePath, spawnNotesBaseCommand);
 
-			string commandBasePath = Path.Combine(_blockSaberSongFunctionsPath, difficultyName + C_McFunction);
+			string commandBasePath = Path.Combine(_folder_uuidFunctionsPath, difficultyName + C_McFunction);
 
 			int currentLevel = 0;
 			int currentTick = 0;
 			int prevCurrentTick = 0;
 			int currentNumberOfCommands = 0;
-
-			_notes[] notes = song.beatMapData._notes;
-			_obstacles[] obstacles = song.beatMapData._obstacles;
-
 			int noteIndex = 0;
 			int obsicleIndex = 0;
 			string modeID = _UUIDHex + difficultyID.ToString();
-
-			string playCommands = string.Format("scoreboard players set @s Difficulty {0}{1}execute as @s run function block_saber_base:play",
-												difficultyID,
-												System.Environment.NewLine);
-
+			
 
 			string scoreboardCommand = string.Format("scoreboard objectives add {0} dummy{1}execute as @a unless score @s {0} = @s {0} run scoreboard players set @s {0} 0",
 													modeID,
 													System.Environment.NewLine);
 
 			SafeFileManagement.AppendFile(initFunctionPath, scoreboardCommand);
+			
 
 
-			string difficultyCommand1 = _templateStrings._difficultyChat;
-			difficultyCommand1 = difficultyCommand1.Replace("DIFFNAME", modeID);
-			difficultyCommand1 = difficultyCommand1.Replace("VALUE", "1");
-			difficultyCommand1 = difficultyCommand1.Replace("DIFFICULTY", difficultyName);
-			difficultyCommand1 = difficultyCommand1.Replace("COLOR", "green");
-
-			string difficultyCommand2 = _templateStrings._difficultyChat;
-			difficultyCommand2 = difficultyCommand2.Replace("DIFFNAME", modeID);
-			difficultyCommand2 = difficultyCommand2.Replace("VALUE", "0");
-			difficultyCommand2 = difficultyCommand2.Replace("DIFFICULTY", difficultyName);
-			difficultyCommand2 = difficultyCommand2.Replace("COLOR", "red");
-
-			SafeFileManagement.AppendFile(difficultiesFunctionPath, difficultyCommand1 + System.Environment.NewLine + difficultyCommand2);
+			string difficultyDisplayCommands = CreateDifficultyDisplay(modeID, difficultyName, _folder_uuid);
+			SafeFileManagement.AppendFile(difficultiesFunctionPath, difficultyDisplayCommands);
 
 
 
-
-			string playPath = Path.Combine(_blockSaberSongFunctionsPath, difficultyName + "_play" + C_McFunction);
+			string playCommands = string.Format("scoreboard players set @s Difficulty {0}{1}execute as @s run function {2}:play",
+												difficultyID,
+												System.Environment.NewLine,
+												_folder_uuid);
+			string playPath = Path.Combine(_folder_uuidFunctionsPath, difficultyName + "_play" + C_McFunction);
 			SafeFileManagement.SetFileContents(playPath, playCommands);
+
+
+			_notes[] notes = song.beatMapData._notes;
+			_obstacles[] obstacles = song.beatMapData._obstacles;
 
 			// Main note generation
 			while (noteIndex < notes.Length || obsicleIndex < obstacles.Length)
@@ -269,42 +212,22 @@ public class DatapackGenerator : GeneratorBase
 				currentLevel++;
 				string commandLevelName = string.Format("{0}{1}{2}", difficultyName, C_LvlName, currentLevel);
 				string commandLevelFileName = string.Format("{0}{1}", commandLevelName, C_McFunction);
-				string commandLevelFilePath = Path.Combine(_blockSaberSongFunctionsPath, commandLevelFileName);
+				string commandLevelFilePath = Path.Combine(_folder_uuidFunctionsPath, commandLevelFileName);
 				string currentCommands = "";
 
-				while((noteIndex < notes.Length || obsicleIndex < obstacles.Length) && currentNumberOfCommands < C_CommandLimit)
+				while ((noteIndex < notes.Length || obsicleIndex < obstacles.Length) && currentNumberOfCommands < C_CommandLimit)
 				{
 					double noteTime = noteIndex < notes.Length ? notes[noteIndex]._time : -1;
 					double obsicleTime = obsicleIndex < obstacles.Length ? obstacles[obsicleIndex]._time : -1;
 
-					if(obsicleTime != -1 && noteTime != -1)
-					{
-						// Both notes still
-						if (noteTime < obsicleTime)
-						{
-							if (prevNodeTime != notes[noteIndex]._time)
-							{
-								prevNodeTime = notes[noteIndex]._time;
-								nodeRowID++;
-							}
+					bool shouldConvertNotes = false;
+					bool doBothHaveDataStill = obsicleTime != -1 && noteTime != -1;
 
-							currentCommands += NodeDataToCommands(notes[noteIndex], _packInfo._beatsPerMinute, _metersPerTick, nodeRowID, ref currentTick);
-							prevNodeTime = notes[noteIndex]._time;
-							currentNumberOfCommands += 3;
-							noteIndex++;
-						}
-						else if (obsicleTime < noteTime)
-						{
-							int numberOfAddedCommands = 0;
-							string newCommands = ObsicleDataToCommands(obstacles[obsicleIndex], _packInfo._beatsPerMinute, _metersPerTick, ref numberOfAddedCommands, ref currentTick);
-							currentCommands += string.Format("{0}{1}", newCommands, System.Environment.NewLine);
-							currentNumberOfCommands += numberOfAddedCommands;
-							obsicleIndex++;
-						}
-					}
-					else if(noteTime > 0)
+					if ((doBothHaveDataStill && noteTime < obsicleTime) || noteTime > 0)
+						shouldConvertNotes = true;
+
+					if (shouldConvertNotes)
 					{
-						// Just notes left
 						if (prevNodeTime != notes[noteIndex]._time)
 						{
 							prevNodeTime = notes[noteIndex]._time;
@@ -315,13 +238,12 @@ public class DatapackGenerator : GeneratorBase
 						prevNodeTime = notes[noteIndex]._time;
 						currentNumberOfCommands += 3;
 						noteIndex++;
-
 					}
-					else if (obsicleTime > 0)
+					else
 					{
-						// Just obsicles left
 						int numberOfAddedCommands = 0;
-						currentCommands += ObsicleDataToCommands(obstacles[obsicleIndex], _packInfo._beatsPerMinute, _metersPerTick, ref numberOfAddedCommands, ref currentTick);
+						string newCommands = ObsicleDataToCommands(obstacles[obsicleIndex], _packInfo._beatsPerMinute, _metersPerTick, ref numberOfAddedCommands, ref currentTick);
+						currentCommands += string.Format("{0}{1}", newCommands, System.Environment.NewLine);
 						currentNumberOfCommands += numberOfAddedCommands;
 						obsicleIndex++;
 					}
@@ -331,7 +253,7 @@ public class DatapackGenerator : GeneratorBase
 				string baseCommand = string.Format("execute if score @s TickCount matches {0}..{1} run function {2}:{3}",
 													prevCurrentTick,
 													currentTick,
-													C_BlockSaberSong,
+													_folder_uuid,
 													commandLevelName);
 				SafeFileManagement.AppendFile(commandBasePath, baseCommand);
 				prevCurrentTick = currentTick + 1;
@@ -341,6 +263,33 @@ public class DatapackGenerator : GeneratorBase
 
 		SafeFileManagement.AppendFile(difficultiesFunctionPath, _templateStrings._mainMenuBack);
 	}
+
+	/// <summary>
+	/// Generate tellraw commands that displays a difficulty to the user
+	/// </summary>
+	/// <param name="modeID">NOTSURE</param>
+	/// <param name="difficultyName">Name of the difficulty this is for</param>
+	/// <param name="folderID"></param>
+	/// <returns>Completed commands for tellraw display</returns>
+	private string CreateDifficultyDisplay(string modeID, string difficultyName, string folderID)
+	{
+		string difficultyCommand1 = _templateStrings._difficultyChat;
+		difficultyCommand1 = difficultyCommand1.Replace("DIFFNAME", modeID);
+		difficultyCommand1 = difficultyCommand1.Replace("VALUE", "1");
+		difficultyCommand1 = difficultyCommand1.Replace("DIFFICULTY", difficultyName);
+		difficultyCommand1 = difficultyCommand1.Replace("COLOR", "green");
+		difficultyCommand1 = difficultyCommand1.Replace("folder_uuid", folderID);
+
+		string difficultyCommand2 = _templateStrings._difficultyChat;
+		difficultyCommand2 = difficultyCommand2.Replace("DIFFNAME", modeID);
+		difficultyCommand2 = difficultyCommand2.Replace("VALUE", "0");
+		difficultyCommand2 = difficultyCommand2.Replace("DIFFICULTY", difficultyName);
+		difficultyCommand2 = difficultyCommand2.Replace("COLOR", "red");
+		difficultyCommand2 = difficultyCommand2.Replace("folder_uuid", folderID);
+
+		return difficultyCommand1 + System.Environment.NewLine + difficultyCommand2;
+	}
+
 
 	private string ObsicleDataToCommands(_obstacles obstacle, float bpm, double metersPerTick, ref int numberOfAddedCommands, ref int wholeTick)
 	{
@@ -352,7 +301,7 @@ public class DatapackGenerator : GeneratorBase
 		wholeTick = (int)System.Math.Truncate(exactTick);
 		double fractionTick = exactTick % beatsPerTick;
 		double fractionMeters = fractionTick * metersPerTick;
-		
+
 		// Calculate the LWH of the rectangular prism to generate
 		int lengthOfWallInNotes = (int)System.Math.Truncate(obstacle._duration * 24);
 
@@ -362,7 +311,7 @@ public class DatapackGenerator : GeneratorBase
 		int widthOfWallInNotes = obstacle._width;
 		int heightOfWallInNotes = obstacle._type == 0 ? 3 : 1;
 
-		for(int length = 0; length < lengthOfWallInNotes; length++)
+		for (int length = 0; length < lengthOfWallInNotes; length++)
 		{
 			double meterLengths = fractionMeters + 0.21 * length;
 			int tickOffset = meterLengths != 0 ? (int)System.Math.Truncate(meterLengths / metersPerTick) : 0;
@@ -377,7 +326,7 @@ public class DatapackGenerator : GeneratorBase
 							0.6d - 0.3d * height,
 							-extraOffset);
 
-					string spawnWallNode = string.Format("execute if score @s TickCount matches {0} as @e[type = armor_stand, tag = nodeCursor] run function block_types:box",
+					string spawnWallNode = string.Format("execute if score @s TickCount matches {0} as @e[type = armor_stand, tag = nodeCursor] run function _block_types:box",
 							wholeTick + tickOffset);
 					commandList += string.Format("{0}{1}{2}{3}",
 												positionCommand,
@@ -388,10 +337,10 @@ public class DatapackGenerator : GeneratorBase
 				}
 			}
 		}
-		
+
 		return commandList;
 	}
-	
+
 	private double CalculateMoveSpeed(float beatsPerMinute)
 	{
 		return beatsPerMinute / 60.0d * 24 * 0.21 / 20;
@@ -409,11 +358,11 @@ public class DatapackGenerator : GeneratorBase
 		double fractionTick = exactTick % beatsPerTick;
 		double fractionMeters = fractionTick * metersPerTick;
 
-		string scoreCommand = string.Format("execute if score @s TickCount matches {0} at @e[type=armor_stand,tag=playerOrgin] as @p[scores={{SongUUID={1}}}] run scoreboard players set @s NodeRowID {2}",
+		string scoreCommand = string.Format("execute if score @s TickCount matches {0} at @e[type=armor_stand,tag=playerOrgin] as @p[scores={{SongID={1}}}] run scoreboard players set @s NodeRowID {2}",
 											wholeTick,
-											_keyVars["SONGUUID"],
+											_keyVars["SONGID"],
 											nodeRowID);
-		
+
 		return string.Format("{0}{1}{2}{3}{4}{5}",
 							NodePositionCommand(wholeTick, node._lineIndex * 0.3d, node._lineLayer * 0.3d, -fractionMeters),
 							System.Environment.NewLine,
@@ -435,8 +384,8 @@ public class DatapackGenerator : GeneratorBase
 	private string NodeTypeCommand(int tick, _notes node)
 	{
 
-		return string.Format("execute if score @s TickCount matches {0} as @e[type = armor_stand, tag = nodeCursor] run function block_types:{1}",
+		return string.Format("execute if score @s TickCount matches {0} as @e[type = armor_stand, tag = nodeCursor] run function _block_types:{1}",
 							tick,
-							noteTypes[node._type][node._cutDirection]);
+							_templateStrings._noteTypes[node._type][node._cutDirection]);
 	}
 }

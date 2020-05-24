@@ -1,2 +1,0 @@
-scoreboard players operation #TempPlayer TempVar2 = @s NodeRowID
-execute as @e[type=rabbit,tag=note,distance=..6] if score @s NodeRowID = #TempPlayer TempVar2 run function block_saber_base:note_was_wrong

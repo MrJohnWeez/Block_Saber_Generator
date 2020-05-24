@@ -63,7 +63,7 @@ public class Converter
 	/// </summary>
 	private void UnZipFile()
 	{
-		_tempUnZipPath = Path.Combine(_tempFilePath, SafeFileManagement.GetFolderName(_zipPath) + SafeFileManagement.GetDateNow());
+		_tempUnZipPath = Path.Combine(_tempFilePath, SafeFileManagement.GetFolderName(_zipPath));
 		Directory.CreateDirectory(_tempUnZipPath);
 		Archive.Decompress(_zipPath, _tempUnZipPath);
 	}

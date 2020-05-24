@@ -31,7 +31,7 @@ public class GeneratorBase
 	protected Dictionary<string, string> _keyVars = new Dictionary<string, string>();
 	protected string _packName = "";
 	protected PackInfo _packInfo;
-	protected string _longNameID = "";
+	protected string _folder_uuid = "";
 
 	public virtual bool Generate()
 	{

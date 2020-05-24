@@ -64,9 +64,9 @@ public static class StringExtensions
 	public static string MakeMinecraftSafe(this string value)
 	{
 		value = value.ToLower();
-		Regex rgx = new Regex("[^a-z0-9_)( -]");
+		Regex rgx = new Regex("[^a-z0-9_-]");
 		value = rgx.Replace(value, "");
-		rgx = new Regex("[^a-z0-9_-]");
+		rgx = new Regex("[^a-z0-9_]");
 		value = rgx.Replace(value, "_");
 		return value;
 	}

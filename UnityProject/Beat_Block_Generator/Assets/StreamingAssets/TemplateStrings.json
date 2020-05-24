@@ -1,4 +1,50 @@
 {
-    "_difficultyChat":"execute if score @s DIFFNAME matches VALUE as @s run tellraw @s [\"\",{\"text\":\"- \",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"\/function block_saber_song:DIFFICULTY_play\"},\"hoverEvent\":{\"action\":\"show_text\",\"contents\":\"Play DIFFICULTY\"}},{\"text\":\"\\u2588 \",\"color\":\"COLOR\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"\/function block_saber_song:DIFFICULTY_play\"},\"hoverEvent\":{\"action\":\"show_text\",\"contents\":\"Play DIFFICULTY\"}},{\"text\":\"DIFFICULTY \",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"\/function block_saber_song:DIFFICULTY_play\"},\"hoverEvent\":{\"action\":\"show_text\",\"contents\":\"Play DIFFICULTY\"}}]",
-    "_mainMenuBack":"tellraw @s {\"text\":\"[back]\",\"color\":\"red\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"\/execute as @s run function blocksaber:play\"},\"hoverEvent\":{\"action\":\"show_text\",\"contents\":\"Go back to main menu\"}}"
+    "_difficultyChat": "execute if score @s DIFFNAME matches VALUE as @s run tellraw @s [\"\",{\"text\":\"- \",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"\/function folder_uuid:DIFFICULTY_play\"},\"hoverEvent\":{\"action\":\"show_text\",\"contents\":\"Play DIFFICULTY\"}},{\"text\":\"\\u2588 \",\"color\":\"COLOR\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"\/function folder_uuid:DIFFICULTY_play\"},\"hoverEvent\":{\"action\":\"show_text\",\"contents\":\"Play DIFFICULTY\"}},{\"text\":\"DIFFICULTY \",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"\/function folder_uuid:DIFFICULTY_play\"},\"hoverEvent\":{\"action\":\"show_text\",\"contents\":\"Play DIFFICULTY\"}}]",
+    "_mainMenuBack": "tellraw @s {\"text\":\"[back]\",\"color\":\"red\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"\/execute as @s run function blocksaber:play\"},\"hoverEvent\":{\"action\":\"show_text\",\"contents\":\"Go back to main menu\"}}",
+    "_noteTypes": [
+        [
+            "red_up",
+            "red_down",
+            "red_left",
+            "red_right",
+            "red_up_left",
+            "red_up_right",
+            "red_down_left",
+            "red_down_right",
+            "red_dot"
+        ],
+        [
+            "blue_up",
+            "blue_down",
+            "blue_left",
+            "blue_right",
+            "blue_up_left",
+            "blue_up_right",
+            "blue_down_left",
+            "blue_down_right",
+            "blue_dot"
+        ],
+        [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ],
+        [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "bomb"
+        ]
+    ]
 }

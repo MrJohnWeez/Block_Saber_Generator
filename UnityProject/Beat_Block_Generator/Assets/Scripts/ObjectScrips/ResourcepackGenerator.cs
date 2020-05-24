@@ -17,6 +17,7 @@ public class ResourcepackGenerator : GeneratorBase
 	private const string C_Assets = "assets";
 	private const string C_Sounds = "sounds";
 	private const string C_Custom = "custom";
+	private const string C_ResourcePack = "ResourcePack_";
 
 	// Paths
 	private string _pathOfResourcepackTemplate = Path.Combine(C_StreamingAssets, "TemplateResourcepack");
@@ -66,10 +67,10 @@ public class ResourcepackGenerator : GeneratorBase
 	protected override void Init()
 	{
 		base.Init();
-		_packName = _packInfo._songAuthorName + " - " + _packInfo._songName + " " + _packInfo._songSubName;
-		_longNameID = _packName.MakeMinecraftSafe();
+		_folder_uuid = SafeFileManagement.GetFileName(Path.GetFileName(_unzippedFolderPath)).MakeMinecraftSafe();
+		_packName = C_ResourcePack + _folder_uuid;
 		_fullOutputPath = Path.Combine(_outputPath, _packName + C_Zip);
-		_keyVars["SONG"] = _longNameID;
+		_keyVars["SONG"] = _folder_uuid;
 	}
 
 	/// <summary>
@@ -91,7 +92,7 @@ public class ResourcepackGenerator : GeneratorBase
 	{
 		string mapSong = Path.Combine(_unzippedFolderPath, _packInfo._songFilename);
 		string minecraftNamespace = Path.Combine(_rootFolderPath, C_Assets, C_Minecraft);
-		string packSong = Path.Combine(minecraftNamespace, C_Sounds, C_Custom, _longNameID + C_Ogg);
+		string packSong = Path.Combine(minecraftNamespace, C_Sounds, C_Custom, _folder_uuid + C_Ogg);
 		if(SafeFileManagement.CopyFileTo(mapSong, packSong, true, C_numberOfIORetryAttempts))
 		{
 			UpdateFileWithKeys(Path.Combine(minecraftNamespace, C_SoundsJson));
