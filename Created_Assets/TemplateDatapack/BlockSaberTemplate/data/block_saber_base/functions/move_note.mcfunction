@@ -1,1 +1,0 @@
-execute at @s run teleport @s ^ ^ ^MOVESPEED

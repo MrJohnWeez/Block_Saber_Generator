@@ -1,3 +1,0 @@
-execute if entity @s[nbt={OnGround:0b}] run scoreboard players add @s[nbt={OnGround:0b}] AirTime 1
-execute if entity @s[scores={AirTime=20..},gamemode=adventure] as @s[scores={AirTime=15..},gamemode=adventure] run function block_saber_base:reset_player_position
-execute if entity @s[nbt={OnGround:1b},scores={AirTime=1..}] run scoreboard players set @s[nbt={OnGround:1b},scores={AirTime=1..}] AirTime 0
