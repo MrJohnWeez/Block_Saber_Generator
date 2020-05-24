@@ -349,29 +349,36 @@ public class DatapackGenerator : GeneratorBase
 		double beatsPerTick = bpm / 60.0d / 20;
 		double exactTick = obstacle._time / beatsPerTick;
 
-		wholeTick = (int)Mathf.Floor((float)exactTick);
+		wholeTick = (int)System.Math.Truncate(exactTick);
 		double fractionTick = exactTick % beatsPerTick;
 		double fractionMeters = fractionTick * metersPerTick;
 		
 		// Calculate the LWH of the rectangular prism to generate
-		int lengthOfWallInNotes = (int)Mathf.Floor((float)(obstacle._duration * 24)) + 1;
+		int lengthOfWallInNotes = (int)System.Math.Truncate(obstacle._duration * 24);
+
+		if (lengthOfWallInNotes == 0)
+			lengthOfWallInNotes++;
+
 		int widthOfWallInNotes = obstacle._width;
 		int heightOfWallInNotes = obstacle._type == 0 ? 3 : 1;
 
-		for(int height = 0; height < heightOfWallInNotes; height++)
+		for(int length = 0; length < lengthOfWallInNotes; length++)
 		{
-			for (int length = 0; length < lengthOfWallInNotes; length++)
+			double meterLengths = fractionMeters + 0.21 * length;
+			int tickOffset = meterLengths != 0 ? (int)System.Math.Truncate(meterLengths / metersPerTick) : 0;
+			double extraOffset = meterLengths != 0 ? meterLengths % metersPerTick : 0;
+			for (int height = 0; height < heightOfWallInNotes; height++)
 			{
 				for (int width = 0; width < widthOfWallInNotes; width++)
 				{
 					string positionCommand = string.Format("execute if score @s TickCount matches {0} at @e[type = armor_stand, tag = nodeSpawnOrgin] run teleport @e[type = armor_stand, tag = nodeCursor] ~{1} ~{2} ~{3:F18}",
-							wholeTick,
+							wholeTick + tickOffset,
 							0.3 * obstacle._lineIndex + 0.3d * width,
 							0.6d - 0.3d * height,
-							-fractionMeters - 0.21 * length);
+							-extraOffset);
 
 					string spawnWallNode = string.Format("execute if score @s TickCount matches {0} as @e[type = armor_stand, tag = nodeCursor] run function block_types:box",
-							wholeTick);
+							wholeTick + tickOffset);
 					commandList += string.Format("{0}{1}{2}{3}",
 												positionCommand,
 												System.Environment.NewLine,
