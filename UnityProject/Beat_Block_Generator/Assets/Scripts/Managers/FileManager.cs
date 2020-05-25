@@ -23,7 +23,7 @@ public class FileManager : MonoBehaviour
 	#region UnityCallbacks
 	private void Start()
 	{
-		_zipFilePath = "C:\\Users\\John\\Desktop\\test3_20200523T1135.zip";
+		_zipFilePath = "C:\\Users\\John\\Desktop\\a03cb0a107993be5cded1e91dc31e8a7b048f02a.zip";
 		_datapackOutputPath = "C:\\Users\\John\\Desktop";
 		AreSelectedPathsValid();
 		ConvertAndCreateResources();

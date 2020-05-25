@@ -8,5 +8,4 @@ public class TemplateStrings
 {
 	public string _difficultyChat = "";
 	public string _mainMenuBack = "";
-	public string[][] _noteTypes = null;
 }

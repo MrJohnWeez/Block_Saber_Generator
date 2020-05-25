@@ -30,6 +30,10 @@ public class ResourcepackGenerator : GeneratorBase
 		Init();
 	}
 
+	/// <summary>
+	/// Generate resourcepack
+	/// </summary>
+	/// <returns></returns>
 	public override bool Generate()
 	{
 		if (Directory.Exists(_unzippedFolderPath) && _packInfo != null)
@@ -53,6 +57,11 @@ public class ResourcepackGenerator : GeneratorBase
 		return false;
 	}
 
+	/// <summary>
+	/// Copy the Resourcepack template and rename
+	/// </summary>
+	/// <param name="sourceDirName">Source folder path to copy</param>
+	/// <param name="destDirName">Path to copy to</param>
 	protected override bool CopyTemplate(string sourceDirName, string destDirName)
 	{
 		if(base.CopyTemplate(sourceDirName, destDirName))
@@ -64,6 +73,9 @@ public class ResourcepackGenerator : GeneratorBase
 		return false;
 	}
 
+	/// <summary>
+	/// Set up varibles and paths based on class data
+	/// </summary>
 	protected override void Init()
 	{
 		base.Init();

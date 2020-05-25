@@ -64,6 +64,9 @@ public class Converter
 	private void UnZipFile()
 	{
 		_tempUnZipPath = Path.Combine(_tempFilePath, SafeFileManagement.GetFolderName(_zipPath));
+		if (Directory.Exists(_tempUnZipPath))
+			SafeFileManagement.DeleteDirectory(_tempUnZipPath);
+
 		Directory.CreateDirectory(_tempUnZipPath);
 		Archive.Decompress(_zipPath, _tempUnZipPath);
 	}

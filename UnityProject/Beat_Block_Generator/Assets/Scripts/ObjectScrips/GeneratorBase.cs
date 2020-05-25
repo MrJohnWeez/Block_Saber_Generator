@@ -38,6 +38,9 @@ public class GeneratorBase
 		return false;
 	}
 
+	/// <summary>
+	/// Set up varibles and paths based on class data
+	/// </summary>
 	protected virtual void Init()
 	{
 		
