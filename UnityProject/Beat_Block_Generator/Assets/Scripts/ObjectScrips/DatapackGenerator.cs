@@ -206,8 +206,7 @@ public class DatapackGenerator : GeneratorBase
 		string difficultiesFunctionPath = Path.Combine(_folder_uuidFunctionsPath, C_Difficulties);
 		string initFunctionPath = Path.Combine(_blockSaberBaseFunctionsPath, C_InitFunction);
 		int difficultyID = 1;
-		double prevNodeTime = 0;
-		int nodeRowID = 1;
+		
 		int difficulty = 0;
 		
 		foreach (BeatMapSong song in _beatMapSongList)
@@ -224,11 +223,7 @@ public class DatapackGenerator : GeneratorBase
 
 			string commandBasePath = Path.Combine(_folder_uuidFunctionsPath, difficultyName + C_McFunction);
 
-			int currentLevel = 0;
-			int currentTick = 0;
-			int prevCurrentTick = 0;
-			int currentNumberOfCommands = 0;
-			int noteIndex = 0;
+			
 			
 			string modeID = _UUIDHex + difficultyID.ToString();
 			
@@ -254,100 +249,115 @@ public class DatapackGenerator : GeneratorBase
 			SafeFileManagement.SetFileContents(playPath, playCommands);
 
 
-			_notes[] notes = song.beatMapData._notes;
+			GenerateNotes(song, difficultyName, commandBasePath);
+			GenerateObsicles(song, difficultyName, commandBasePath);
 			
-			int currentCommandLimit = C_CommandLimit;
-
-			// Main note generation
-			while (noteIndex < notes.Length) 
-			{
-				currentLevel++;
-				string commandLevelName = difficultyName + C_LvlNoteName + currentLevel;
-				string commandLevelFileName = commandLevelName + C_McFunction;
-				string commandLevelFilePath = Path.Combine(_folder_uuidFunctionsPath, commandLevelFileName);
-				string currentCommands = "";
-
-				// Continue to generate commands until all nodes and obsicles have been itterated though
-				while (noteIndex < notes.Length && currentNumberOfCommands < currentCommandLimit)
-				{
-					if (prevNodeTime != notes[noteIndex]._time)
-					{
-						prevNodeTime = notes[noteIndex]._time;
-						nodeRowID++;
-					}
-
-					currentCommands += NodeDataToCommands(notes[noteIndex], _packInfo._beatsPerMinute, _metersPerTick, nodeRowID, ref currentTick);
-					prevNodeTime = notes[noteIndex]._time;
-					currentNumberOfCommands += 3;
-					noteIndex++;
-				}
-
-				SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands);
-				string baseCommand = string.Format("execute if score @s TickCount matches {0}..{1} run function {2}:{3}",
-													prevCurrentTick,
-													currentTick,
-													_folder_uuid,
-													commandLevelName);
-				SafeFileManagement.AppendFile(commandBasePath, baseCommand);
-				prevCurrentTick = currentTick + 1;
-				currentCommandLimit = currentNumberOfCommands + C_CommandLimit;
-			}
-
-
-			_obstacles[] obstacles = song.beatMapData._obstacles;
-			int obsicleIndex = 0;
-			currentLevel = 0;
-			currentTick = 0;
-			int maxTick = 0;
-			int minTick = 0;
-			prevCurrentTick = 0;
-			currentNumberOfCommands = 0;
-			currentCommandLimit = C_CommandLimit;
-
-			// Main note generation
-			while (obsicleIndex < obstacles.Length)
-			{
-				currentLevel++;
-				string commandLevelName = difficultyName + C_LvlObsicleName + currentLevel;
-				string commandLevelFileName = commandLevelName + C_McFunction;
-				string commandLevelFilePath = Path.Combine(_folder_uuidFunctionsPath, commandLevelFileName);
-				string currentCommands = "";
-
-				// Continue to generate commands until all nodes and obsicles have been itterated though
-				while (obsicleIndex < obstacles.Length && currentNumberOfCommands < currentCommandLimit)
-				{
-					int numberOfAddedCommands = 0;
-					int maxNewTick = 0;
-					int minNewTick = 0;
-					string newCommands = ObsicleDataToCommands(obstacles[obsicleIndex], _packInfo._beatsPerMinute, _metersPerTick, ref numberOfAddedCommands, ref minNewTick, ref maxNewTick);
-					if (minTick == 0)
-						minTick = minNewTick;
-
-					maxTick = Mathf.Max(maxTick, maxNewTick);
-					currentCommands += newCommands + System.Environment.NewLine;
-					currentNumberOfCommands += numberOfAddedCommands;
-					obsicleIndex++;
-				}
-				SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands);
-				string baseCommand = string.Format("execute if score @s TickCount matches {0}..{1} run function {2}:{3}",
-													minTick,
-													maxTick,
-													_folder_uuid,
-													commandLevelName);
-				SafeFileManagement.AppendFile(commandBasePath, baseCommand);
-				prevCurrentTick = currentTick + 1;
-				currentCommandLimit = currentNumberOfCommands + C_CommandLimit;
-				minTick = 0;
-			}
-
-			
-
 
 			difficultyID++;
 		}
 
 		SafeFileManagement.AppendFile(difficultiesFunctionPath, _templateStrings._mainMenuBack);
 	}
+
+	private void GenerateNotes(BeatMapSong song, string difficultyName, string commandBasePath)
+	{
+		_notes[] notes = song.beatMapData._notes;
+
+		double prevNodeTime = 0;
+		int nodeRowID = 1;
+		int currentLevel = 0;
+		int currentTick = 0;
+		int prevCurrentTick = 0;
+		int currentNumberOfCommands = 0;
+		int noteIndex = 0;
+		int currentCommandLimit = C_CommandLimit;
+
+		// Main note generation
+		while (noteIndex < notes.Length)
+		{
+			currentLevel++;
+			string commandLevelName = difficultyName + C_LvlNoteName + currentLevel;
+			string commandLevelFileName = commandLevelName + C_McFunction;
+			string commandLevelFilePath = Path.Combine(_folder_uuidFunctionsPath, commandLevelFileName);
+			string currentCommands = "";
+
+			// Continue to generate commands until all nodes and obsicles have been itterated though
+			while (noteIndex < notes.Length && currentNumberOfCommands < currentCommandLimit)
+			{
+				if (prevNodeTime != notes[noteIndex]._time)
+				{
+					prevNodeTime = notes[noteIndex]._time;
+					nodeRowID++;
+				}
+
+				currentCommands += NodeDataToCommands(notes[noteIndex], _packInfo._beatsPerMinute, _metersPerTick, nodeRowID, ref currentTick);
+				prevNodeTime = notes[noteIndex]._time;
+				currentNumberOfCommands += 3;
+				noteIndex++;
+			}
+
+			SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands);
+			string baseCommand = string.Format("execute if score @s TickCount matches {0}..{1} run function {2}:{3}",
+												prevCurrentTick,
+												currentTick,
+												_folder_uuid,
+												commandLevelName);
+			SafeFileManagement.AppendFile(commandBasePath, baseCommand);
+			prevCurrentTick = currentTick + 1;
+			currentCommandLimit = currentNumberOfCommands + C_CommandLimit;
+		}
+	}
+
+	private void GenerateObsicles(BeatMapSong song, string difficultyName, string commandBasePath)
+	{
+		_obstacles[] obstacles = song.beatMapData._obstacles;
+		int obsicleIndex = 0;
+		int currentLevel = 0;
+		int currentTick = 0;
+		int maxTick = 0;
+		int minTick = 0;
+		int prevCurrentTick = 0;
+		int currentNumberOfCommands = 0;
+		int currentCommandLimit = C_CommandLimit;
+
+		// Main note generation
+		while (obsicleIndex < obstacles.Length)
+		{
+			currentLevel++;
+			string commandLevelName = difficultyName + C_LvlObsicleName + currentLevel;
+			string commandLevelFileName = commandLevelName + C_McFunction;
+			string commandLevelFilePath = Path.Combine(_folder_uuidFunctionsPath, commandLevelFileName);
+			string currentCommands = "";
+
+			// Continue to generate commands until all nodes and obsicles have been itterated though
+			while (obsicleIndex < obstacles.Length && currentNumberOfCommands < currentCommandLimit)
+			{
+				int numberOfAddedCommands = 0;
+				int maxNewTick = 0;
+				int minNewTick = 0;
+				string newCommands = ObsicleDataToCommands(obstacles[obsicleIndex], _packInfo._beatsPerMinute, _metersPerTick, ref numberOfAddedCommands, ref minNewTick, ref maxNewTick);
+				if (minTick == 0)
+					minTick = minNewTick;
+
+				maxTick = Mathf.Max(maxTick, maxNewTick);
+				currentCommands += newCommands + System.Environment.NewLine;
+				currentNumberOfCommands += numberOfAddedCommands;
+				obsicleIndex++;
+			}
+			SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands);
+			string baseCommand = string.Format("execute if score @s TickCount matches {0}..{1} run function {2}:{3}",
+												minTick,
+												maxTick,
+												_folder_uuid,
+												commandLevelName);
+			SafeFileManagement.AppendFile(commandBasePath, baseCommand);
+			prevCurrentTick = currentTick + 1;
+			currentCommandLimit = currentNumberOfCommands + C_CommandLimit;
+			minTick = 0;
+		}
+	}
+
+
 
 	/// <summary>
 	/// Generate commands to produce a beat saber obsicle
