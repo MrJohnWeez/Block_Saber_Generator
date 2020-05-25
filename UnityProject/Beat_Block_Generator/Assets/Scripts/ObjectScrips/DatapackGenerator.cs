@@ -53,7 +53,8 @@ public class DatapackGenerator : GeneratorBase
 	private const string C_TemplateStrings = "TemplateStrings.json";
 
 	// Part names
-	private const string C_LvlName = "_lvl_";
+	private const string C_LvlNoteName = "_lvl_note_";
+	private const string C_LvlObsicleName = "_lvl_obsicle_";
 
 	// Paths
 	private string _datapackRootPath = "";
@@ -228,7 +229,7 @@ public class DatapackGenerator : GeneratorBase
 			int prevCurrentTick = 0;
 			int currentNumberOfCommands = 0;
 			int noteIndex = 0;
-			int obsicleIndex = 0;
+			
 			string modeID = _UUIDHex + difficultyID.ToString();
 			
 
@@ -254,52 +255,31 @@ public class DatapackGenerator : GeneratorBase
 
 
 			_notes[] notes = song.beatMapData._notes;
-			_obstacles[] obstacles = song.beatMapData._obstacles;
+			
 			int currentCommandLimit = C_CommandLimit;
 
 			// Main note generation
-			while (noteIndex < notes.Length || obsicleIndex < obstacles.Length)
+			while (noteIndex < notes.Length) 
 			{
 				currentLevel++;
-				string commandLevelName = difficultyName + C_LvlName + currentLevel;
+				string commandLevelName = difficultyName + C_LvlNoteName + currentLevel;
 				string commandLevelFileName = commandLevelName + C_McFunction;
 				string commandLevelFilePath = Path.Combine(_folder_uuidFunctionsPath, commandLevelFileName);
 				string currentCommands = "";
 
 				// Continue to generate commands until all nodes and obsicles have been itterated though
-				while ((noteIndex < notes.Length || obsicleIndex < obstacles.Length) && currentNumberOfCommands < currentCommandLimit)
+				while (noteIndex < notes.Length && currentNumberOfCommands < currentCommandLimit)
 				{
-
-					double noteTime = noteIndex < notes.Length ? notes[noteIndex]._time : -1;
-					double obsicleTime = obsicleIndex < obstacles.Length ? obstacles[obsicleIndex]._time : -1;
-
-					bool shouldConvertNotes = false;
-					bool doBothHaveDataStill = obsicleTime != -1 && noteTime != -1;
-
-					if ((doBothHaveDataStill && noteTime < obsicleTime) || noteTime > 0)
-						shouldConvertNotes = true;
-
-					if (shouldConvertNotes)
+					if (prevNodeTime != notes[noteIndex]._time)
 					{
-						if (prevNodeTime != notes[noteIndex]._time)
-						{
-							prevNodeTime = notes[noteIndex]._time;
-							nodeRowID++;
-						}
-
-						currentCommands += NodeDataToCommands(notes[noteIndex], _packInfo._beatsPerMinute, _metersPerTick, nodeRowID, ref currentTick);
 						prevNodeTime = notes[noteIndex]._time;
-						currentNumberOfCommands += 3;
-						noteIndex++;
+						nodeRowID++;
 					}
-					else
-					{
-						int numberOfAddedCommands = 0;
-						string newCommands = ObsicleDataToCommands(obstacles[obsicleIndex], _packInfo._beatsPerMinute, _metersPerTick, ref numberOfAddedCommands, ref currentTick);
-						currentCommands += string.Format("{0}{1}", newCommands, System.Environment.NewLine);
-						currentNumberOfCommands += numberOfAddedCommands;
-						obsicleIndex++;
-					}
+
+					currentCommands += NodeDataToCommands(notes[noteIndex], _packInfo._beatsPerMinute, _metersPerTick, nodeRowID, ref currentTick);
+					prevNodeTime = notes[noteIndex]._time;
+					currentNumberOfCommands += 3;
+					noteIndex++;
 				}
 
 				SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands);
@@ -312,6 +292,57 @@ public class DatapackGenerator : GeneratorBase
 				prevCurrentTick = currentTick + 1;
 				currentCommandLimit = currentNumberOfCommands + C_CommandLimit;
 			}
+
+
+			_obstacles[] obstacles = song.beatMapData._obstacles;
+			int obsicleIndex = 0;
+			currentLevel = 0;
+			currentTick = 0;
+			int maxTick = 0;
+			int minTick = 0;
+			prevCurrentTick = 0;
+			currentNumberOfCommands = 0;
+			currentCommandLimit = C_CommandLimit;
+
+			// Main note generation
+			while (obsicleIndex < obstacles.Length)
+			{
+				currentLevel++;
+				string commandLevelName = difficultyName + C_LvlObsicleName + currentLevel;
+				string commandLevelFileName = commandLevelName + C_McFunction;
+				string commandLevelFilePath = Path.Combine(_folder_uuidFunctionsPath, commandLevelFileName);
+				string currentCommands = "";
+
+				// Continue to generate commands until all nodes and obsicles have been itterated though
+				while (obsicleIndex < obstacles.Length && currentNumberOfCommands < currentCommandLimit)
+				{
+					int numberOfAddedCommands = 0;
+					int maxNewTick = 0;
+					int minNewTick = 0;
+					string newCommands = ObsicleDataToCommands(obstacles[obsicleIndex], _packInfo._beatsPerMinute, _metersPerTick, ref numberOfAddedCommands, ref minNewTick, ref maxNewTick);
+					if (minTick == 0)
+						minTick = minNewTick;
+
+					maxTick = Mathf.Max(maxTick, maxNewTick);
+					currentCommands += newCommands + System.Environment.NewLine;
+					currentNumberOfCommands += numberOfAddedCommands;
+					obsicleIndex++;
+				}
+				SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands);
+				string baseCommand = string.Format("execute if score @s TickCount matches {0}..{1} run function {2}:{3}",
+													minTick,
+													maxTick,
+													_folder_uuid,
+													commandLevelName);
+				SafeFileManagement.AppendFile(commandBasePath, baseCommand);
+				prevCurrentTick = currentTick + 1;
+				currentCommandLimit = currentNumberOfCommands + C_CommandLimit;
+				minTick = 0;
+			}
+
+			
+
+
 			difficultyID++;
 		}
 
@@ -327,14 +358,14 @@ public class DatapackGenerator : GeneratorBase
 	/// <param name="numberOfAddedCommands">Output of number of commands generated</param>
 	/// <param name="wholeTick">Output of minecraft tick used</param>
 	/// <returns></returns>
-	private string ObsicleDataToCommands(_obstacles obstacle, float bpm, double metersPerTick, ref int numberOfAddedCommands, ref int wholeTick)
+	private string ObsicleDataToCommands(_obstacles obstacle, float bpm, double metersPerTick, ref int numberOfAddedCommands, ref int minWholeTick, ref int maxWholeTick)
 	{
 		string commandList = "";
 
 		double beatsPerTick = bpm / 60.0d / 20;
 		double exactTick = obstacle._time / beatsPerTick;
 
-		wholeTick = (int)System.Math.Truncate(exactTick);
+		minWholeTick = (int)System.Math.Truncate(exactTick);
 		double fractionTick = exactTick % beatsPerTick;
 		double fractionMeters = fractionTick * metersPerTick;
 
@@ -357,14 +388,15 @@ public class DatapackGenerator : GeneratorBase
 			{
 				for (int width = 0; width < widthOfWallInNotes; width++)
 				{
+					maxWholeTick = minWholeTick + tickOffset;
 					string positionCommand = string.Format("execute if score @s TickCount matches {0} at @e[type=armor_stand, tag=nodeSpawnOrgin] run teleport @e[type=armor_stand, tag=nodeCursor] ~{1} ~{2} ~{3:F18}",
-							wholeTick + tickOffset,
+							maxWholeTick,
 							0.3 * obstacle._lineIndex + 0.3d * width,
 							0.6d - 0.3d * height,
 							-extraOffset);
 
 					string spawnWallNode = string.Format("execute if score @s TickCount matches {0} as @e[type=armor_stand, tag=nodeCursor] run function _block_types:box",
-							wholeTick + tickOffset);
+							maxWholeTick);
 					commandList += string.Format("{0}{1}{2}{3}",
 												positionCommand,
 												System.Environment.NewLine,
