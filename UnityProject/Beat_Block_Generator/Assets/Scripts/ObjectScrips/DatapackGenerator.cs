@@ -33,7 +33,7 @@ public class DatapackGenerator : GeneratorBase
 																	},
 																	new string[9],
 																	new string[9]
-																	{"","","","","","","","","bomb"}};
+																	{"bomb","bomb","bomb","bomb","bomb","bomb","bomb","bomb","bomb"}};
 
 	// Extension names
 	private const string C_McFunction = ".mcfunction";
@@ -50,6 +50,7 @@ public class DatapackGenerator : GeneratorBase
 	private const string C_SpawnNotesBaseFunction = "spawn_notes_base.mcfunction";
 	private const string C_InitFunction = "init.mcfunction";
 	private const string C_Difficulties = "difficulties.mcfunction";
+	private const string C_SetSpawnOrgin = "set_spawn_orgin.mcfunction";
 	private const string C_TemplateStrings = "TemplateStrings.json";
 
 	// Part names
@@ -69,7 +70,6 @@ public class DatapackGenerator : GeneratorBase
 	private double _metersPerTick = 0;
 	private string _UUIDHex = "";
 	private TemplateStrings _templateStrings = null;
-	private double _offset = 0.0;
 
 	public DatapackGenerator(string unzippedFolderPath, PackInfo packInfo, List<BeatMapSong> beatMapSongList, string datapackOutputPath)
 	{
@@ -86,11 +86,6 @@ public class DatapackGenerator : GeneratorBase
 	/// <returns></returns>
 	public override bool Generate()
 	{
-
-		
-
-
-
 
 		if (Directory.Exists(_unzippedFolderPath) && _packInfo != null && _beatMapSongList.Count > 0)
 		{
@@ -153,7 +148,6 @@ public class DatapackGenerator : GeneratorBase
 
 		// Values
 		_metersPerTick = _packInfo._beatsPerMinute  / 60.0d * 24 * 0.21 / 20;
-		_offset = _metersPerTick * -21;
 
 		// Keys
 		_keyVars["MAPPER_NAME"] = _packInfo._levelAuthorName;
@@ -162,8 +156,6 @@ public class DatapackGenerator : GeneratorBase
 		_keyVars["MOVESPEED"] = _metersPerTick.ToString();
 		_keyVars["SONGTITLE"] = _packInfo._songName + " " + _packInfo._songSubName;
 		_keyVars["SONGARTIST"] = _packInfo._songAuthorName;
-		_keyVars["OFFSET"] = string.Format("{0:F18}", _offset);
-		_offset = double.Parse(_keyVars["OFFSET"]);
 		_keyVars["SONG"] = _folder_uuid;
 		_keyVars["folder_uuid"] = _folder_uuid;
 	}
@@ -205,12 +197,17 @@ public class DatapackGenerator : GeneratorBase
 	{
 		string difficultiesFunctionPath = Path.Combine(_folder_uuidFunctionsPath, C_Difficulties);
 		string initFunctionPath = Path.Combine(_blockSaberBaseFunctionsPath, C_InitFunction);
+		string setSpawnOrginFunctionPath = Path.Combine(_folder_uuidFunctionsPath, C_SetSpawnOrgin);
 		int difficultyID = 1;
 		
 		int difficulty = 0;
 		
 		foreach (BeatMapSong song in _beatMapSongList)
 		{
+
+			double ticksStartOffset = (int)(Mathf.Clamp((float)(_packInfo._beatsPerMinute / 60d * 10), 7, 20) / _metersPerTick);
+
+
 			string difficultyName = song.difficultyBeatmaps._difficulty.MakeMinecraftSafe();
 			Debug.Log("Generating song for mode: " + difficultyName);
 
@@ -241,12 +238,31 @@ public class DatapackGenerator : GeneratorBase
 
 
 
-			string playCommands = string.Format("scoreboard players set @s Difficulty {0}{1}execute as @s run function {2}:play",
+			string playCommands = string.Format("scoreboard players set @s Difficulty {0}{1}execute as @s run function {2}:play{3}",
 												difficultyID,
 												System.Environment.NewLine,
-												_folder_uuid);
+												_folder_uuid,
+												System.Environment.NewLine);
+			
+
 			string playPath = Path.Combine(_folder_uuidFunctionsPath, difficultyName + "_play" + C_McFunction);
 			SafeFileManagement.SetFileContents(playPath, playCommands);
+
+
+
+			string spawnOrginCommands = string.Format("execute if score @s Difficulty matches {2} as @s at @e[type=armor_stand,tag=playerOrgin] run summon armor_stand ~-0.45 ~1.2 ~{0:F18} {{Tags:[nodeSpawnOrgin,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}}{1}",
+				-_metersPerTick * ticksStartOffset,
+				System.Environment.NewLine,
+				difficultyID);
+			SafeFileManagement.AppendFile(setSpawnOrginFunctionPath, spawnOrginCommands);
+
+
+			string playSongCommand = string.Format("execute if score @s TickCount matches {0} at @s run playsound minecraft:{1} music @s ~ ~ ~ 1{2}",
+													ticksStartOffset,
+													_folder_uuid,
+													System.Environment.NewLine);
+
+			SafeFileManagement.AppendFile(commandBasePath, playSongCommand);
 
 
 			GenerateNotes(song, difficultyName, commandBasePath);
@@ -315,7 +331,7 @@ public class DatapackGenerator : GeneratorBase
 		int currentLevel = 0;
 		int currentTick = 0;
 		int maxTick = 0;
-		int minTick = 0;
+		int minTick = -1;
 		int prevCurrentTick = 0;
 		int currentNumberOfCommands = 0;
 		int currentCommandLimit = C_CommandLimit;
@@ -336,7 +352,7 @@ public class DatapackGenerator : GeneratorBase
 				int maxNewTick = 0;
 				int minNewTick = 0;
 				string newCommands = ObsicleDataToCommands(obstacles[obsicleIndex], _packInfo._beatsPerMinute, _metersPerTick, ref numberOfAddedCommands, ref minNewTick, ref maxNewTick);
-				if (minTick == 0)
+				if (minTick == -1)
 					minTick = minNewTick;
 
 				maxTick = Mathf.Max(maxTick, maxNewTick);
@@ -354,6 +370,7 @@ public class DatapackGenerator : GeneratorBase
 			prevCurrentTick = currentTick + 1;
 			currentCommandLimit = currentNumberOfCommands + C_CommandLimit;
 			minTick = 0;
+			maxTick = 0;
 		}
 	}
 

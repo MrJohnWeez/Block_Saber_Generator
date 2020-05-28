@@ -4,7 +4,8 @@ execute as @s run function _block_saber_base:configure_base
 #Set up vars
 scoreboard players set @s IsPlayerSneeking 0
 scoreboard players set @s TempVar1 0
-scoreboard players set @s TickCount -21
+# Give 3sec delay until song starts
+scoreboard players set @s TickCount -60
 scoreboard players set @s NodeRowID 0
 
 effect give @s saturation 1000000 20 true
@@ -17,7 +18,6 @@ execute at @s run summon armor_stand ~ ~ ~ {Tags:[playerOrgin,blockBeat],Disable
 execute at @s run summon armor_stand ~ ~ ~ {Tags:[fakePlayerEyes,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
 
 execute at @e[type=armor_stand,tag=playerOrgin] run summon armor_stand ~ ~ ~ {Tags:[nodeCursor,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute at @e[type=armor_stand,tag=playerOrgin] run summon armor_stand ~-0.45 ~1.2 ~OFFSET {Tags:[nodeSpawnOrgin,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
 
 #Set up detection heights
 execute at @s run summon armor_stand ~ ~1.8 ~ {Tags:[HighBlockHeight,temp,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
