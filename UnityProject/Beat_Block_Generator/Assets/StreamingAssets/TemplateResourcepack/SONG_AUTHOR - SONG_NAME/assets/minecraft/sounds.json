@@ -2,6 +2,8 @@
     "SONG": {
 	    "category": "music",
 	    "sounds": [
-        "custom/SONG"]
+        "custom/SONG"],
+        "stream": true,
+        "subtitle":"BlockSaber: Playing song: SONG"
     }
 }
