@@ -1,9 +1,9 @@
 {
-    "SONG": {
+    "SONGUUID": {
 	    "category": "music",
 	    "sounds": [
-        "custom/SONG"],
+        "custom/SONGUUID"],
         "stream": true,
-        "subtitle":"BlockSaber: Playing song: SONG"
+        "subtitle":"BlockSaber: Playing song: SONGUUID"
     }
 }

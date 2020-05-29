@@ -12,6 +12,7 @@ effect give @s saturation 1000000 20 true
 effect give @s resistance 1000000 20 true
 gamemode adventure @s
 gamerule doMobLoot false
+gamerule sendCommandFeedback false
 
 #Spawn main points
 execute at @s run summon armor_stand ~ ~ ~ {Tags:[playerOrgin,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
@@ -19,7 +20,7 @@ execute at @s run summon armor_stand ~ ~ ~ {Tags:[fakePlayerEyes,blockBeat],Disa
 
 execute at @e[type=armor_stand,tag=playerOrgin] run summon armor_stand ~ ~ ~ {Tags:[nodeCursor,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
 
-#Set up detection heights
+#Set up eye detection heights
 execute at @s run summon armor_stand ~ ~1.8 ~ {Tags:[HighBlockHeight,temp,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
 execute at @s run summon armor_stand ~ ~1.5 ~ {Tags:[MidBlockHeight,temp,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
 execute at @s run summon armor_stand ~ ~1.2 ~ {Tags:[LowBlockHeight,temp,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}

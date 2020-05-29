@@ -41,6 +41,8 @@ public class ResourcepackGenerator : GeneratorBase
 			Debug.Log("Copying Template...");
 			if (CopyTemplate(_pathOfResourcepackTemplate, _unzippedFolderPath))
 			{
+				UpdateAllCopiedFiles(_rootFolderPath);
+
 				Debug.Log("Copying Image Icon...");
 				CopyMapIcon();
 
@@ -82,7 +84,9 @@ public class ResourcepackGenerator : GeneratorBase
 		_folder_uuid = SafeFileManagement.GetFileName(Path.GetFileName(_unzippedFolderPath)).MakeMinecraftSafe();
 		_packName = C_ResourcePack + _folder_uuid;
 		_fullOutputPath = Path.Combine(_outputPath, _packName + C_Zip);
-		_keyVars["SONG"] = _folder_uuid;
+		_keyVars["SONGUUID"] = _folder_uuid;
+		_keyVars["SONGNAME"] = _packInfo._songName + _packInfo._songSubName;
+		_keyVars["AUTHORNAME"] = _packInfo._songAuthorName;
 	}
 
 	/// <summary>
@@ -94,6 +98,31 @@ public class ResourcepackGenerator : GeneratorBase
 		string mapIcon = Path.Combine(_unzippedFolderPath, _packInfo._coverImageFilename);
 		string packIcon = Path.Combine(_rootFolderPath, C_PackIcon);
 		return SafeFileManagement.CopyFileTo(mapIcon, packIcon, true, C_numberOfIORetryAttempts);
+	}
+
+	/// <summary>
+	/// Update all files within a directory to correct varible names
+	/// </summary>
+	/// <param name="folderPath">In folder path</param>
+	private void UpdateAllCopiedFiles(string folderPath, bool checkSubDirectories = false)
+	{
+		if (checkSubDirectories)
+		{
+			string[] dirs = SafeFileManagement.GetDirectoryPaths(folderPath, C_numberOfIORetryAttempts);
+			foreach (string dir in dirs)
+			{
+				UpdateAllCopiedFiles(dir, checkSubDirectories);
+			}
+		}
+
+		if (Directory.Exists(folderPath))
+		{
+			string[] files = SafeFileManagement.GetFilesPaths(folderPath, C_numberOfIORetryAttempts);
+			foreach (string file in files)
+			{
+				UpdateFileWithKeys(file);
+			}
+		}
 	}
 
 	/// <summary>

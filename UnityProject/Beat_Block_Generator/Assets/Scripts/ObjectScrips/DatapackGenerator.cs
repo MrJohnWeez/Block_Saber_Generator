@@ -155,9 +155,18 @@ public class DatapackGenerator : GeneratorBase
 		_keyVars["SONGID"] = Random.Range(-999999999, 999999999).ToString();
 		_keyVars["MOVESPEED"] = _metersPerTick.ToString();
 		_keyVars["SONGTITLE"] = _packInfo._songName + " " + _packInfo._songSubName;
+		_keyVars["SONGSHORTNAME"] = _packInfo._songName;
 		_keyVars["SONGARTIST"] = _packInfo._songAuthorName;
-		_keyVars["SONG"] = _folder_uuid;
 		_keyVars["folder_uuid"] = _folder_uuid;
+
+		string listOfDifficulties = "";
+		for(int diffNumber = 0; diffNumber < _beatMapSongList.Count; diffNumber++)
+		{
+			listOfDifficulties += _beatMapSongList[diffNumber].difficultyBeatmaps._difficulty;
+			if (diffNumber < _beatMapSongList.Count - 1)
+				listOfDifficulties += " | ";
+		}
+		_keyVars["DIFFICULTYLIST"] = listOfDifficulties;
 	}
 
 	/// <summary>
@@ -196,7 +205,7 @@ public class DatapackGenerator : GeneratorBase
 	private void GenerateMCBeatData()
 	{
 		string difficultiesFunctionPath = Path.Combine(_folder_uuidFunctionsPath, C_Difficulties);
-		string initFunctionPath = Path.Combine(_blockSaberBaseFunctionsPath, C_InitFunction);
+		string initFunctionPath = Path.Combine(_folder_uuidFunctionsPath, C_InitFunction);
 		string setSpawnOrginFunctionPath = Path.Combine(_folder_uuidFunctionsPath, C_SetSpawnOrgin);
 		int difficultyID = 1;
 		
@@ -258,7 +267,7 @@ public class DatapackGenerator : GeneratorBase
 
 
 			string playSongCommand = string.Format("execute if score @s TickCount matches {0} at @s run playsound minecraft:{1} music @s ~ ~ ~ 1{2}",
-													ticksStartOffset,
+													ticksStartOffset - 1,
 													_folder_uuid,
 													System.Environment.NewLine);
 
