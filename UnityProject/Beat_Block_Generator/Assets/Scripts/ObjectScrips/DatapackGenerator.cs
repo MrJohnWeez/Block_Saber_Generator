@@ -1,8 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System;
+using System.Text;
 using UnityEngine;
 
+/// <summary>
+/// Generate entire datapack based on given beat saber map data. 
+/// NOTE: Ref is used alot for performance reasons
+/// </summary>
 public class DatapackGenerator : GeneratorBase
 {
 	private const int C_CommandLimit = 10000;
@@ -57,19 +63,19 @@ public class DatapackGenerator : GeneratorBase
 	private const string C_LvlNoteName = "_lvl_note_";
 	private const string C_LvlObsicleName = "_lvl_obsicle_";
 
+	// Holds all minecraft command templates
+	private static TemplateStrings _templateStrings = null;
+
 	// Paths
 	private string _datapackRootPath = "";
 	private string _blockSaberBaseFunctionsPath = "";
 	private string _spawnNotesBasePath = "";
 	private string _folder_uuidFunctionsPath = "";
-
 	private string _pathOfDatapackTemplate = Path.Combine(C_StreamingAssets, "TemplateDatapack");
 
 	private List<BeatMapSong> _beatMapSongList;
-
 	private double _metersPerTick = 0;
-	private string _UUIDHex = "";
-	private TemplateStrings _templateStrings = null;
+	private string _UUIDVar = "";
 
 	public DatapackGenerator(string unzippedFolderPath, PackInfo packInfo, List<BeatMapSong> beatMapSongList, string datapackOutputPath)
 	{
@@ -83,15 +89,15 @@ public class DatapackGenerator : GeneratorBase
 	/// <summary>
 	/// Generate datapack
 	/// </summary>
-	/// <returns></returns>
+	/// <returns>True if successful</returns>
 	public override bool Generate()
 	{
-
 		if (Directory.Exists(_unzippedFolderPath) && _packInfo != null && _beatMapSongList.Count > 0)
 		{
 			Debug.Log("Copying Template...");
 			if (CopyTemplate(_pathOfDatapackTemplate, _unzippedFolderPath))
 			{
+				Debug.Log("Updating Copied files...");
 				UpdateAllCopiedFiles(_datapackRootPath, true);
 
 				Debug.Log("Generating main datapack files...");
@@ -131,13 +137,16 @@ public class DatapackGenerator : GeneratorBase
 	{
 		base.Init();
 		// minecraft data
-		string _pathOfTemplateStrings = Path.Combine(C_StreamingAssets, C_TemplateStrings);
-		_templateStrings = JsonUtility.FromJson<TemplateStrings>(SafeFileManagement.GetFileContents(_pathOfTemplateStrings));
+		if(_templateStrings == null)
+		{
+			string _pathOfTemplateStrings = Path.Combine(C_StreamingAssets, C_TemplateStrings);
+			_templateStrings = JsonUtility.FromJson<TemplateStrings>(SafeFileManagement.GetFileContents(_pathOfTemplateStrings));
+		}
 		
 		// Names
 		_folder_uuid = SafeFileManagement.GetFileName(Path.GetFileName(_unzippedFolderPath)).MakeMinecraftSafe();
 		_packName = C_Datapack + _folder_uuid;
-		_UUIDHex = Random.Range(-999999999, 999999999).ToString("X");
+		_UUIDVar = UnityEngine.Random.Range(-999999999, 999999999).ToString("X");
 
 		// Paths
 		_datapackRootPath = Path.Combine(_unzippedFolderPath, _packName);
@@ -149,10 +158,11 @@ public class DatapackGenerator : GeneratorBase
 		// Values
 		_metersPerTick = _packInfo._beatsPerMinute  / 60.0d * 24 * 0.21 / 20;
 
-		// Keys
+		// Set up Keys
 		_keyVars["MAPPER_NAME"] = _packInfo._levelAuthorName;
 		_keyVars["BEATS_PER_MINUTE"] = _packInfo._beatsPerMinute.ToString();
-		_keyVars["SONGID"] = Random.Range(-999999999, 999999999).ToString();
+		System.Random rand = new System.Random();
+		_keyVars["SONGID"] = LongRandom(-99999999999, 99999999999, rand).ToString("X");
 		_keyVars["MOVESPEED"] = _metersPerTick.ToString();
 		_keyVars["SONGTITLE"] = _packInfo._songName + " " + _packInfo._songSubName;
 		_keyVars["SONGSHORTNAME"] = _packInfo._songName;
@@ -172,7 +182,7 @@ public class DatapackGenerator : GeneratorBase
 	/// <summary>
 	/// Update all files within a directory to correct varible names
 	/// </summary>
-	/// <param name="folderPath">In folder path</param>
+	/// <param name="folderPath">Root folder path to scan</param>
 	private void UpdateAllCopiedFiles(string folderPath, bool checkSubDirectories = false)
 	{
 		// Must change the folder names before searching for keys
@@ -204,86 +214,76 @@ public class DatapackGenerator : GeneratorBase
 	/// </summary>
 	private void GenerateMCBeatData()
 	{
-		string difficultiesFunctionPath = Path.Combine(_folder_uuidFunctionsPath, C_Difficulties);
-		string initFunctionPath = Path.Combine(_folder_uuidFunctionsPath, C_InitFunction);
-		string setSpawnOrginFunctionPath = Path.Combine(_folder_uuidFunctionsPath, C_SetSpawnOrgin);
-		int difficultyID = 1;
+		StringBuilder difficultyDisplayCommands = new StringBuilder();
+		StringBuilder scoreboardCommands = new StringBuilder();
+		StringBuilder spawnOrginCommands = new StringBuilder();
+		StringBuilder spawnNotesBaseCommands = new StringBuilder();
+		int difficultyNumber = 1;
 		
-		int difficulty = 0;
-		
+		// Itterate though each song difficulty
 		foreach (BeatMapSong song in _beatMapSongList)
 		{
-
 			double ticksStartOffset = (int)(Mathf.Clamp((float)(_packInfo._beatsPerMinute / 60d * 10), 7, 20) / _metersPerTick);
-
-
 			string difficultyName = song.difficultyBeatmaps._difficulty.MakeMinecraftSafe();
-			Debug.Log("Generating song for mode: " + difficultyName);
-
-			difficulty++;
-			string spawnNotesBaseCommand = string.Format("execute if score @s Difficulty matches {0} as @s run function {1}:{2}",
-														difficulty,
-														_folder_uuid,
-														difficultyName);
-			SafeFileManagement.AppendFile(_spawnNotesBasePath, spawnNotesBaseCommand);
-
-			string commandBasePath = Path.Combine(_folder_uuidFunctionsPath, difficultyName + C_McFunction);
-
 			
-			
-			string modeID = _UUIDHex + difficultyID.ToString();
-			
+			// Append running command lists
+			string songDifficultyID = _UUIDVar + difficultyNumber.ToString();
+			scoreboardCommands.AppendFormat(_templateStrings._scoreboardCommand,
+											songDifficultyID);
 
-			string scoreboardCommand = string.Format("scoreboard objectives add {0} dummy{1}execute as @a unless score @s {0} = @s {0} run scoreboard players set @s {0} 0",
-													modeID,
-													System.Environment.NewLine);
+			spawnOrginCommands.AppendFormat(_templateStrings._spawnOrginCommands,
+											-_metersPerTick * ticksStartOffset,
+											difficultyNumber);
 
-			SafeFileManagement.AppendFile(initFunctionPath, scoreboardCommand);
-			
-
-
-			string difficultyDisplayCommands = CreateDifficultyDisplay(modeID, difficultyName, _folder_uuid);
-			SafeFileManagement.AppendFile(difficultiesFunctionPath, difficultyDisplayCommands);
-
-
-
-			string playCommands = string.Format("scoreboard players set @s Difficulty {0}{1}execute as @s run function {2}:play{3}",
-												difficultyID,
-												System.Environment.NewLine,
+			spawnNotesBaseCommands.AppendFormat(_templateStrings._spawnNotesBaseCommand,
+												difficultyNumber,
 												_folder_uuid,
-												System.Environment.NewLine);
-			
+												difficultyName);
 
+			CreateDifficultyDisplay(songDifficultyID, difficultyName, _folder_uuid, ref difficultyDisplayCommands);
+
+
+			// Write difficulty-specific-file commands
+			string playCommands = string.Format(_templateStrings._playCommands,
+												difficultyNumber,
+												_folder_uuid);
 			string playPath = Path.Combine(_folder_uuidFunctionsPath, difficultyName + "_play" + C_McFunction);
 			SafeFileManagement.SetFileContents(playPath, playCommands);
 
 
-
-			string spawnOrginCommands = string.Format("execute if score @s Difficulty matches {2} as @s at @e[type=armor_stand,tag=playerOrgin] run summon armor_stand ~-0.45 ~1.2 ~{0:F18} {{Tags:[nodeSpawnOrgin,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}}{1}",
-				-_metersPerTick * ticksStartOffset,
-				System.Environment.NewLine,
-				difficultyID);
-			SafeFileManagement.AppendFile(setSpawnOrginFunctionPath, spawnOrginCommands);
-
-
-			string playSongCommand = string.Format("execute if score @s TickCount matches {0} at @s run playsound minecraft:{1} music @s ~ ~ ~ 1{2}",
+			string playSongCommand = string.Format(_templateStrings._playSongCommand,
 													ticksStartOffset - 1,
-													_folder_uuid,
-													System.Environment.NewLine);
-
+													_folder_uuid);
+			string commandBasePath = Path.Combine(_folder_uuidFunctionsPath, difficultyName + C_McFunction);
 			SafeFileManagement.AppendFile(commandBasePath, playSongCommand);
-
-
+			
+			// Generate main note/obsicle data
 			GenerateNotes(song, difficultyName, commandBasePath);
 			GenerateObsicles(song, difficultyName, commandBasePath);
 			
-
-			difficultyID++;
+			difficultyNumber++;
 		}
 
-		SafeFileManagement.AppendFile(difficultiesFunctionPath, _templateStrings._mainMenuBack);
+		// Write collected commands to files
+		string difficultiesFunctionPath = Path.Combine(_folder_uuidFunctionsPath, C_Difficulties);
+		string initFunctionPath = Path.Combine(_folder_uuidFunctionsPath, C_InitFunction);
+		string setSpawnOrginFunctionPath = Path.Combine(_folder_uuidFunctionsPath, C_SetSpawnOrgin);
+
+		SafeFileManagement.AppendFile(_spawnNotesBasePath, spawnNotesBaseCommands.ToString());
+		SafeFileManagement.AppendFile(setSpawnOrginFunctionPath, spawnOrginCommands.ToString());
+		SafeFileManagement.AppendFile(initFunctionPath, scoreboardCommands.ToString());
+
+		// Add back button in tellraw
+		difficultyDisplayCommands.Append(_templateStrings._mainMenuBack);
+		SafeFileManagement.AppendFile(difficultiesFunctionPath, difficultyDisplayCommands.ToString());
 	}
 
+	/// <summary>
+	/// Generate note commands given a song and difficulty
+	/// </summary>
+	/// <param name="song">Beatmap data for a song and difficulty</param>
+	/// <param name="difficultyName">Minecraft safe difficulty name</param>
+	/// <param name="commandBasePath">Base folder path to generate new mcfunctions</param>
 	private void GenerateNotes(BeatMapSong song, string difficultyName, string commandBasePath)
 	{
 		_notes[] notes = song.beatMapData._notes;
@@ -304,7 +304,7 @@ public class DatapackGenerator : GeneratorBase
 			string commandLevelName = difficultyName + C_LvlNoteName + currentLevel;
 			string commandLevelFileName = commandLevelName + C_McFunction;
 			string commandLevelFilePath = Path.Combine(_folder_uuidFunctionsPath, commandLevelFileName);
-			string currentCommands = "";
+			StringBuilder currentCommands = new StringBuilder();
 
 			// Continue to generate commands until all nodes and obsicles have been itterated though
 			while (noteIndex < notes.Length && currentNumberOfCommands < currentCommandLimit)
@@ -315,14 +315,14 @@ public class DatapackGenerator : GeneratorBase
 					nodeRowID++;
 				}
 
-				currentCommands += NodeDataToCommands(notes[noteIndex], _packInfo._beatsPerMinute, _metersPerTick, nodeRowID, ref currentTick);
+				NodeDataToCommands(notes[noteIndex], _packInfo._beatsPerMinute, _metersPerTick, nodeRowID, ref currentCommands, ref currentTick);
 				prevNodeTime = notes[noteIndex]._time;
 				currentNumberOfCommands += 3;
 				noteIndex++;
 			}
 
-			SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands);
-			string baseCommand = string.Format("execute if score @s TickCount matches {0}..{1} run function {2}:{3}",
+			SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands.ToString());
+			string baseCommand = string.Format(_templateStrings._baseCommand,
 												prevCurrentTick,
 												currentTick,
 												_folder_uuid,
@@ -333,6 +333,12 @@ public class DatapackGenerator : GeneratorBase
 		}
 	}
 
+	/// <summary>
+	/// Generate obsicles commands given a song and difficulty
+	/// </summary>
+	/// <param name="song">Beatmap data for a song and difficulty</param>
+	/// <param name="difficultyName">Minecraft safe difficulty name</param>
+	/// <param name="commandBasePath">Base folder path to generate new mcfunctions</param>
 	private void GenerateObsicles(BeatMapSong song, string difficultyName, string commandBasePath)
 	{
 		_obstacles[] obstacles = song.beatMapData._obstacles;
@@ -352,25 +358,22 @@ public class DatapackGenerator : GeneratorBase
 			string commandLevelName = difficultyName + C_LvlObsicleName + currentLevel;
 			string commandLevelFileName = commandLevelName + C_McFunction;
 			string commandLevelFilePath = Path.Combine(_folder_uuidFunctionsPath, commandLevelFileName);
-			string currentCommands = "";
+			StringBuilder currentCommands = new StringBuilder();
+			int maxNewTick = 0;
+			int minNewTick = 0;
 
 			// Continue to generate commands until all nodes and obsicles have been itterated though
 			while (obsicleIndex < obstacles.Length && currentNumberOfCommands < currentCommandLimit)
 			{
-				int numberOfAddedCommands = 0;
-				int maxNewTick = 0;
-				int minNewTick = 0;
-				string newCommands = ObsicleDataToCommands(obstacles[obsicleIndex], _packInfo._beatsPerMinute, _metersPerTick, ref numberOfAddedCommands, ref minNewTick, ref maxNewTick);
+				ObsicleDataToCommands(obstacles[obsicleIndex], _packInfo._beatsPerMinute, _metersPerTick, ref currentCommands, ref currentNumberOfCommands, ref minNewTick, ref maxNewTick);
 				if (minTick == -1)
 					minTick = minNewTick;
 
 				maxTick = Mathf.Max(maxTick, maxNewTick);
-				currentCommands += newCommands + System.Environment.NewLine;
-				currentNumberOfCommands += numberOfAddedCommands;
 				obsicleIndex++;
 			}
-			SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands);
-			string baseCommand = string.Format("execute if score @s TickCount matches {0}..{1} run function {2}:{3}",
+			SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands.ToString());
+			string baseCommand = string.Format(_templateStrings._baseCommand,
 												minTick,
 												maxTick,
 												_folder_uuid,
@@ -384,20 +387,18 @@ public class DatapackGenerator : GeneratorBase
 	}
 
 
-
 	/// <summary>
 	/// Generate commands to produce a beat saber obsicle
 	/// </summary>
 	/// <param name="obstacle">Obsicle data</param>
 	/// <param name="bpm">Beats per minute</param>
 	/// <param name="metersPerTick">Distance note travels per tick</param>
-	/// <param name="numberOfAddedCommands">Output of number of commands generated</param>
-	/// <param name="wholeTick">Output of minecraft tick used</param>
-	/// <returns></returns>
-	private string ObsicleDataToCommands(_obstacles obstacle, float bpm, double metersPerTick, ref int numberOfAddedCommands, ref int minWholeTick, ref int maxWholeTick)
+	/// <param name="commandList">String Builder object to append to</param>
+	/// <param name="addToNumberOfCommands">Output of number of commands generated</param>
+	/// <param name="minWholeTick">Output of min minecraft tick used</param>
+	/// <param name="maxWholeTick">Output of max minecraft tick used</param>
+	private void ObsicleDataToCommands(_obstacles obstacle, float bpm, double metersPerTick, ref StringBuilder commandList, ref int addToNumberOfCommands, ref int minWholeTick, ref int maxWholeTick)
 	{
-		string commandList = "";
-
 		double beatsPerTick = bpm / 60.0d / 20;
 		double exactTick = obstacle._time / beatsPerTick;
 
@@ -425,25 +426,51 @@ public class DatapackGenerator : GeneratorBase
 				for (int width = 0; width < widthOfWallInNotes; width++)
 				{
 					maxWholeTick = minWholeTick + tickOffset;
-					string positionCommand = string.Format("execute if score @s TickCount matches {0} at @e[type=armor_stand, tag=nodeSpawnOrgin] run teleport @e[type=armor_stand, tag=nodeCursor] ~{1} ~{2} ~{3:F18}",
-							maxWholeTick,
-							0.3 * obstacle._lineIndex + 0.3d * width,
-							0.6d - 0.3d * height,
-							-extraOffset);
-
-					string spawnWallNode = string.Format("execute if score @s TickCount matches {0} as @e[type=armor_stand, tag=nodeCursor] run function _block_types:box",
-							maxWholeTick);
-					commandList += string.Format("{0}{1}{2}{3}",
-												positionCommand,
-												System.Environment.NewLine,
-												spawnWallNode,
-												System.Environment.NewLine);
-					numberOfAddedCommands += 2;
+					commandList.AppendFormat(_templateStrings._positionCommand,
+											maxWholeTick,
+											0.3 * obstacle._lineIndex + 0.3d * width,
+											0.6d - 0.3d * height,
+											-extraOffset);
+					addToNumberOfCommands += 2;
 				}
 			}
 		}
+	}
+	
 
-		return commandList;
+	/// <summary>
+	/// Generate all neciccary commands for node placement on beat
+	/// </summary>
+	/// <param name="node">Node data to use</param>
+	/// <param name="bpm">Beats per minute</param>
+	/// <param name="metersPerTick">Distance note travels per tick</param>
+	/// <param name="nodeRowID">Row id within minecraft</param>
+	/// <param name="commandList">String Builder object to append to</param>
+	/// <param name="wholeTick">Output of minecraft tick used</param>
+	private void NodeDataToCommands(_notes node, float bpm, double metersPerTick, int nodeRowID, ref StringBuilder commandList, ref int wholeTick)
+	{
+		//_lineIndex = col
+		//_lineLayer = row
+
+		double beatsPerTick = bpm / 60.0d / 20;
+		double exactTick = node._time / beatsPerTick;
+
+		wholeTick = (int)Mathf.Floor((float)exactTick);
+		double fractionTick = exactTick % beatsPerTick;
+		double fractionMeters = fractionTick * metersPerTick;
+
+		commandList.AppendFormat(_templateStrings._nodePositionCommand,
+									wholeTick,
+									node._lineIndex * 0.3d,
+									node._lineLayer * 0.3d,
+									-fractionMeters);
+		commandList.AppendFormat(_templateStrings._scoreCommand,
+									wholeTick,
+									_keyVars["SONGID"],
+									nodeRowID);
+		commandList.AppendFormat(_templateStrings._nodeTypeCommand,
+									wholeTick,
+									_noteTypes[node._type][node._cutDirection]);
 	}
 
 	/// <summary>
@@ -452,8 +479,8 @@ public class DatapackGenerator : GeneratorBase
 	/// <param name="modeID">NOTSURE</param>
 	/// <param name="difficultyName">Name of the difficulty this is for</param>
 	/// <param name="folderID"></param>
-	/// <returns>Completed commands for tellraw display</returns>
-	private string CreateDifficultyDisplay(string modeID, string difficultyName, string folderID)
+	/// <param name="commandList">String Builder object to append to</param>
+	private void CreateDifficultyDisplay(string modeID, string difficultyName, string folderID, ref StringBuilder commandList)
 	{
 		string difficultyCommand1 = _templateStrings._difficultyChat;
 		difficultyCommand1 = difficultyCommand1.Replace("DIFFNAME", modeID);
@@ -469,71 +496,24 @@ public class DatapackGenerator : GeneratorBase
 		difficultyCommand2 = difficultyCommand2.Replace("COLOR", "red");
 		difficultyCommand2 = difficultyCommand2.Replace("folder_uuid", folderID);
 
-		return difficultyCommand1 + System.Environment.NewLine + difficultyCommand2;
+		commandList.Append(difficultyCommand1);
+		commandList.Append(difficultyCommand2);
 	}
 
 	/// <summary>
-	/// Generate all neciccary commands for node placement on beat
+	/// Generate random Long number given range
 	/// </summary>
-	/// <param name="node">Node data to use</param>
-	/// <param name="bpm">Beats per minute</param>
-	/// <param name="metersPerTick">Distance note travels per tick</param>
-	/// <param name="nodeRowID">Row id within minecraft</param>
-	/// <param name="wholeTick">Output of minecraft tick used</param>
+	/// <param name="min">Min number</param>
+	/// <param name="max">Max number</param>
+	/// <param name="rand">Random object</param>
 	/// <returns></returns>
-	private string NodeDataToCommands(_notes node, float bpm, double metersPerTick, int nodeRowID, ref int wholeTick)
+	private long LongRandom(long min, long max, System.Random rand)
 	{
-		//_lineIndex = col
-		//_lineLayer = row
+		
+		byte[] buf = new byte[8];
+		rand.NextBytes(buf);
+		long longRand = BitConverter.ToInt64(buf, 0);
 
-		double beatsPerTick = bpm / 60.0d / 20;
-		double exactTick = node._time / beatsPerTick;
-
-		wholeTick = (int)Mathf.Floor((float)exactTick);
-		double fractionTick = exactTick % beatsPerTick;
-		double fractionMeters = fractionTick * metersPerTick;
-
-		string scoreCommand = string.Format("execute if score @s TickCount matches {0} at @e[type=armor_stand,tag=playerOrgin] as @p[scores={{SongID={1}}}] run scoreboard players set @s NodeRowID {2}",
-			wholeTick,
-			_keyVars["SONGID"],
-			nodeRowID);
-
-		return string.Format("{0}{1}{2}{3}{4}{5}",
-							NodePositionCommand(wholeTick, node._lineIndex * 0.3d, node._lineLayer * 0.3d, -fractionMeters),
-							System.Environment.NewLine,
-							scoreCommand,
-							System.Environment.NewLine,
-							NodeTypeCommand(wholeTick, node),
-							System.Environment.NewLine);
-	}
-
-	/// <summary>
-	/// Convert given tick and xyz offset into a position command in minecraft
-	/// </summary>
-	/// <param name="tick">whole tick when command will be ran</param>
-	/// <param name="xOffset">Minecraft x offset</param>
-	/// <param name="yOffset">Minecraft y offset</param>
-	/// <param name="zOffset">Minecraft z offset</param>
-	/// <returns></returns>
-	private string NodePositionCommand(int tick, double xOffset, double yOffset, double zOffset)
-	{
-		return string.Format("execute if score @s TickCount matches {0} at @e[type=armor_stand, tag=nodeSpawnOrgin] run teleport @e[type=armor_stand, tag=nodeCursor] ~{1} ~{2} ~{3:F18}",
-							tick,
-							xOffset,
-							yOffset,
-							zOffset);
-	}
-
-	/// <summary>
-	/// Convert a tick and node into a node generation command
-	/// </summary>
-	/// <param name="tick">whole tick when command will be ran</param>
-	/// <param name="node">node data to generate</param>
-	/// <returns></returns>
-	private string NodeTypeCommand(int tick, _notes node)
-	{
-		return string.Format("execute if score @s TickCount matches {0} as @e[type=armor_stand, tag=nodeCursor] run function _block_types:{1}",
-							tick,
-							_noteTypes[node._type][node._cutDirection]);
+		return (Math.Abs(longRand % (max - min)) + min);
 	}
 }
