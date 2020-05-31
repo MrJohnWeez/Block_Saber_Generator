@@ -15,6 +15,9 @@ scoreboard objectives add Const_3 dummy
 scoreboard objectives add TempVar1 dummy
 scoreboard objectives add TempVar2 dummy
 
+scoreboard objectives add FinishedNotes dummy
+scoreboard objectives add FinishedObsicles dummy
+
 scoreboard objectives add HighBlockHeight dummy
 scoreboard objectives add MidBlockHeight dummy
 scoreboard objectives add LowBlockHeight dummy

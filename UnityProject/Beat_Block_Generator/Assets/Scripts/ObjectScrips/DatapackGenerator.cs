@@ -76,6 +76,7 @@ public class DatapackGenerator : GeneratorBase
 	private List<BeatMapSong> _beatMapSongList;
 	private double _metersPerTick = 0;
 	private string _UUIDVar = "";
+	private double _ticksStartOffset = 0;
 
 	public DatapackGenerator(string unzippedFolderPath, PackInfo packInfo, List<BeatMapSong> beatMapSongList, string datapackOutputPath)
 	{
@@ -157,12 +158,12 @@ public class DatapackGenerator : GeneratorBase
 
 		// Values
 		_metersPerTick = _packInfo._beatsPerMinute  / 60.0d * 24 * 0.21 / 20;
+		_ticksStartOffset = (int)(Mathf.Clamp((float)(_packInfo._beatsPerMinute / 60d * 10), 7, 20) / _metersPerTick);
 
 		// Set up Keys
 		_keyVars["MAPPER_NAME"] = _packInfo._levelAuthorName;
 		_keyVars["BEATS_PER_MINUTE"] = _packInfo._beatsPerMinute.ToString();
-		System.Random rand = new System.Random();
-		_keyVars["SONGID"] = LongRandom(-99999999999, 99999999999, rand).ToString("X");
+		_keyVars["SONGID"] = ((int)UnityEngine.Random.Range(-999999999, 999999999)).ToString();
 		_keyVars["MOVESPEED"] = _metersPerTick.ToString();
 		_keyVars["SONGTITLE"] = _packInfo._songName + " " + _packInfo._songSubName;
 		_keyVars["SONGSHORTNAME"] = _packInfo._songName;
@@ -223,7 +224,6 @@ public class DatapackGenerator : GeneratorBase
 		// Itterate though each song difficulty
 		foreach (BeatMapSong song in _beatMapSongList)
 		{
-			double ticksStartOffset = (int)(Mathf.Clamp((float)(_packInfo._beatsPerMinute / 60d * 10), 7, 20) / _metersPerTick);
 			string difficultyName = song.difficultyBeatmaps._difficulty.MakeMinecraftSafe();
 			
 			// Append running command lists
@@ -232,7 +232,7 @@ public class DatapackGenerator : GeneratorBase
 											songDifficultyID);
 
 			spawnOrginCommands.AppendFormat(_templateStrings._spawnOrginCommands,
-											-_metersPerTick * ticksStartOffset,
+											-_metersPerTick * _ticksStartOffset,
 											difficultyNumber);
 
 			spawnNotesBaseCommands.AppendFormat(_templateStrings._spawnNotesBaseCommand,
@@ -252,7 +252,7 @@ public class DatapackGenerator : GeneratorBase
 
 
 			string playSongCommand = string.Format(_templateStrings._playSongCommand,
-													ticksStartOffset - 1,
+													_ticksStartOffset - 1,
 													_folder_uuid);
 			string commandBasePath = Path.Combine(_folder_uuidFunctionsPath, difficultyName + C_McFunction);
 			SafeFileManagement.AppendFile(commandBasePath, playSongCommand);
@@ -290,7 +290,7 @@ public class DatapackGenerator : GeneratorBase
 
 		double prevNodeTime = 0;
 		int nodeRowID = 1;
-		int currentLevel = 0;
+		int currentLevel = 1;
 		int currentTick = 0;
 		int prevCurrentTick = 0;
 		int currentNumberOfCommands = 0;
@@ -300,7 +300,6 @@ public class DatapackGenerator : GeneratorBase
 		// Main note generation
 		while (noteIndex < notes.Length)
 		{
-			currentLevel++;
 			string commandLevelName = difficultyName + C_LvlNoteName + currentLevel;
 			string commandLevelFileName = commandLevelName + C_McFunction;
 			string commandLevelFilePath = Path.Combine(_folder_uuidFunctionsPath, commandLevelFileName);
@@ -321,6 +320,13 @@ public class DatapackGenerator : GeneratorBase
 				noteIndex++;
 			}
 
+			if(noteIndex >= notes.Length)
+			{
+				currentTick += (int)(_ticksStartOffset + 1); ;
+				currentCommands.AppendFormat(_templateStrings._finishedNotes,
+											currentTick);
+			}
+
 			SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands.ToString());
 			string baseCommand = string.Format(_templateStrings._baseCommand,
 												prevCurrentTick,
@@ -330,6 +336,26 @@ public class DatapackGenerator : GeneratorBase
 			SafeFileManagement.AppendFile(commandBasePath, baseCommand);
 			prevCurrentTick = currentTick + 1;
 			currentCommandLimit = currentNumberOfCommands + C_CommandLimit;
+			currentLevel++;
+		}
+
+		// Note pretty buy create a command if no obsicles are present in a map
+		if (notes.Length == 0)
+		{
+			currentTick += (int)(_ticksStartOffset + 1); ;
+			string commandLevelName = difficultyName + C_LvlNoteName + currentLevel;
+			string commandLevelFileName = commandLevelName + C_McFunction;
+			string commandLevelFilePath = Path.Combine(_folder_uuidFunctionsPath, commandLevelFileName);
+			StringBuilder currentCommands = new StringBuilder();
+			SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands.ToString());
+			string baseCommand = string.Format(_templateStrings._baseCommand,
+												prevCurrentTick,
+												currentTick,
+												_folder_uuid,
+												commandLevelName);
+			SafeFileManagement.AppendFile(commandBasePath, baseCommand);
+			currentCommands.AppendFormat(_templateStrings._finishedNotes,
+										currentTick);
 		}
 	}
 
@@ -343,7 +369,7 @@ public class DatapackGenerator : GeneratorBase
 	{
 		_obstacles[] obstacles = song.beatMapData._obstacles;
 		int obsicleIndex = 0;
-		int currentLevel = 0;
+		int currentLevel = 1;
 		int currentTick = 0;
 		int maxTick = 0;
 		int minTick = -1;
@@ -354,7 +380,6 @@ public class DatapackGenerator : GeneratorBase
 		// Main note generation
 		while (obsicleIndex < obstacles.Length)
 		{
-			currentLevel++;
 			string commandLevelName = difficultyName + C_LvlObsicleName + currentLevel;
 			string commandLevelFileName = commandLevelName + C_McFunction;
 			string commandLevelFilePath = Path.Combine(_folder_uuidFunctionsPath, commandLevelFileName);
@@ -372,6 +397,14 @@ public class DatapackGenerator : GeneratorBase
 				maxTick = Mathf.Max(maxTick, maxNewTick);
 				obsicleIndex++;
 			}
+
+			if (obsicleIndex >= obstacles.Length)
+			{
+				maxTick += (int)(_ticksStartOffset + 1);
+				currentCommands.AppendFormat(_templateStrings._finishedObsicles,
+											maxTick);
+			}
+
 			SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands.ToString());
 			string baseCommand = string.Format(_templateStrings._baseCommand,
 												minTick,
@@ -383,6 +416,26 @@ public class DatapackGenerator : GeneratorBase
 			currentCommandLimit = currentNumberOfCommands + C_CommandLimit;
 			minTick = 0;
 			maxTick = 0;
+			currentLevel++;
+		}
+
+		// Note pretty buy create a command if no obsicles are present in a map
+		if (obstacles.Length == 0)
+		{
+			string commandLevelName = difficultyName + C_LvlObsicleName + currentLevel;
+			string commandLevelFileName = commandLevelName + C_McFunction;
+			string commandLevelFilePath = Path.Combine(_folder_uuidFunctionsPath, commandLevelFileName);
+			StringBuilder currentCommands = new StringBuilder();
+			currentTick++;
+			currentCommands.AppendFormat(_templateStrings._finishedObsicles,
+										currentTick);
+			SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands.ToString());
+			string baseCommand = string.Format(_templateStrings._baseCommand,
+												minTick,
+												maxTick + (int)(_ticksStartOffset + 1),
+												_folder_uuid,
+												commandLevelName);
+			SafeFileManagement.AppendFile(commandBasePath, baseCommand);
 		}
 	}
 

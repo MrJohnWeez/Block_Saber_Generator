@@ -4,6 +4,9 @@ execute as @s run function _block_saber_base:configure_base
 #Set up vars
 scoreboard players set @s IsPlayerSneeking 0
 scoreboard players set @s TempVar1 0
+scoreboard players set @s FinishedNotes 0
+scoreboard players set @s FinishedObsicles 0
+
 # Give 3sec delay until song starts
 scoreboard players set @s TickCount -60
 scoreboard players set @s NodeRowID 0

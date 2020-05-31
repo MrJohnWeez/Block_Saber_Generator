@@ -17,5 +17,7 @@ public class TemplateStrings
 	public string _nodePositionCommand = "";
 	public string _nodeTypeCommand = "";
 	public string _spawnOrginCommands = "";
+	public string _finishedObsicles = "";
+	public string _finishedNotes = "";
 	public string _playSongCommand = "";
 }

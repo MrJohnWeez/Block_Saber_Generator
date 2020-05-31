@@ -16,3 +16,5 @@ execute as @e[tag=node] run function folder_uuid:move_note
 
 # Clear frame vars
 scoreboard players set @s[scores={IsPlayerSneeking=1..}] IsPlayerSneeking 0
+
+execute if score @s FinishedObsicles matches 1 if score @s FinishedNotes matches 1 at @e[type=armor_stand,tag=playerOrgin] as @p[scores={SongID=SONGID}] run function folder_uuid:map_difficulty_completed

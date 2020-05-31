@@ -75,13 +75,11 @@ public class GeneratorBase
 	protected void UpdateFileWithKeys(string filePath)
 	{
 		string textInfo = SafeFileManagement.GetFileContents(filePath);
-		string original = textInfo;
 		foreach (string key in _keyVars.Keys)
 		{
 			textInfo = textInfo.Replace(key, _keyVars[key]);
 		}
-
-		if(string.Compare(textInfo, original) > 0)
-			SafeFileManagement.SetFileContents(filePath, textInfo);
+		
+		SafeFileManagement.SetFileContents(filePath, textInfo);
 	}
 }
