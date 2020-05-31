@@ -58,6 +58,7 @@ public class DatapackGenerator : GeneratorBase
 	private const string C_Difficulties = "difficulties.mcfunction";
 	private const string C_SetSpawnOrgin = "set_spawn_orgin.mcfunction";
 	private const string C_TemplateStrings = "TemplateStrings.json";
+	private const string C_MapDifficultyCompleted = "map_difficulty_completed.mcfunction";
 
 	// Part names
 	private const string C_LvlNoteName = "_lvl_note_";
@@ -256,7 +257,12 @@ public class DatapackGenerator : GeneratorBase
 													_folder_uuid);
 			string commandBasePath = Path.Combine(_folder_uuidFunctionsPath, difficultyName + C_McFunction);
 			SafeFileManagement.AppendFile(commandBasePath, playSongCommand);
-			
+
+			string completedSongCommand = string.Format(_templateStrings._completedSong,
+														songDifficultyID);
+			string completedSongPath = Path.Combine(_folder_uuidFunctionsPath, C_MapDifficultyCompleted);
+			SafeFileManagement.AppendFile(completedSongPath, completedSongCommand);
+
 			// Generate main note/obsicle data
 			GenerateNotes(song, difficultyName, commandBasePath);
 			GenerateObsicles(song, difficultyName, commandBasePath);

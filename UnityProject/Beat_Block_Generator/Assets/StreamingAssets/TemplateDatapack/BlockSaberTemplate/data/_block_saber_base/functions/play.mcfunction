@@ -1,24 +1,23 @@
 execute as @s run function _block_saber_base:stop
 execute as @s run function _block_saber_base:configure_base
 
-#Set up vars
-scoreboard players set @s IsPlayerSneeking 0
-scoreboard players set @s TempVar1 0
-scoreboard players set @s FinishedNotes 0
-scoreboard players set @s FinishedObsicles 0
-scoreboard players set @s PlayerScore 0
-scoreboard players set @s FinishedCount 0
-
 # Give 3sec delay until song starts
 scoreboard players set @s TickCount -60
 scoreboard players set @s NodeRowID 0
 
+scoreboard players set @s PlayingSong 1
+
 effect give @s saturation 1000000 20 true
 effect give @s resistance 1000000 20 true
+
+# Reset health to 50%
+experience set @s 28 levels
+experience set @s 50 points
+experience set @s 1 levels
+
 gamemode adventure @s
 gamerule doMobLoot false
 gamerule sendCommandFeedback false
-
 
 #Spawn main points
 execute at @s run summon armor_stand ~ ~ ~ {Tags:[playerOrgin,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}

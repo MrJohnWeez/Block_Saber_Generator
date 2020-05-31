@@ -20,4 +20,5 @@ public class TemplateStrings
 	public string _finishedObsicles = "";
 	public string _finishedNotes = "";
 	public string _playSongCommand = "";
+	public string _completedSong = "";
 }

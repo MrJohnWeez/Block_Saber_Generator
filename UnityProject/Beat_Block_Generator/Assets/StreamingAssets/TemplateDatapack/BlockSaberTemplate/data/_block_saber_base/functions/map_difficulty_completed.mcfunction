@@ -1,6 +1,7 @@
 scoreboard players add @s FinishedCount 1
 execute if score @s FinishedCount matches 1 run stopsound @s music
 execute if score @s FinishedCount matches 1 run playsound minecraft:end_sound music @s ~ ~ ~ 1
+execute if score @s FinishedCount matches 1 run function blocksaber:play
 
 # Firework commands
 execute if score @s FinishedCount matches 1 run summon firework_rocket ~ ~3 ~-10 {LifeTime:1,FireworksItem:{id:"firework_rocket",Count:1,tag:{Fireworks:{Flight:2,Explosions:[{Type:1,Flicker:1,Trail:1,Colors:[I;11743532,6719955],FadeColors:[I;11743532,2437522]}]}}}}

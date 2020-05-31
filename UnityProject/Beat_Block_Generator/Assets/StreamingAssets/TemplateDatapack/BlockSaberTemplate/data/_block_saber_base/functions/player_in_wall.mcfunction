@@ -1,6 +1,6 @@
-# Decrease health by 10%
+# Decrease health by 2%
 experience set @s 28 levels
-experience add @s -10 points
+experience add @s -2 points
 
 execute as @s[level=27, scores={Multiplier=1, PlayingSong=1}] run function _block_saber_base:map_difficulty_failed
 execute as @s[scores={Multiplier=2}] run experience set @s 1 levels

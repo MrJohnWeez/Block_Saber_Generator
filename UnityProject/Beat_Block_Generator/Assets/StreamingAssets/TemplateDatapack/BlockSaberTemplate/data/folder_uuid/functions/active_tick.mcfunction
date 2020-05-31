@@ -6,7 +6,6 @@ execute as @s run function folder_uuid:spawn_notes_base
 # Update Fake player eyes and give player items
 execute as @s run function _block_saber_base:calculate_fake_eye_height
 execute as @s run function _block_saber_base:give_sabers
-function folder_uuid:game_controls
 
 # Handle all notes
 function _block_saber_base:handle_notes

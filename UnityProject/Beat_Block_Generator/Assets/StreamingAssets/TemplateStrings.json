@@ -12,5 +12,6 @@
 	"_nodePositionCommand": "execute if score @s TickCount matches {0} at @e[type=armor_stand, tag=nodeSpawnOrgin] run teleport @e[type=armor_stand, tag=nodeCursor] ~{1} ~{2} ~{3:F18}\r\n",
     "_nodeTypeCommand": "execute if score @s TickCount matches {0} as @e[type=armor_stand, tag=nodeCursor] run function _block_types:{1}\r\n",
     "_finishedObsicles": "execute if score @s TickCount matches {0} run scoreboard players set @s FinishedObsicles 1\r\n",
-    "_finishedNotes": "execute if score @s TickCount matches {0} run scoreboard players set @s FinishedNotes 1\r\n"
+    "_finishedNotes": "execute if score @s TickCount matches {0} run scoreboard players set @s FinishedNotes 1\r\n",
+    "_completedSong": "execute if score @s FinishedCount matches 1 run scoreboard players set @s {0} 1\r\n"
 }

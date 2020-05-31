@@ -16,6 +16,8 @@ scoreboard objectives add Const_3 dummy
 scoreboard objectives add TempVar1 dummy
 scoreboard objectives add TempVar2 dummy
 scoreboard objectives add PlayerScore dummy
+scoreboard objectives add Multiplier dummy
+scoreboard objectives add PlayingSong dummy
 
 scoreboard objectives add FinishedNotes dummy
 scoreboard objectives add FinishedObsicles dummy
