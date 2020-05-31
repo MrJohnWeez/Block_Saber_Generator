@@ -5,5 +5,12 @@
         "custom/SONGUUID"],
         "stream": true,
         "subtitle":"BlockSaber: Playing song: SONGUUID"
+    },
+    "end_sound": {
+	    "category": "music",
+	    "sounds": [
+        "custom/end_sound"],
+        "stream": true,
+        "subtitle":"BlockSaber: Win Sounds"
     }
 }

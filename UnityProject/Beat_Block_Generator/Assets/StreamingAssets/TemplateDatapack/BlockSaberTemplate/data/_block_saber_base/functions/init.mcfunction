@@ -9,11 +9,13 @@ team modify NoCollide deathMessageVisibility never
 scoreboard objectives add NoteHealth dummy
 scoreboard objectives add NodeRowID dummy
 scoreboard objectives add TickCount dummy
+scoreboard objectives add FinishedCount dummy
 scoreboard objectives add Difficulty dummy
 scoreboard objectives add Const_3 dummy
 
 scoreboard objectives add TempVar1 dummy
 scoreboard objectives add TempVar2 dummy
+scoreboard objectives add PlayerScore dummy
 
 scoreboard objectives add FinishedNotes dummy
 scoreboard objectives add FinishedObsicles dummy
