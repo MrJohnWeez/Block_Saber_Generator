@@ -109,6 +109,8 @@ execute if score #BlockSaberGlobal XpPoints matches 100 run experience set @s 10
 execute if score #BlockSaberGlobal XpPoints matches ..-1 if score #BlockSaberGlobal XpLevels matches 1 run function _root_class:map_difficulty_failed
 execute if score #BlockSaberGlobal XpPoints matches 100 if score #BlockSaberGlobal XpPoints matches 1..7 run scoreboard players operation #BlockSaberGlobal XpLevels *= #CONST Const_2
 
+
+execute if score #BlockSaberGlobal XpLevels matches ..0 run experience set @s 0 levels
 execute if score #BlockSaberGlobal XpLevels matches 1 run experience set @s 1 levels
 execute if score #BlockSaberGlobal XpLevels matches 2 run experience set @s 2 levels
 execute if score #BlockSaberGlobal XpLevels matches 4 run experience set @s 4 levels
