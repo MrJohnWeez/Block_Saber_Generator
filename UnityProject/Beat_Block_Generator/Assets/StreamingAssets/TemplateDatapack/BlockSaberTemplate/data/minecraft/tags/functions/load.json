@@ -1,6 +1,6 @@
 {
     "values": [
-        "_block_saber_base:init",
+        "_root_class:init",
         "folder_uuid:init"
     ]
 }

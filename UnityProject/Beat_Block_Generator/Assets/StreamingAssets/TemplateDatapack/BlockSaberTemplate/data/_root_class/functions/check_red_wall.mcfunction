@@ -1,0 +1,1 @@
+execute at @e[type=armor_stand,tag=fakePlayerEyes,tag=blockBeat] if entity @s[distance=..0.2] at @e[type=armor_stand,tag=playerOrgin] as @p[scores={SongID=SONGID}] run function _root_class:player_in_wall

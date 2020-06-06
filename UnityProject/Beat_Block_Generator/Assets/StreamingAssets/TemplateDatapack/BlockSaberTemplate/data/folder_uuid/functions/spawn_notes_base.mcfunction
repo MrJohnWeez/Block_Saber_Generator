@@ -1,1 +1,1 @@
-scoreboard players add @s TickCount 1
+scoreboard players add #BlockSaberGlobal TickCount 1

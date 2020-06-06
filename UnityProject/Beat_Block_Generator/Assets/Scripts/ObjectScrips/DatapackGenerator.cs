@@ -49,7 +49,7 @@ public class DatapackGenerator : GeneratorBase
 	private const string C_Functions = "functions";
 	private const string C_Datapack = "DataPack_";
 	private const string C_TemplateName = "BlockSaberTemplate";
-	private const string C_BlockSaberBase = "_block_saber_base";
+	private const string C_BlockSaberBase = "_root_class";
 	private const string C_FolderUUID = "folder_uuid";
 
 	// File names
@@ -310,7 +310,6 @@ public class DatapackGenerator : GeneratorBase
 			string commandLevelFileName = commandLevelName + C_McFunction;
 			string commandLevelFilePath = Path.Combine(_folder_uuidFunctionsPath, commandLevelFileName);
 			StringBuilder currentCommands = new StringBuilder();
-
 			// Continue to generate commands until all nodes and obsicles have been itterated though
 			while (noteIndex < notes.Length && currentNumberOfCommands < currentCommandLimit)
 			{
@@ -321,6 +320,7 @@ public class DatapackGenerator : GeneratorBase
 				}
 
 				NodeDataToCommands(notes[noteIndex], _packInfo._beatsPerMinute, _metersPerTick, nodeRowID, ref currentCommands, ref currentTick);
+
 				prevNodeTime = notes[noteIndex]._time;
 				currentNumberOfCommands += 3;
 				noteIndex++;
@@ -392,6 +392,7 @@ public class DatapackGenerator : GeneratorBase
 			StringBuilder currentCommands = new StringBuilder();
 			int maxNewTick = 0;
 			int minNewTick = 0;
+			minTick = -1;
 
 			// Continue to generate commands until all nodes and obsicles have been itterated though
 			while (obsicleIndex < obstacles.Length && currentNumberOfCommands < currentCommandLimit)
@@ -409,6 +410,8 @@ public class DatapackGenerator : GeneratorBase
 				maxTick += (int)(_ticksStartOffset + 1);
 				currentCommands.AppendFormat(_templateStrings._finishedObsicles,
 											maxTick);
+				if (minTick == -1)
+					minTick = maxTick-1;
 			}
 
 			SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands.ToString());
@@ -525,7 +528,6 @@ public class DatapackGenerator : GeneratorBase
 									-fractionMeters);
 		commandList.AppendFormat(_templateStrings._scoreCommand,
 									wholeTick,
-									_keyVars["SONGID"],
 									nodeRowID);
 		commandList.AppendFormat(_templateStrings._nodeTypeCommand,
 									wholeTick,

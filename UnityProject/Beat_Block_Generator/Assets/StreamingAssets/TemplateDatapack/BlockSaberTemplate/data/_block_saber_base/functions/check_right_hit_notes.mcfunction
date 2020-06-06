@@ -1,2 +1,0 @@
-execute if entity @s[name="Blue Saber"] at @s as @s run function _block_saber_base:correct_auto_hit_row_notes
-execute if score @s NoteHealth < #CONST3 Const_3 at @s as @s run function _block_saber_base:wrong_auto_hit_row_notes

@@ -1,2 +1,2 @@
-execute at @e[type=armor_stand,tag=playerOrgin] as @e[type=item,name="Red Saber",distance=..3] as @p[scores={SongID=SONGID}] run function folder_uuid:play
-execute at @e[type=armor_stand,tag=playerOrgin] as @e[type=item,name="Stop Game",distance=..3] as @p[scores={SongID=SONGID}] run function _block_saber_base:stop_main_menu
+execute positioned 0 150.0 0 as @e[type=item,name="Red Saber",distance=..4] as @p[scores={PlayerPlaying=1}] run function folder_uuid:play
+execute positioned 0 150.0 0 as @e[type=item,name="Stop Game",distance=..4] as @p[scores={PlayerPlaying=1}] run function _root_class:stop_main_menu
