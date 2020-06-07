@@ -1,6 +1,5 @@
 {
 	"credit": "Made with Blockbench",
-	"parent": "brick_wall",
 	"texture_size": [32, 32],
 	"textures": {
 		"0": "blocks/black",

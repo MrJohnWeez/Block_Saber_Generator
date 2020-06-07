@@ -1,6 +1,5 @@
 {
 	"credit": "Made with Blockbench",
-	"parent": "dead_brain_coral_block",
 	"texture_size": [32, 32],
 	"textures": {
 		"0": "blocks/read_death_box",
