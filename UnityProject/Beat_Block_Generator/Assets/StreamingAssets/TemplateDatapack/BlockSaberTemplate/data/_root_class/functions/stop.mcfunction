@@ -20,4 +20,4 @@ scoreboard players set #BlockSaberGlobal XpPoints 50
 scoreboard players set #BlockSaberGlobal XpLevels 1
 
 execute as @a run function _root_class:update_xp_display
-execute positioned 0 150.0 0 as @e[type=item,distance=..6] run kill @s
+execute in minecraft:the_end positioned 0 150.0 500 as @e[type=item,distance=..6] run kill @s
