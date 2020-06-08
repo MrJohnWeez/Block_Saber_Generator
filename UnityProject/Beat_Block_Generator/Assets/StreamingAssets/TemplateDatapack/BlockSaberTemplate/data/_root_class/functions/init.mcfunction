@@ -14,6 +14,7 @@ scoreboard objectives add PlayerPlaying dummy
 
 scoreboard objectives add TempVar1 dummy
 scoreboard objectives add TempVar2 dummy
+scoreboard objectives add TempVar3 dummy
 scoreboard objectives add PlayerScore dummy
 scoreboard objectives add Multiplier dummy
 scoreboard objectives add PlayingSong dummy
