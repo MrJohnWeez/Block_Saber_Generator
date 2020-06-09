@@ -16,8 +16,10 @@ scoreboard players set #BlockSaberGlobal PlayerScore 0
 scoreboard players set #BlockSaberGlobal FinishedCount 0
 scoreboard players set #BlockSaberGlobal Multiplier 1
 scoreboard players set #BlockSaberGlobal PlayingSong 0
-scoreboard players set #BlockSaberGlobal XpPoints 50
+scoreboard players set #BlockSaberGlobal HealthPoints 50
 scoreboard players set #BlockSaberGlobal XpLevels 1
+scoreboard players set #BlockSaberGlobal NodeRowID 0
+scoreboard players set #BlockSaberGlobal Combo 0
 
 execute as @a run function _root_class:update_xp_display
 execute in minecraft:the_end positioned 0 150.0 500 as @e[type=item,distance=..6] run kill @s

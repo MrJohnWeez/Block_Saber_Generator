@@ -6,7 +6,6 @@ scoreboard players set @s PlayerPlaying 1
 scoreboard players set #BlockSaberGlobal TickCount -60
 
 # Set playtime vars
-scoreboard players set #BlockSaberGlobal NodeRowID 0
 scoreboard players set #BlockSaberGlobal PlayingSong 1
 scoreboard players set #BlockSaberGlobal HighBlockHeight 1518
 scoreboard players set #BlockSaberGlobal MidBlockHeight 1515
@@ -25,4 +24,6 @@ execute in minecraft:the_end run summon armor_stand 0 150.0 500 {Tags:[playerOrg
 execute in minecraft:the_end run summon armor_stand 0 150.0 500 {Tags:[fakePlayerEyes,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
 execute in minecraft:the_end run summon armor_stand 0 150.0 500 {Tags:[nodeCursor,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
 
-kill @e[type=armor_stand,tag=temp]
+function _root_class:spawn_titles
+
+

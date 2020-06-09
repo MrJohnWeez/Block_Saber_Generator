@@ -10,6 +10,7 @@ scoreboard objectives add TickCount dummy
 scoreboard objectives add FinishedCount dummy
 scoreboard objectives add Difficulty dummy
 scoreboard objectives add PlayerPlaying dummy
+scoreboard objectives add Combo dummy
 
 
 scoreboard objectives add TempVar1 dummy
@@ -19,7 +20,7 @@ scoreboard objectives add PlayerScore dummy
 scoreboard objectives add Multiplier dummy
 scoreboard objectives add PlayingSong dummy
 scoreboard objectives add XpLevels dummy
-scoreboard objectives add XpPoints dummy
+scoreboard objectives add HealthPoints dummy
 scoreboard objectives add CopyTemp dummy
 
 scoreboard objectives add FinishedNotes dummy
@@ -44,3 +45,4 @@ gamerule sendCommandFeedback false
 
 # Auto Display Songs
 execute at @a as @a run function _root_class:stop_main_menu
+function _root_class:spawn_titles

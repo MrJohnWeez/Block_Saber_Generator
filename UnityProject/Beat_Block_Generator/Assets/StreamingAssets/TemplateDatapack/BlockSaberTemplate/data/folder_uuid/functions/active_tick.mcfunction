@@ -9,6 +9,7 @@ execute as @p[scores={PlayerPlaying=1}] run function _root_class:give_sabers
 
 # Handle all notes
 function _root_class:handle_notes
+function _root_class:update_scores
 
 # Move all nodes
 execute as @e[tag=node] run function folder_uuid:move_note
