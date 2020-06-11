@@ -1,6 +1,5 @@
 kill @e[tag=blockBeat]
 stopsound @a music
-effect clear @a
 title @a clear
 title @a reset
 execute as @a[scores={PlayerPlaying=1}] run clear
@@ -21,5 +20,6 @@ scoreboard players set #BlockSaberGlobal XpLevels 1
 scoreboard players set #BlockSaberGlobal NodeRowID 0
 scoreboard players set #BlockSaberGlobal Combo 0
 
-execute as @a run function _root_class:update_xp_display
 execute in minecraft:the_end positioned 0 150.0 500 as @e[type=item,distance=..6] run kill @s
+
+function _root_class:spawn_titles

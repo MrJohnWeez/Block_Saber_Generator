@@ -45,4 +45,3 @@ gamerule sendCommandFeedback false
 
 # Auto Display Songs
 execute at @a as @a run function _root_class:stop_main_menu
-function _root_class:spawn_titles
