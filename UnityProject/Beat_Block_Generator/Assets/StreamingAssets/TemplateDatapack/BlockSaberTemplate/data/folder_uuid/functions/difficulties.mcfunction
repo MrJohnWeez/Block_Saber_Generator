@@ -1,0 +1,2 @@
+tellraw @s ["",{"text":"Selected Song:","color":"yellow"},{"text":" SONGTITLE","color":"aqua"},{"text":" by","color":"gold"},{"text":" SONGARTIST:","color":"red"}]
+#https://minecraft.tools/en/tellraw.php?tellraw=%3Cspan%20style%3D%22color%3A%23FFFF55%22%3ESelected%20Song%3A%3C%2Fspan%3E%20%3Cspan%20style%3D%22color%3A%2355FFFF%22%3ESONGTITLE%3C%2Fspan%3E%20%3Cspan%20style%3D%22color%3A%23FFAA00%22%3Eby%3C%2Fspan%3E%26nbsp%3B%3Cspan%20style%3D%22color%3A%23FF5555%22%3ESONGARTIST%3A%3C%2Fspan%3E&selector=%40s

@@ -1,0 +1,29 @@
+{
+    "block.minecraft.dead_fire_coral_block": "Red Saber",
+    
+    "block.minecraft.white_glazed_terracotta": "Blue Up Note",
+    "block.minecraft.orange_glazed_terracotta": "Blue Down Note",
+    "block.minecraft.magenta_glazed_terracotta": "Blue Left Note",
+    "block.minecraft.light_blue_glazed_terracotta": "Blue Right Note",
+    "block.minecraft.yellow_glazed_terracotta": "Blue Down Right Note",
+    "block.minecraft.lime_glazed_terracotta": "Blue Down Left Note",
+    "block.minecraft.pink_glazed_terracotta": "Blue Up Right Note",
+    "block.minecraft.gray_glazed_terracotta": "Blue Up Left Note",
+    "block.minecraft.dead_brain_coral_block": "Blue Dot Note",
+    
+    "block.minecraft.light_gray_glazed_terracotta": "Red Up Note",
+    "block.minecraft.cyan_glazed_terracotta": "Red Down Note",
+    "block.minecraft.purple_glazed_terracotta": "Red Left Note",
+    "block.minecraft.blue_glazed_terracotta": "Red Right Note",
+    "block.minecraft.brown_glazed_terracotta": "Red Down Right Note",
+    "block.minecraft.green_glazed_terracotta": "Red Down Left Note",
+    "block.minecraft.red_glazed_terracotta": "Red Up Right Note",
+    "block.minecraft.black_glazed_terracotta": "Red Up Left Note",
+    "block.minecraft.dead_bubble_coral_block": "Red Dot Note",
+    
+    "block.minecraft.dead_tube_coral_block": "Bomb Note",
+    "block.minecraft.ice": "Red Wall",
+    
+    "item.minecraft.name_tag": "Blue Saber",
+    "item.minecraft.spectral_arrow": "Main Menu"
+}
