@@ -1,3 +1,9 @@
+# Verify Resourcepack
+execute in minecraft:the_end positioned 0 150.0 500 run summon item ~ ~ ~ {Item:{id:"minecraft:dead_fire_coral_block",Count:1b,display:{Name:"[{\"text\":\"Red Saber\",\"italic\":false}]"},Unbreakable:1b,HideFlags:63,CanDestroy:["minecraft:air"],CanPlaceOn:["minecraft:air"],Enchantments:[{id:"minecraft:unbreaking",lvl:3}]}}
+scoreboard players set #BlockSaberGlobal TempVar1 0
+execute in minecraft:the_end positioned 0 150.0 500 as @e[type=item,name="Red Saber",distance=..2] run scoreboard players set #BlockSaberGlobal TempVar1 1
+execute if score #BlockSaberGlobal TempVar1 matches 0 run function _root_class:resourcepack_error
+
 kill @e[tag=blockBeat]
 stopsound @a music
 title @a clear

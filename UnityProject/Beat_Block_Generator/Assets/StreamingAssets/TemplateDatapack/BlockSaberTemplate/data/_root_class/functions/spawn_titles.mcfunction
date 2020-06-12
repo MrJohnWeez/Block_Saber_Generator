@@ -13,12 +13,12 @@ execute in minecraft:the_end run summon armor_stand 0 150.7 504 {Tags:[aboutName
 # ██╔══██╗██║     ██║   ██║██║     ██╔═██╗ 
 # ██████╔╝███████╗╚██████╔╝╚██████╗██║  ██╗
 # ╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝
-execute in minecraft:the_end run summon armor_stand 0 161.5 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"██████╗ ██╗      ██████╗  ██████╗██╗  ██╗\",\"color\":\"aqua\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute in minecraft:the_end run summon armor_stand 0 161.2 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"██╔══██╗██║     ██╔═══██╗██╔════╝██║ ██╔╝\",\"color\":\"aqua\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute in minecraft:the_end run summon armor_stand 0 160.9 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"██████╔╝██║     ██║   ██║██║     █████╔╝ \",\"color\":\"aqua\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute in minecraft:the_end run summon armor_stand 0 160.6 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"██╔══██╗██║     ██║   ██║██║     ██╔═██╗ \",\"color\":\"aqua\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute in minecraft:the_end run summon armor_stand 0 160.3 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"██████╔╝███████╗╚██████╔╝╚██████╗██║  ██╗\",\"color\":\"aqua\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute in minecraft:the_end run summon armor_stand 0 160.0 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝\",\"color\":\"aqua\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute in minecraft:the_end run summon armor_stand 0 161.5 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"██████╗ ██╗      ██████╗  ██████╗██╗  ██╗\",\"color\":\"#00FFFF\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute in minecraft:the_end run summon armor_stand 0 161.2 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"██╔══██╗██║     ██╔═══██╗██╔════╝██║ ██╔╝\",\"color\":\"#00FFFF\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute in minecraft:the_end run summon armor_stand 0 160.9 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"██████╔╝██║     ██║   ██║██║     █████╔╝ \",\"color\":\"#00FFFF\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute in minecraft:the_end run summon armor_stand 0 160.6 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"██╔══██╗██║     ██║   ██║██║     ██╔═██╗ \",\"color\":\"#00FFFF\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute in minecraft:the_end run summon armor_stand 0 160.3 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"██████╔╝███████╗╚██████╔╝╚██████╗██║  ██╗\",\"color\":\"#00FFFF\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute in minecraft:the_end run summon armor_stand 0 160.0 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝\",\"color\":\"#00FFFF\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
 
 
 # http://patorjk.com/software/taag/#p=display&f=ANSI%20Shadow&t=SABER
@@ -29,12 +29,12 @@ execute in minecraft:the_end run summon armor_stand 0 160.0 480 {Tags:[aboutName
 # ╚════██║██╔══██║██╔══██╗██╔══╝  ██╔══██╗
 # ███████║██║  ██║██████╔╝███████╗██║  ██║
 # ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝
-execute in minecraft:the_end run summon armor_stand 0 159.4 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"███████╗ █████╗ ██████╗ ███████╗██████╗ \",\"color\":\"red\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute in minecraft:the_end run summon armor_stand 0 159.1 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"██╔════╝██╔══██╗██╔══██╗██╔════╝██╔══██╗\",\"color\":\"red\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute in minecraft:the_end run summon armor_stand 0 158.9 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"███████╗███████║██████╔╝█████╗  ██████╔╝\",\"color\":\"red\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute in minecraft:the_end run summon armor_stand 0 158.6 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"╚════██║██╔══██║██╔══██╗██╔══╝  ██╔══██╗\",\"color\":\"red\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute in minecraft:the_end run summon armor_stand 0 158.3 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"███████║██║  ██║██████╔╝███████╗██║  ██║\",\"color\":\"red\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute in minecraft:the_end run summon armor_stand 0 158.0 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝\",\"color\":\"red\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute in minecraft:the_end run summon armor_stand 0 159.4 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"███████╗ █████╗ ██████╗ ███████╗██████╗ \",\"color\":\"#FF0003\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute in minecraft:the_end run summon armor_stand 0 159.1 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"██╔════╝██╔══██╗██╔══██╗██╔════╝██╔══██╗\",\"color\":\"#FF0003\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute in minecraft:the_end run summon armor_stand 0 158.9 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"███████╗███████║██████╔╝█████╗  ██████╔╝\",\"color\":\"#FF0003\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute in minecraft:the_end run summon armor_stand 0 158.6 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"╚════██║██╔══██║██╔══██╗██╔══╝  ██╔══██╗\",\"color\":\"#FF0003\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute in minecraft:the_end run summon armor_stand 0 158.3 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"███████║██║  ██║██████╔╝███████╗██║  ██║\",\"color\":\"#FF0003\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute in minecraft:the_end run summon armor_stand 0 158.0 480 {Tags:[aboutNameCreated,blockBeat],CustomName:"[{\"text\":\"╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝\",\"color\":\"#FF0003\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
 
 
 
