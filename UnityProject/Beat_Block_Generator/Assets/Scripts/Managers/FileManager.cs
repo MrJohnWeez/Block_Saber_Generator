@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine.UI;
 using SFB;
 using System.IO;
+using UnityEngine.Networking;
 
 public class FileManager : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class FileManager : MonoBehaviour
 	[Header("Texts")]
 	[SerializeField] private TMP_Text _zipFilePathText = null;
 	[SerializeField] private TMP_Text _datapackOutputPathText = null;
+	[SerializeField] private TMP_Text _debugText = null;
 
 	[SerializeField] private Button GenerateDatapackButton = null;
 
@@ -21,9 +23,20 @@ public class FileManager : MonoBehaviour
 	private Converter _converter = null;
 
 	#region UnityCallbacks
+	private void Awake()
+	{
+		FileReceiver.UserDroppedFile += UserDroppedFile;
+	}
+
+	private void OnDestroy()
+	{
+		FileReceiver.UserDroppedFile -= UserDroppedFile;
+	}
+
 	private void Start()
 	{
-		_datapackOutputPath = "C:\\Users\\John\\Desktop";
+		Application.targetFrameRate = 30;
+	   _datapackOutputPath = "C:\\Users\\John\\Desktop";
 		AreSelectedPathsValid();
 	}
 
@@ -31,6 +44,19 @@ public class FileManager : MonoBehaviour
 
 
 	#region FileSelection
+	public void UserDroppedFile(string url)
+	{
+		StartCoroutine(LoadFile(url));
+	}
+
+	private IEnumerator LoadFile(string url)
+	{
+		UnityWebRequest webRequest = new UnityWebRequest(url);
+		yield return webRequest;
+
+		_debugText.text = "URL: " + webRequest.url + "\n\r" + "File Size: " + webRequest.GetResponseHeader("Content-Length");
+	}
+
 	/// <summary>
 	/// Lets the user select a zip file to be parsed and converted
 	/// </summary>
