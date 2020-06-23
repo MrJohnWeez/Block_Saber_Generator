@@ -3,20 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Networking;
 
 public class ZippedFile : MonoBehaviour
 {
 	public Image image = null;
 	public TMP_Text title = null;
-	public string zipFilekURL = "";
+	public UnityWebRequest url = null;
 
-	public void SetTitle(string newTitle)
+	public void SetWebRequest(UnityWebRequest urlToFile)
 	{
-		title.text = newTitle;
+		url = urlToFile;
 	}
 
-	public void SetURL(string url)
+	public void Convert()
 	{
-		zipFilekURL = url;
+		//_converter = new Converter(url.ToString());
+		//_converter.GenerateMinecraftResources();
 	}
 }

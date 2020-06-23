@@ -352,7 +352,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3056830162618331822}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6754931527905552884}
+        m_MethodName: DownloadDatapack
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &3056830162797103672
 GameObject:
   m_ObjectHideFlags: 0
@@ -714,6 +725,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7240c19dc6a4d642a171eb114b1a499, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  image: {fileID: 3056830163133651147}
+  title: {fileID: 3056830162954464976}
+  datapackURL: 
+  resourcepackURL: 
 --- !u!1 &3056830163133651141
 GameObject:
   m_ObjectHideFlags: 0
@@ -906,4 +921,15 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3056830163432147210}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6754931527905552884}
+        m_MethodName: DownloadResourcepack
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2

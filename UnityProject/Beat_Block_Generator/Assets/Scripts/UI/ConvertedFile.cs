@@ -25,4 +25,14 @@ public class ConvertedFile : MonoBehaviour
 		datapackURL = datapack;
 		resourcepackURL = resourcepack;
 	}
+
+	public void DownloadDatapack()
+	{
+
+	}
+
+	public void DownloadResourcepack()
+	{
+
+	}
 }
