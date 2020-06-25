@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using SFB;
 using UnityEngine.Networking;
+using System.Runtime.InteropServices;
 
 public class ZipSelectionManager : MonoBehaviour, IPointerDownHandler
 {
@@ -57,9 +58,9 @@ public class ZipSelectionManager : MonoBehaviour, IPointerDownHandler
 	{
 		for (int i = 0; i < urlArr.Length; i++)
 		{
-#pragma warning disable 0618
+			Debug.Log("URL: " + urlArr[i]);
 			UnityWebRequest webRequest = new UnityWebRequest(urlArr[i]);
-#pragma warning restore 0618
+			//WWW test = new WWW(urlArr[i])
 			yield return webRequest;
 			_nonConvertedList.AddZip(webRequest);
 		}

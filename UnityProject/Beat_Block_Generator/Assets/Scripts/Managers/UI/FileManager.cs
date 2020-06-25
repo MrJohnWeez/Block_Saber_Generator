@@ -93,7 +93,7 @@ public class FileManager : MonoBehaviour
 	{
 		if (AreSelectedPathsValid())
 		{
-			_converter = new Converter(_zipFilePath, _datapackOutputPath);
+			_converter = new Converter(_zipFilePath);
 			_converter.GenerateMinecraftResources();
 		}
 	}

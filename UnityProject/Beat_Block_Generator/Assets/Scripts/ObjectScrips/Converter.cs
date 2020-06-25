@@ -9,7 +9,6 @@ public class Converter
 	// Paths
 	private string _tempFilePath = Application.temporaryCachePath;
 	private string _zipPath = "";
-	private string _datapackOutputPath = "";
 	private string _tempUnZipPath = "";
 
 	// Map Pack info
@@ -19,16 +18,15 @@ public class Converter
 
 	
 
-	public Converter(string zipPath, string datapackOutputPath)
+	public Converter(string zipPath)
 	{
 		_zipPath = zipPath;
-		_datapackOutputPath = datapackOutputPath;
 	}
 
 	public void GenerateMinecraftResources()
 	{
-		if(File.Exists(_zipPath) && Directory.Exists(_datapackOutputPath))
-		{
+		//if(File.Exists(_zipPath))
+		//{
 			Debug.Log(_tempFilePath);
 			Debug.Log("Decompressing files...");
 			UnZipFile();
@@ -40,22 +38,21 @@ public class Converter
 			ConvertSoundFile();
 			ConvertImageFiles();
 
-			if (_beatMapSongList.Count > 0 && _packInfo != null)
-			{
-				Debug.Log("Generating Resource pack...");
-				ResourcepackGenerator resourcepackGenerator = new ResourcepackGenerator(_tempUnZipPath, _packInfo, _datapackOutputPath);
-				resourcepackGenerator.Generate();
+			//if (_beatMapSongList.Count > 0 && _packInfo != null)
+			//{
+			//	Debug.Log("Generating Resource pack...");
+			//	ResourcepackGenerator resourcepackGenerator = new ResourcepackGenerator(_tempUnZipPath, _packInfo);
+			//	resourcepackGenerator.Generate();
 
-				Debug.Log("Generating Data pack...");
-				DatapackGenerator datapackGenerator = new DatapackGenerator(_tempUnZipPath, _packInfo, _beatMapSongList, _datapackOutputPath);
-				datapackGenerator.Generate();
-			}
+			//	Debug.Log("Generating Data pack...");
+			//	DatapackGenerator datapackGenerator = new DatapackGenerator(_tempUnZipPath, _packInfo, _beatMapSongList);
+			//	datapackGenerator.Generate();
+			//}
 
-			Debug.Log("Deleting Temp files...");
-			SafeFileManagement.DeleteDirectory(_tempUnZipPath);
-
-			Debug.Log("Done.");
-		}		
+			//Debug.Log("Deleting Temp files...");
+			//SafeFileManagement.DeleteDirectory(_tempUnZipPath);
+		//}
+		Debug.Log("Done.");
 	}
 
 	/// <summary>
@@ -63,7 +60,9 @@ public class Converter
 	/// </summary>
 	private void UnZipFile()
 	{
-		_tempUnZipPath = Path.Combine(_tempFilePath, SafeFileManagement.GetFolderName(_zipPath));
+		Debug.Log("Unzipping File");
+		_tempUnZipPath = Path.Combine(_tempFilePath, "Test1_" + SafeFileManagement.GetDateNow());
+		Debug.Log("_tempUnZipPath: " + _tempUnZipPath);
 		if (Directory.Exists(_tempUnZipPath))
 			SafeFileManagement.DeleteDirectory(_tempUnZipPath);
 
