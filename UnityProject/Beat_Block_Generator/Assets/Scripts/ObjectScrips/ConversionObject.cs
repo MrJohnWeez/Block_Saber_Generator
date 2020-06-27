@@ -7,15 +7,20 @@ using System.IO;
 
 public class ConversionObject : MonoBehaviour
 {
+	public delegate void ObjectEvent(ConversionObject conversionObject);
+	public event ObjectEvent OnObjectConverted;
+	public event ObjectEvent OnObjectDeleted;
+
 	[HideInInspector] public string filePath = "";
 	[HideInInspector] public string outputPath = "";
+	[HideInInspector] public int uuid = -1;
 
 	[SerializeField] private TMP_Text title = null;
 	[SerializeField] private TMP_Text _status = null;
 	[SerializeField] private Slider _progressBar = null;
 	[SerializeField] private Image _trash = null;
-	[SerializeField] private Image _trashOpen = null;
-	[SerializeField] private Image _trashClosed = null;
+	[SerializeField] private Sprite _trashOpen = null;
+	[SerializeField] private Sprite _trashClosed = null;
 	private string fileName = "";
 
     void Start()
@@ -26,18 +31,25 @@ public class ConversionObject : MonoBehaviour
 		_progressBar.value = 0;
 	}
 
+	public void Convert()
+	{
+
+		OnObjectConverted?.Invoke(this);
+	}
+
 	public void DeleteSelf()
 	{
+		OnObjectDeleted?.Invoke(this);
 		Destroy(gameObject);
 	}
 
 	public void TrashOpen()
 	{
-		_trash = _trashOpen;
+		_trash.sprite = _trashOpen;
 	}
 
 	public void TrashClosed()
 	{
-		_trash = _trashClosed;
+		_trash.sprite = _trashClosed;
 	}
 }
