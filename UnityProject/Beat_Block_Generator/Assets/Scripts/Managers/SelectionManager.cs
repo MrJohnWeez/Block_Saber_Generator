@@ -6,7 +6,6 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Diagnostics;
 
 [RequireComponent(typeof(Animator))]
 public class SelectionManager : MonoBehaviour
@@ -29,7 +28,9 @@ public class SelectionManager : MonoBehaviour
 	{
 		_dragAndDrop = GetComponent<Animator>();
 		OutputPath = Path.Combine(Application.dataPath, DEFAULT_FOLDER_NAME);
+		OutputPath = @"C:\Users\John\Desktop\Converted_Files";
 		Directory.CreateDirectory(OutputPath);
+		Debug.Log("Output Path: " + OutputPath);
 		_outputPathText.text = OutputPath;
 	}
 

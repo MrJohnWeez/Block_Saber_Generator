@@ -45,7 +45,6 @@ public class ConversionObject : MonoBehaviour
 	[Header("Toggle Images")]
 	[SerializeField] private Sprite _trashOpen = null;
 	[SerializeField] private Sprite _trashClosed = null;
-	private Converter _converter = null;
 
 	/// <summary>
 	/// Sets up the ConversionObject object ready for conversion

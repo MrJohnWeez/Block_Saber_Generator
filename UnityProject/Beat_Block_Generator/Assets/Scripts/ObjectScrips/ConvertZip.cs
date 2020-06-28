@@ -19,27 +19,26 @@ public static class ConvertZip
 	{
 		if (File.Exists(zipPath) && Directory.Exists(datapackOutputPath))
 		{
-			string _tempFilePath = Application.temporaryCachePath;
-			Debug.Log(_tempFilePath);
 			Debug.Log("Decompressing files...");
-			string tempUnZipPath = UnZipFile(zipPath, _tempFilePath);
+			string tempUnZipPath = UnZipFile(zipPath, Application.temporaryCachePath);
+			Debug.Log("tempUnZipPath: " + tempUnZipPath);
 
-			PackInfo _packInfo = GetPackInfo(tempUnZipPath);
 			Debug.Log("Parsing files...");
-			List<BeatMapSong> beatMapSongList = ParseBeatSaberDat(tempUnZipPath, _packInfo);
+			PackInfo packInfo = GetPackInfo(tempUnZipPath);
+			List<BeatMapSong> beatMapSongList = ParseBeatSaberDat(tempUnZipPath, packInfo);
 
 			Debug.Log("Converting files...");
-			_packInfo = ConvertSoundFile(tempUnZipPath, _packInfo);
-			_packInfo = ConvertImageFiles(tempUnZipPath, _packInfo);
+			packInfo = ConvertSoundFile(tempUnZipPath, packInfo);
+			packInfo = ConvertImageFiles(tempUnZipPath, packInfo);
 
-			if (beatMapSongList.Count > 0 && _packInfo != null)
+			if (beatMapSongList.Count > 0 && packInfo != null)
 			{
 				Debug.Log("Generating Resource pack...");
-				ResourcepackGenerator resourcepackGenerator = new ResourcepackGenerator(tempUnZipPath, _packInfo, datapackOutputPath);
+				ResourcepackGenerator resourcepackGenerator = new ResourcepackGenerator(tempUnZipPath, packInfo, datapackOutputPath);
 				resourcepackGenerator.Generate();
 
 				Debug.Log("Generating Data pack...");
-				DatapackGenerator datapackGenerator = new DatapackGenerator(tempUnZipPath, _packInfo, beatMapSongList, datapackOutputPath);
+				DatapackGenerator datapackGenerator = new DatapackGenerator(tempUnZipPath, packInfo, beatMapSongList, datapackOutputPath);
 				datapackGenerator.Generate();
 			}
 
@@ -60,7 +59,7 @@ public static class ConvertZip
 	/// <returns>the location of the unzipped file</returns>
 	public static string UnZipFile(string fileToUnzip, string pathToUnzip)
 	{
-		string tempUnZipPath = Path.Combine(pathToUnzip, SafeFileManagement.GetFolderName(pathToUnzip));
+		string tempUnZipPath = Path.Combine(pathToUnzip, SafeFileManagement.GetFolderName(fileToUnzip));
 		if (Directory.Exists(tempUnZipPath))
 			SafeFileManagement.DeleteDirectory(tempUnZipPath);
 
