@@ -6,34 +6,52 @@ public class ProcessManager : MonoBehaviour
 {
 	[SerializeField] private GameObject _conversionPrefab = null;
 	[SerializeField] private GameObject _processingRoot = null;
-	private Queue<ConversionObject> _waitingConvert = new Queue<ConversionObject>();
-	private Queue<ConversionObject> _currentConvert = new Queue<ConversionObject>();
-	private Queue<ConversionObject> _finishedConvert = new Queue<ConversionObject>();
+	private List<ConversionObject> _waitingConvert = new List<ConversionObject>();
+	private List<ConversionObject> _currentConvert = new List<ConversionObject>();
+	private List<ConversionObject> _finishedConvert = new List<ConversionObject>();
+	private string _outputFolderPath = "";
 
-	private int _nextUUID = 0;
-	
+	private void Update()
+	{
+		if(_currentConvert.Count < 3 && _waitingConvert.Count > 0)
+		{
+			ConversionObject nextToConvert = _waitingConvert[0];
+			_waitingConvert.RemoveAt(0);
+			_currentConvert.Add(nextToConvert);
+			nextToConvert.Convert();
+		}
+	}
+
 	public void AddFile(string filePath)
 	{
 		GameObject newConversion = Instantiate(_conversionPrefab, _processingRoot.transform);
 		ConversionObject conversionManager = newConversion.GetComponent<ConversionObject>();
 		if(conversionManager)
 		{
-			conversionManager.filePath = filePath;
-			conversionManager.uuid = _nextUUID;
 			conversionManager.OnObjectConverted += ConversionFinished;
 			conversionManager.OnObjectDeleted += ConversionDeleted;
-			_waitingConvert.Enqueue(conversionManager);
-			_nextUUID++;
+			_waitingConvert.Add(conversionManager);
+			conversionManager.Setup(filePath, _outputFolderPath);
 		}
 	}
 
-	public void ConversionFinished(ConversionObject conversionObject)
+	private void ConversionFinished(ConversionObject conversionObject)
 	{
-		Debug.Log("Conversion Finished for id: " + conversionObject.uuid);
+		_currentConvert.Remove(conversionObject);
+		_finishedConvert.Add(conversionObject);
+		Debug.Log("Conversion Finished for path: " + conversionObject.InputPath);
 	}
 
-	public void ConversionDeleted(ConversionObject conversionObject)
+	private void ConversionDeleted(ConversionObject conversionObject)
 	{
-		Debug.Log("Deleted item with id: " + conversionObject.uuid);
+		RemoveConversion(conversionObject);
+		Debug.Log("Deleted item with path: " + conversionObject.InputPath);
+	}
+
+	private void RemoveConversion(ConversionObject conversionObject)
+	{
+		_waitingConvert.Remove(conversionObject);
+		_currentConvert.Remove(conversionObject);
+		_finishedConvert.Remove(conversionObject);
 	}
 }

@@ -13,7 +13,9 @@ public class SelectionManager : MonoBehaviour
 
 	private readonly ExtensionFilter[] extensions = { new ExtensionFilter("Beat Saber Song Pack", "zip") };
 	private Animator _dragAndDrop = null;
+	private string _outputPath = "";
 
+	#region UnityCallbacks
 	private void Start()
 	{
 		_dragAndDrop = GetComponent<Animator>();
@@ -39,9 +41,12 @@ public class SelectionManager : MonoBehaviour
 	{
 		_dragAndDrop.SetBool("PointerEntered", false);
 	}
-
-
-
+	#endregion UnityCallbacks
+	
+	public void ChangeOutputPath()
+	{
+		string[] zipFiles = StandaloneFileBrowser.OpenFolderPanel("Select Output Folder", "");
+	}
 
 	public void PointerClicked()
 	{
