@@ -501,7 +501,17 @@ public class SafeFileManagement
 		Directory.Delete(directoryPath, true);
 	}
 
-	#endregion DirecotryManagement
+	public static bool OpenFolder(string path)
+	{
+		if(Directory.Exists(path))
+		{
+			System.Diagnostics.Process.Start(path);
+			return true;
+		}
+		return false;
+	}
+
+#endregion DirecotryManagement
 
 	
 	/// <summary>

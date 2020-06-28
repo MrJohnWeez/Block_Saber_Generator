@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class ProcessManager : MonoBehaviour
 {
+	[SerializeField] private SelectionManager _selectionManager = null;
 	[SerializeField] private GameObject _conversionPrefab = null;
 	[SerializeField] private GameObject _processingRoot = null;
 	private List<ConversionObject> _waitingConvert = new List<ConversionObject>();
 	private List<ConversionObject> _currentConvert = new List<ConversionObject>();
 	private List<ConversionObject> _finishedConvert = new List<ConversionObject>();
-	private string _outputFolderPath = "";
 
 	private void Update()
 	{
@@ -28,10 +28,10 @@ public class ProcessManager : MonoBehaviour
 		ConversionObject conversionManager = newConversion.GetComponent<ConversionObject>();
 		if(conversionManager)
 		{
-			conversionManager.OnObjectConverted += ConversionFinished;
+			conversionManager.OnObjectFinished += ConversionFinished;
 			conversionManager.OnObjectDeleted += ConversionDeleted;
 			_waitingConvert.Add(conversionManager);
-			conversionManager.Setup(filePath, _outputFolderPath);
+			conversionManager.Setup(filePath, _selectionManager.OutputPath);
 		}
 	}
 

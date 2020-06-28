@@ -13,16 +13,8 @@ public class WebManager: MonoBehaviour
 	/// <summary>
 	/// Open MrJohnWeez Website
 	/// </summary>
-    public void ToMrJohnWeezSite()
+    public void ToMrJohnWeezHelpSite()
 	{
 		Application.OpenURL("https://www.mrjohnweez.com/");
-	}
-
-	/// <summary>
-	/// Open DownloadResourcePack Website
-	/// </summary>
-	public void ToResourcePackSite()
-	{
-		Application.OpenURL("https://github.com/MrJohnWeez/3D_Printer_Emulator_In_Minecraft/releases");
 	}
 }

@@ -8,7 +8,7 @@ using System.IO;
 public class ConversionObject : MonoBehaviour
 {
 	public delegate void ObjectEvent(ConversionObject conversionObject);
-	public event ObjectEvent OnObjectConverted;
+	public event ObjectEvent OnObjectFinished;
 	public event ObjectEvent OnObjectDeleted;
 
 	#region Properties
@@ -45,6 +45,7 @@ public class ConversionObject : MonoBehaviour
 	[Header("Toggle Images")]
 	[SerializeField] private Sprite _trashOpen = null;
 	[SerializeField] private Sprite _trashClosed = null;
+	private Converter _converter = null;
 
 	/// <summary>
 	/// Sets up the ConversionObject object ready for conversion
@@ -65,8 +66,18 @@ public class ConversionObject : MonoBehaviour
 	public void Convert()
 	{
 		_progressBar.value = 0;
-		Finished();
-		OnObjectConverted?.Invoke(this);
+		_converter = new Converter(InputPath, OutputPath);
+		int errorCode = _converter.GenerateMinecraftResources();
+		if(errorCode > 0)
+		{
+			Debug.Log("There was error: " + errorCode);
+			Failed();
+		}
+		else
+		{
+			Finished();
+		}
+		OnObjectFinished?.Invoke(this);
 	}
 
 

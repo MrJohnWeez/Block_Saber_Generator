@@ -5,20 +5,32 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using System.Diagnostics;
 
 [RequireComponent(typeof(Animator))]
 public class SelectionManager : MonoBehaviour
 {
-	[SerializeField] private ProcessManager _processManager = null;
+	public string OutputPath
+	{
+		get;
+		private set;
+	}
 
+	[SerializeField] private ProcessManager _processManager = null;
+	[SerializeField] private TMP_Text _outputPathText = null;
 	private readonly ExtensionFilter[] extensions = { new ExtensionFilter("Beat Saber Song Pack", "zip") };
 	private Animator _dragAndDrop = null;
-	private string _outputPath = "";
+	private const string DEFAULT_FOLDER_NAME = "Converted_Files";
+
 
 	#region UnityCallbacks
 	private void Start()
 	{
 		_dragAndDrop = GetComponent<Animator>();
+		OutputPath = Path.Combine(Application.dataPath, DEFAULT_FOLDER_NAME);
+		Directory.CreateDirectory(OutputPath);
+		_outputPathText.text = OutputPath;
 	}
 
 	void OnEnable()
@@ -45,8 +57,19 @@ public class SelectionManager : MonoBehaviour
 	
 	public void ChangeOutputPath()
 	{
-		string[] zipFiles = StandaloneFileBrowser.OpenFolderPanel("Select Output Folder", "");
+		string[] folders = StandaloneFileBrowser.OpenFolderPanel("Select Output Folder", OutputPath, false);
+		if(folders.Length > 0)
+		{
+			OutputPath = folders[0];
+			_outputPathText.text = OutputPath;
+		}
 	}
+
+	public void OpenOutputPath()
+	{
+		SafeFileManagement.OpenFolder(OutputPath);
+	}
+
 
 	public void PointerClicked()
 	{

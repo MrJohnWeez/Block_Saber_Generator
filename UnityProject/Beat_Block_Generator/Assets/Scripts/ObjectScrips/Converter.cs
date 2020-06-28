@@ -25,7 +25,7 @@ public class Converter
 		_datapackOutputPath = datapackOutputPath;
 	}
 
-	public void GenerateMinecraftResources()
+	public int GenerateMinecraftResources()
 	{
 		if(File.Exists(_zipPath) && Directory.Exists(_datapackOutputPath))
 		{
@@ -55,7 +55,9 @@ public class Converter
 			SafeFileManagement.DeleteDirectory(_tempUnZipPath);
 
 			Debug.Log("Done.");
-		}		
+			return -1;
+		}
+		return 0;
 	}
 
 	/// <summary>
