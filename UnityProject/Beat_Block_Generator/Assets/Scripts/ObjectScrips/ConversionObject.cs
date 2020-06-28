@@ -66,8 +66,7 @@ public class ConversionObject : MonoBehaviour
 	public void Convert()
 	{
 		_progressBar.value = 0;
-		_converter = new Converter(InputPath, OutputPath);
-		int errorCode = _converter.GenerateMinecraftResources();
+		int errorCode = ConvertZip.Convert(InputPath, OutputPath);
 		if(errorCode > 0)
 		{
 			Debug.Log("There was error: " + errorCode);
