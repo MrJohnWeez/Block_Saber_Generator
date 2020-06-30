@@ -5,6 +5,7 @@ using UnityEngine;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Minecraft.Generator;
 
 public static class ConvertZip
 {
@@ -34,16 +35,15 @@ public static class ConvertZip
 			if (beatMapSongList.Count > 0 && packInfo != null)
 			{
 				Debug.Log("Generating Resource pack...");
-				ResourcepackGenerator resourcepackGenerator = new ResourcepackGenerator(tempUnZipPath, packInfo, datapackOutputPath);
-				resourcepackGenerator.Generate();
+				ResourcePack.FromBeatSaberData(tempUnZipPath, datapackOutputPath, packInfo);
 
-				Debug.Log("Generating Data pack...");
-				DatapackGenerator datapackGenerator = new DatapackGenerator(tempUnZipPath, packInfo, beatMapSongList, datapackOutputPath);
-				datapackGenerator.Generate();
+				//Debug.Log("Generating Data pack...");
+				//DatapackGenerator datapackGenerator = new DatapackGenerator(tempUnZipPath, packInfo, beatMapSongList, datapackOutputPath);
+				//datapackGenerator.Generate();
 			}
 
-			Debug.Log("Deleting Temp files...");
-			SafeFileManagement.DeleteDirectory(tempUnZipPath);
+			//Debug.Log("Deleting Temp files...");
+			//SafeFileManagement.DeleteDirectory(tempUnZipPath);
 
 			Debug.Log("Done.");
 			return -1;

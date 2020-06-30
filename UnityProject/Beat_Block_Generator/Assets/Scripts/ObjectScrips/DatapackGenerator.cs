@@ -13,7 +13,7 @@ public class DatapackGenerator : GeneratorBase
 {
 	private const int C_CommandLimit = 10000;
 
-	private readonly string[][] _noteTypes = new string[4][] {new string[9] 
+	private readonly string[][] noteTypes = new string[4][] {new string[9] 
 																	{
 																		"red_up",
 																		"red_down",
@@ -72,7 +72,7 @@ public class DatapackGenerator : GeneratorBase
 	private string _blockSaberBaseFunctionsPath = "";
 	private string _spawnNotesBasePath = "";
 	private string _folder_uuidFunctionsPath = "";
-	private string _pathOfDatapackTemplate = Path.Combine(C_StreamingAssets, "TemplateDatapack");
+	private string _pathOfDatapackTemplate = Path.Combine(Globals.streamingAssets, "TemplateDatapack");
 
 	private List<BeatMapSong> _beatMapSongList;
 	private double _metersPerTick = 0;
@@ -127,7 +127,7 @@ public class DatapackGenerator : GeneratorBase
 		{
 			string copiedTemplatePath = Path.Combine(destDirName, C_TemplateName);
 			_rootFolderPath = Path.Combine(destDirName, _packName);
-			return SafeFileManagement.MoveDirectory(copiedTemplatePath, _rootFolderPath, C_numberOfIORetryAttempts);
+			return SafeFileManagement.MoveDirectory(copiedTemplatePath, _rootFolderPath, Globals.C_numberOfIORetryAttempts);
 		}
 		return false;
 	}
@@ -141,7 +141,7 @@ public class DatapackGenerator : GeneratorBase
 		// minecraft data
 		if(_templateStrings == null)
 		{
-			string _pathOfTemplateStrings = Path.Combine(C_StreamingAssets, C_TemplateStrings);
+			string _pathOfTemplateStrings = Path.Combine(Globals.streamingAssets, C_TemplateStrings);
 			_templateStrings = JsonUtility.FromJson<TemplateStrings>(SafeFileManagement.GetFileContents(_pathOfTemplateStrings));
 		}
 		
@@ -152,7 +152,7 @@ public class DatapackGenerator : GeneratorBase
 
 		// Paths
 		_datapackRootPath = Path.Combine(_unzippedFolderPath, _packName);
-		_fullOutputPath = Path.Combine(_outputPath, _packName + C_Zip);
+		_fullOutputPath = Path.Combine(_outputPath, _packName + Globals.C_Zip);
 		_blockSaberBaseFunctionsPath = Path.Combine(_datapackRootPath, C_Data, C_BlockSaberBase, C_Functions);
 		_folder_uuidFunctionsPath = Path.Combine(_datapackRootPath, C_Data, _folder_uuid, C_Functions);
 		_spawnNotesBasePath = Path.Combine(_folder_uuidFunctionsPath, C_SpawnNotesBaseFunction);
@@ -190,11 +190,11 @@ public class DatapackGenerator : GeneratorBase
 		// Must change the folder names before searching for keys
 		string songname_uuidFolder = Path.Combine(_datapackRootPath, C_Data, C_FolderUUID);
 		string newPath = Path.Combine(_datapackRootPath, C_Data, _folder_uuid);
-		SafeFileManagement.MoveDirectory(songname_uuidFolder, newPath, C_numberOfIORetryAttempts);
+		SafeFileManagement.MoveDirectory(songname_uuidFolder, newPath, Globals.C_numberOfIORetryAttempts);
 
 		if (checkSubDirectories)
 		{
-			string[] dirs = SafeFileManagement.GetDirectoryPaths(folderPath, C_numberOfIORetryAttempts);
+			string[] dirs = SafeFileManagement.GetDirectoryPaths(folderPath, Globals.C_numberOfIORetryAttempts);
 			foreach (string dir in dirs)
 			{
 				UpdateAllCopiedFiles(dir, checkSubDirectories);
@@ -203,7 +203,7 @@ public class DatapackGenerator : GeneratorBase
 
 		if (Directory.Exists(folderPath))
 		{
-			string[] files = SafeFileManagement.GetFilesPaths(folderPath, C_numberOfIORetryAttempts);
+			string[] files = SafeFileManagement.GetFilesPaths(folderPath, Globals.C_numberOfIORetryAttempts);
 			foreach (string file in files)
 			{
 				UpdateFileWithKeys(file);
@@ -531,7 +531,7 @@ public class DatapackGenerator : GeneratorBase
 									nodeRowID);
 		commandList.AppendFormat(_templateStrings._nodeTypeCommand,
 									wholeTick,
-									_noteTypes[node._type][node._cutDirection]);
+									noteTypes[node._type][node._cutDirection]);
 	}
 
 	/// <summary>
