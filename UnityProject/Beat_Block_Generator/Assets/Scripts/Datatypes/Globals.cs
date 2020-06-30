@@ -5,12 +5,11 @@ using UnityEngine;
 
 public static class Globals
 {
-	public static readonly string streamingAssets = Path.Combine(Application.dataPath, "StreamingAssets");
-	public static readonly string[] excludeExtensions = { ".meta" };
 	public const int C_numberOfIORetryAttempts = 5;
 	public const int C_CommandLimit = 10000;
 
 	// Extension names
+	public static readonly string[] excludeExtensions = { ".meta" };
 	public const string C_Zip = ".zip";
 	public const string C_Ogg = ".ogg";
 	public const string C_McFunction = ".mcfunction";
@@ -26,9 +25,14 @@ public static class Globals
 	public const string C_TemplateStrings = "TemplateStrings.json";
 	public const string C_MapDifficultyCompleted = "map_difficulty_completed.mcfunction";
 
+	// Sub words
+	public const string C_LvlNoteName = "_lvl_note_";
+	public const string C_LvlObsicleName = "_lvl_obsicle_";
+
 	// Folder Names
 	public const string C_Minecraft = "minecraft";
 	public const string C_TemplateResourcePackName = @"SONG_AUTHOR - SONG_NAME";
+	public const string C_TemplateDataPackName = "BlockSaberTemplate";
 	public const string C_Assets = "assets";
 	public const string C_Sounds = "sounds";
 	public const string C_Custom = "custom";
@@ -36,14 +40,13 @@ public static class Globals
 	public const string C_Data = "data";
 	public const string C_Functions = "functions";
 	public const string C_Datapack = "DataPack_";
-	public const string C_TemplateName = "BlockSaberTemplate";
 	public const string C_BlockSaberBase = "_root_class";
 	public const string C_FolderUUID = "folder_uuid";
-	public static readonly string _pathOfResourcepackTemplate = Path.Combine(streamingAssets, "TemplateResourcepack");
-
-	// Sub words
-	public const string C_LvlNoteName = "_lvl_note_";
-	public const string C_LvlObsicleName = "_lvl_obsicle_";
+	public static readonly string streamingAssets = Path.Combine(Application.dataPath, "StreamingAssets");
+	public static readonly string pathOfResourcepackTemplate = Path.Combine(streamingAssets, "TemplateResourcepack");
+	public static readonly string pathOfDatapackTemplate = Path.Combine(streamingAssets, "TemplateDatapack");
+	public static readonly string pathOfTemplateStrings = Path.Combine(streamingAssets, C_TemplateStrings);
+	public static readonly TemplateStrings templateStrings = JsonUtility.FromJson<TemplateStrings>(SafeFileManagement.GetFileContents(pathOfTemplateStrings));
 	
 	// Beat saber data
 	public static readonly string[][] noteTypes = new string[4][] {new string[9]
@@ -73,4 +76,5 @@ public static class Globals
 																	new string[9],
 																	new string[9]
 																	{"bomb","bomb","bomb","bomb","bomb","bomb","bomb","bomb","bomb"}};
+	
 }

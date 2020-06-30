@@ -43,7 +43,7 @@ namespace Minecraft.Generator
 			string copiedTemplatePath = Path.Combine(unzippedFolderPath, Globals.C_TemplateResourcePackName);
 
 
-			if (SafeFileManagement.DirectoryCopy(Globals._pathOfResourcepackTemplate, unzippedFolderPath, true, Globals.excludeExtensions, Globals.C_numberOfIORetryAttempts))
+			if (SafeFileManagement.DirectoryCopy(Globals.pathOfResourcepackTemplate, unzippedFolderPath, true, Globals.excludeExtensions, Globals.C_numberOfIORetryAttempts))
 			{
 				if (SafeFileManagement.MoveDirectory(copiedTemplatePath, rootFolderPath, Globals.C_numberOfIORetryAttempts))
 				{
