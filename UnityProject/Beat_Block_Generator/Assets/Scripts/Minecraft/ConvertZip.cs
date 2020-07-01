@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿// Created by MrJohnWeez
+// June 2020
+
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -6,6 +8,11 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Minecraft.Generator;
+using BeatSaber;
+using BeatSaber.packInfo;
+using BeatSaber.packInfo.difficultyBeatmapSets;
+using BeatSaber.beatMapData.obstacles.BeatSaber.BeatMapData;
+using BeatSaber.packInfo.difficultyBeatmapSets.difficultyBeatMaps;
 
 namespace Minecraft
 {
@@ -44,9 +51,7 @@ namespace Minecraft
 					Debug.Log("Generating Data pack...");
 					DataPack.FromBeatSaberData(tempUnZipPath, datapackOutputPath, packInfo, beatMapSongList);
 				}
-
-				//Debug.Log("Deleting Temp files...");
-				//SafeFileManagement.DeleteDirectory(tempUnZipPath);
+				SafeFileManagement.DeleteDirectory(tempUnZipPath);
 
 				Debug.Log("Done.");
 				return -1;

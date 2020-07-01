@@ -1,7 +1,13 @@
-﻿using System.Collections;
+﻿// Created by MrJohnWeez
+// June 2020
+
+using BeatSaber;
+using BeatSaber.packInfo;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using MrJohnWeez.Extensions;
 
 namespace Minecraft.Generator
 {
