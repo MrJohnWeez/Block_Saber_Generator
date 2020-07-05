@@ -1,12 +1,11 @@
 ﻿// Created by MrJohnWeez
-// March 2020
-//
 
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using MrJohnWeez.Extensions;
 
 /// <summary>
 /// Creates a more feature rich progress bar with a percentage and title
