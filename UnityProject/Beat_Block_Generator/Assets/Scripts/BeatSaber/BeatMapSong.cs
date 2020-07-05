@@ -1,4 +1,7 @@
-﻿using BeatSaber.beatMapData.obstacles.BeatSaber.BeatMapData;
+﻿// Created by MrJohnWeez
+// June 2020
+
+using BeatSaber.beatMapData.obstacles.BeatSaber.BeatMapData;
 using BeatSaber.packInfo.difficultyBeatmapSets.difficultyBeatMaps;
 using System.Collections;
 using System.Collections.Generic;
