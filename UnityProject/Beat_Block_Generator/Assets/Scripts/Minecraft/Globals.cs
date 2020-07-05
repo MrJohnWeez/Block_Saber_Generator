@@ -13,6 +13,7 @@ namespace Minecraft
 
 		// Extension names
 		public static readonly string[] excludeExtensions = { ".meta" };
+		public static readonly string[] excludeKeyVarExtensions = { ".meta", ".nbt" };
 		public const string C_Zip = ".zip";
 		public const string C_Ogg = ".ogg";
 		public const string C_McFunction = ".mcfunction";

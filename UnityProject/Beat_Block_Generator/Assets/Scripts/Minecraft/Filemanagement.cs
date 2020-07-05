@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -11,14 +12,14 @@ namespace Minecraft
 		/// Update all files within a directory to correct varible names
 		/// </summary>
 		/// <param name="folderPath">In folder path</param>
-		public static void UpdateAllCopiedFiles(string folderPath, Dictionary<string, string> keyVars, bool checkSubDirectories = false)
+		public static void UpdateAllCopiedFiles(string folderPath, Dictionary<string, string> keyVars, bool checkSubDirectories = false, string[] excludeExtensions = null)
 		{
 			if (checkSubDirectories)
 			{
 				string[] dirs = SafeFileManagement.GetDirectoryPaths(folderPath, Globals.C_numberOfIORetryAttempts);
 				foreach (string dir in dirs)
 				{
-					UpdateAllCopiedFiles(dir, keyVars, checkSubDirectories);
+					UpdateAllCopiedFiles(dir, keyVars, checkSubDirectories, excludeExtensions);
 				}
 			}
 
@@ -27,6 +28,14 @@ namespace Minecraft
 				string[] files = SafeFileManagement.GetFilesPaths(folderPath, Globals.C_numberOfIORetryAttempts);
 				foreach (string file in files)
 				{
+					if(excludeExtensions != null)
+					{
+						string extension = Path.GetExtension(file);
+						if (Array.Exists(excludeExtensions, element => element.ToLower() == extension.ToLower()))
+						{
+							continue;
+						}
+					}
 					UpdateFileWithKeys(file, keyVars);
 				}
 			}

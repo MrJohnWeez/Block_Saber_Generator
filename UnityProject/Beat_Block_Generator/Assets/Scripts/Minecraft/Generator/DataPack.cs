@@ -34,8 +34,13 @@ namespace Minecraft.Generator
 				{
 					if (SafeFileManagement.MoveDirectory(copiedTemplatePath, dpd.datapackRootPath, Globals.C_numberOfIORetryAttempts))
 					{
+						// Must change the folder names before searching for keys
+						string songname_uuidFolder = Path.Combine(dpd.datapackRootPath, Globals.C_Data, Globals.C_FolderUUID);
+						string newPath = Path.Combine(dpd.datapackRootPath, Globals.C_Data, dpd.folder_uuid);
+						SafeFileManagement.MoveDirectory(songname_uuidFolder, newPath, Globals.C_numberOfIORetryAttempts);
+
 						Debug.Log("Updating Copied files...");
-						Filemanagement.UpdateAllCopiedFiles(dpd.datapackRootPath, dpd.keyVars, true);
+						Filemanagement.UpdateAllCopiedFiles(dpd.datapackRootPath, dpd.keyVars, true, Globals.excludeKeyVarExtensions);
 
 						Debug.Log("Generating main datapack files...");
 						GenerateMCBeatData(beatMapSongList, packInfo, dpd);
