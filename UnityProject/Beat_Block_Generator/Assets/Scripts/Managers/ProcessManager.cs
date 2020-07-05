@@ -17,8 +17,8 @@ public class ProcessManager : MonoBehaviour
 	private List<ConversionObject> _waitingConvert = new List<ConversionObject>();
 	private List<ConversionObject> _currentConvert = new List<ConversionObject>();
 	private List<ConversionObject> _finishedConvert = new List<ConversionObject>();
-	
 
+	#region UnityCallbacks
 	private void Start()
 	{
 		temporaryPath = Application.temporaryCachePath;
@@ -35,7 +35,12 @@ public class ProcessManager : MonoBehaviour
 			await nextToConvert.ConvertAsync();
 		}
 	}
+	#endregion UnityCallbacks
 
+	/// <summary>
+	/// Add file for conversion
+	/// </summary>
+	/// <param name="filePath">Path of the Beat Saber zip file</param>
 	public void AddFile(string filePath)
 	{
 		GameObject newConversion = Instantiate(_conversionPrefab, _processingRoot.transform);
@@ -49,6 +54,7 @@ public class ProcessManager : MonoBehaviour
 		}
 	}
 
+	#region Callbacks
 	private void ConversionFinished(ConversionObject conversionObject)
 	{
 		_currentConvert.Remove(conversionObject);
@@ -60,6 +66,7 @@ public class ProcessManager : MonoBehaviour
 		RemoveConversion(conversionObject);
 		Debug.Log("Deleted item with path: " + conversionObject.InputPath);
 	}
+	#endregion Callbacks
 
 	private void RemoveConversion(ConversionObject conversionObject)
 	{

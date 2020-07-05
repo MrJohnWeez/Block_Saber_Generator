@@ -1,4 +1,7 @@
-﻿using Minecraft;
+﻿// Created by MrJohnWeez
+// June 2020
+
+using Minecraft;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +9,9 @@ using UnityEngine;
 
 namespace Minecraft
 {
+	/// <summary>
+	/// Static class for commonly used values
+	/// </summary>
 	public static class Globals
 	{
 		public const int C_numberOfIORetryAttempts = 5;

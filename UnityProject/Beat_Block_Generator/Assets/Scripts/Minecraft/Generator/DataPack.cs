@@ -16,15 +16,25 @@ using System.Threading.Tasks;
 
 namespace Minecraft.Generator
 {
+	/// <summary>
+	/// Class that allows for quick conversion of Beat Saber data to a Minecraft datapack
+	/// </summary>
 	public static class DataPack
 	{
 		/// <summary>
 		/// Generate a minecraft datapack from Beat Saber data
 		/// </summary>
+		/// <param name="unzippedFolderPath">Path of unzipped Beat Saber data</param>
+		/// <param name="datapackOutputPath">Path to output datapack</param>
+		/// <param name="packInfo">Beat Saber Parsed info</param>
+		/// <param name="beatMapSongList">List of Beat Saber song data</param>
+		/// <param name="cancellationToken">Token that allows async function to be canceled</param>
+		/// <returns></returns>
 		public static Task<int> FromBeatSaberData(string unzippedFolderPath, string datapackOutputPath, PackInfo packInfo, List<BeatMapSong> beatMapSongList, CancellationToken cancellationToken)
 		{
 			return Task.Run(() =>
 			{
+				
 				// Validate inputs
 				if (!Directory.Exists(unzippedFolderPath) || packInfo == null || beatMapSongList == null)
 					return 0;
@@ -54,7 +64,9 @@ namespace Minecraft.Generator
 								cancellationToken.ThrowIfCancellationRequested();
 
 								// Generating main datapack files
-								GenerateMCBeatData(beatMapSongList, packInfo, dpd);
+								int errorCode = GenerateMCBeatData(beatMapSongList, packInfo, dpd);
+								if (errorCode >= 0)
+									return errorCode;
 
 								cancellationToken.ThrowIfCancellationRequested();
 
@@ -80,8 +92,13 @@ namespace Minecraft.Generator
 		/// <summary>
 		/// Main generation of minecraft commands for beat saber data
 		/// </summary>
-		public static void GenerateMCBeatData(List<BeatMapSong> beatMapSongList, PackInfo packInfo, DataPackData dpd)
+		/// <param name="beatMapSongList">List of Beat Saber song data</param>
+		/// <param name="packInfo">Beat Saber Parsed info</param>
+		/// <param name="dpd">Data used for datapack generation</param>
+		/// <returns></returns>
+		public static int GenerateMCBeatData(List<BeatMapSong> beatMapSongList, PackInfo packInfo, DataPackData dpd)
 		{
+			
 			StringBuilder difficultyDisplayCommands = new StringBuilder();
 			StringBuilder scoreboardCommands = new StringBuilder();
 			StringBuilder spawnOrginCommands = new StringBuilder();
@@ -91,6 +108,9 @@ namespace Minecraft.Generator
 			// Itterate though each song difficulty
 			foreach (BeatMapSong song in beatMapSongList)
 			{
+				if (song.beatMapData == null)
+					return 3;
+
 				string difficultyName = song.difficultyBeatmaps._difficulty.MakeMinecraftSafe();
 
 				// Append running command lists
@@ -148,6 +168,7 @@ namespace Minecraft.Generator
 			// Add back button in tellraw
 			difficultyDisplayCommands.Append(Globals.templateStrings._mainMenuBack);
 			SafeFileManagement.AppendFile(difficultiesFunctionPath, difficultyDisplayCommands.ToString());
+			return -1;
 		}
 
 		/// <summary>
@@ -156,6 +177,8 @@ namespace Minecraft.Generator
 		/// <param name="song">Beatmap data for a song and difficulty</param>
 		/// <param name="difficultyName">Minecraft safe difficulty name</param>
 		/// <param name="commandBasePath">Base folder path to generate new mcfunctions</param>
+		/// <param name="packInfo">Beat Saber Parsed info</param>
+		/// <param name="dpd">Data used for datapack generation</param>
 		public static void GenerateNotes(BeatMapSong song, string difficultyName, string commandBasePath, PackInfo packInfo, DataPackData dpd)
 		{
 			_notes[] notes = song.beatMapData._notes;
@@ -237,6 +260,8 @@ namespace Minecraft.Generator
 		/// <param name="song">Beatmap data for a song and difficulty</param>
 		/// <param name="difficultyName">Minecraft safe difficulty name</param>
 		/// <param name="commandBasePath">Base folder path to generate new mcfunctions</param>
+		/// <param name="packInfo">Beat Saber Parsed info</param>
+		/// <param name="dpd">Data used for datapack generation</param>
 		public static void GenerateObsicles(BeatMapSong song, string difficultyName, string commandBasePath,PackInfo packInfo, DataPackData dpd)
 		{
 			_obstacles[] obstacles = song.beatMapData._obstacles;

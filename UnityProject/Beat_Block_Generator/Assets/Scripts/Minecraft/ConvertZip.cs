@@ -26,6 +26,8 @@ namespace Minecraft
 		/// </summary>
 		/// <param name="zipPath">file path to beat saber zip file</param>
 		/// <param name="datapackOutputPath">folder path that minecraft zips will be generated</param>
+		/// <param name="uuid">Unique number that determines song value</param>
+		/// <param name="cancellationToken">Token that allows async function to be canceled</param>
 		/// <returns>-1 on Sucess</returns>
 		public static Task<int> ConvertAsync(string zipPath, string datapackOutputPath, int uuid, CancellationToken cancellationToken)
 		{
@@ -35,40 +37,58 @@ namespace Minecraft
 				{
 					// Decompressing files
 					string tempUnZipPath = await UnZipFileAsync(zipPath, ProcessManager.temporaryPath, cancellationToken);
-					try
+
+					// Parsing files
+					PackInfo packInfo = GetPackInfo(tempUnZipPath);
+					if (packInfo != null)
 					{
-						// Parsing files
-						PackInfo packInfo = GetPackInfo(tempUnZipPath);
-						packInfo._uuid = uuid;
-						List<BeatMapSong> beatMapSongList = await ParseBeatSaberDat(tempUnZipPath, packInfo);
-						
-						// Converting files
-						packInfo = ConvertSoundFile(tempUnZipPath, packInfo);
-						packInfo = ConvertImageFilesAsync(tempUnZipPath, packInfo);
-
-						cancellationToken.ThrowIfCancellationRequested();
-
-						if (beatMapSongList.Count > 0 && packInfo != null)
+						try
 						{
-							// Generating Resource pack
-							int failCode = await ResourcePack.FromBeatSaberData(tempUnZipPath, datapackOutputPath, packInfo);
+							packInfo._uuid = uuid;
+							List<BeatMapSong> beatMapSongList = await ParseBeatSaberDat(tempUnZipPath, packInfo);
+							
+					
+							// Converting files
+							packInfo = ConvertSoundFile(tempUnZipPath, packInfo);
+							if (packInfo == null)
+								return 4;
+
+							packInfo = ConvertImageFiles(tempUnZipPath, packInfo);
+
 							cancellationToken.ThrowIfCancellationRequested();
 
-							// Generating Data pack
-							failCode = await DataPack.FromBeatSaberData(tempUnZipPath, datapackOutputPath, packInfo, beatMapSongList, cancellationToken);
-							return -1;
+							if (beatMapSongList.Count > 0 && packInfo != null)
+							{
+								// Generating Resource pack
+								int failCode = await ResourcePack.FromBeatSaberData(tempUnZipPath, datapackOutputPath, packInfo);
+								if (failCode >= 0)
+									return failCode;
+
+								cancellationToken.ThrowIfCancellationRequested();
+
+								// Generating Data pack
+								failCode = await DataPack.FromBeatSaberData(tempUnZipPath, datapackOutputPath, packInfo, beatMapSongList, cancellationToken);
+								if (failCode >= 0)
+									return failCode;
+							}
+							else
+								return 2;
+
 						}
-						return 0;
-						
-					}
-					catch (OperationCanceledException wasCanceled)
-					{
+						catch (OperationCanceledException)
+						{
+							SafeFileManagement.DeleteDirectory(tempUnZipPath);
+						}
+						catch (ObjectDisposedException)
+						{
+							SafeFileManagement.DeleteDirectory(tempUnZipPath);
+						}
+
+						// Successfully converted map
 						SafeFileManagement.DeleteDirectory(tempUnZipPath);
+						return -1;
 					}
-					catch (ObjectDisposedException wasAreadyCanceled)
-					{
-						SafeFileManagement.DeleteDirectory(tempUnZipPath);
-					}
+					return 1;
 				}
 				return 0;
 			});
@@ -79,6 +99,7 @@ namespace Minecraft
 		/// </summary>
 		/// <param name="fileToUnzip">path of file to unzip</param>
 		/// <param name="pathToUnzip">path to unzip the file into</param>
+		/// <param name="cancellationToken">Token that allows async function to be canceled</param>
 		/// <returns>the location of the unzipped file</returns>
 		public static Task<string> UnZipFileAsync(string fileToUnzip, string pathToUnzip, CancellationToken cancellationToken)
 		{
@@ -98,16 +119,20 @@ namespace Minecraft
 		/// Convert egg file to ogg
 		/// </summary>
 		/// <param name="rootFilePath">Folder that contains .egg files</param>
-		/// <param name="packInfo">info object that contains data about beatsaber songs</param>
-		/// <returns>updated pack info object</returns>
+		/// <param name="packInfo">Info object that contains data about beatsaber songs</param>
+		/// <returns>Updated pack info object</returns>
 		public static PackInfo ConvertSoundFile(string rootFilePath, PackInfo packInfo)
 		{
 			string[] files = Directory.GetFiles(rootFilePath, "*.egg*", SearchOption.AllDirectories);
+			string[] alreadyConvertedfiles = Directory.GetFiles(rootFilePath, "*.ogg*", SearchOption.AllDirectories);
+			packInfo._songFilename = packInfo._songFilename.Replace(".egg", ".ogg");
+
+			if (files.Length == 0 && alreadyConvertedfiles.Length == 0)
+				return null;
 
 			foreach (string path in files)
 			{
 				string newName = path.Replace(".egg", ".ogg");
-				packInfo._songFilename = packInfo._songFilename.Replace(".egg", ".ogg");
 				SafeFileManagement.MoveFile(path, newName);
 			}
 			return packInfo;
@@ -119,14 +144,14 @@ namespace Minecraft
 		/// <param name="rootFilePath">Folder that contains .jpg files</param>
 		/// <param name="packInfo">info object that contains data about beatsaber songs</param>
 		/// <returns>updated pack info object</returns>
-		public static PackInfo ConvertImageFilesAsync(string rootFilePath, PackInfo packInfo)
+		public static PackInfo ConvertImageFiles(string rootFilePath, PackInfo packInfo)
 		{
 			string[] files = Directory.GetFiles(rootFilePath, "*.jpg*", SearchOption.AllDirectories);
+			packInfo._coverImageFilename = packInfo._coverImageFilename.Replace(".jpg", ".png");
 
 			foreach (string path in files)
 			{
 				string newName = path.Replace(".jpg", ".png");
-				packInfo._coverImageFilename = packInfo._coverImageFilename.Replace(".jpg", ".png");
 				SafeFileManagement.MoveFile(path, newName);
 			}
 			return packInfo;

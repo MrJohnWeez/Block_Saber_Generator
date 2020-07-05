@@ -12,6 +12,9 @@ using System.Threading.Tasks;
 
 namespace Minecraft.Generator
 {
+	/// <summary>
+	/// Class that allows for quick conversion of Beat Saber data to a Minecraft resourcepack
+	/// </summary>
 	public static class ResourcePack
 	{
 		/// <summary>
@@ -20,6 +23,7 @@ namespace Minecraft.Generator
 		/// <param name="unzippedFolderPath">Path to unzipped beat saber pack</param>
 		/// <param name="datapackOutputPath">Folder path that Resourcepack will be generated in</param>
 		/// <param name="packInfo">Beat Saber Infomation</param>
+		/// <param name="cancellationToken">Token that allows async function to be canceled</param>
 		/// <returns>-1 if successful</returns>
 		public static Task<int> FromBeatSaberData(string unzippedFolderPath, string datapackOutputPath, PackInfo packInfo)
 		{

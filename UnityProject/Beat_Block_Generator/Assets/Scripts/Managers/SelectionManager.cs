@@ -1,15 +1,22 @@
-﻿using B83.Win32;
+﻿// Created by MrJohnWeez
+// June 2020
+
+using B83.Win32;
 using SFB;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using MrJohnWeez.Extensions;
 
+/// <summary>
+/// Manages the files section process and user settings
+/// </summary>
 [RequireComponent(typeof(Animator))]
 public class SelectionManager : MonoBehaviour
 {
+	/// <summary> Path that the files will be saved to </summary>
 	public string OutputPath
 	{
 		get;
@@ -28,7 +35,9 @@ public class SelectionManager : MonoBehaviour
 	{
 		_dragAndDrop = GetComponent<Animator>();
 		OutputPath = Path.Combine(Application.dataPath, DEFAULT_FOLDER_NAME);
-		OutputPath = @"C:\Users\John\Desktop\Converted_Files";
+		string oldPath = PlayerPrefs.GetString("SavePath");
+		if (oldPath != null && !oldPath.IsEmpty())
+			OutputPath = oldPath;
 		Directory.CreateDirectory(OutputPath);
 		Debug.Log("Output Path: " + OutputPath);
 		_outputPathText.text = OutputPath;
@@ -56,12 +65,16 @@ public class SelectionManager : MonoBehaviour
 	}
 	#endregion UnityCallbacks
 	
+	/// <summary>
+	/// Open file windows for user to select a new output folder
+	/// </summary>
 	public void ChangeOutputPath()
 	{
 		string[] folders = StandaloneFileBrowser.OpenFolderPanel("Select Output Folder", OutputPath, false);
 		if(folders.Length > 0)
 		{
 			OutputPath = folders[0];
+			PlayerPrefs.SetString("SavePath", OutputPath);
 			_outputPathText.text = OutputPath;
 		}
 	}
@@ -71,7 +84,7 @@ public class SelectionManager : MonoBehaviour
 		SafeFileManagement.OpenFolder(OutputPath);
 	}
 
-
+	#region UserCallbacks
 	public void PointerClicked()
 	{
 		string[] zipFiles = StandaloneFileBrowser.OpenFilePanel("Select Beat Saber Map Zip", "", extensions, true);
@@ -81,6 +94,11 @@ public class SelectionManager : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// User has dropped files in the unity window (only works in standalone)
+	/// </summary>
+	/// <param name="aFiles">File list</param>
+	/// <param name="aPos">Postion of mouse on file drop</param>
 	void FilesDropped(List<string> aFiles, POINT aPos)
 	{
 		foreach (var filePath in aFiles)
@@ -93,4 +111,5 @@ public class SelectionManager : MonoBehaviour
 			}
 		}
 	}
+	#endregion UserCallbacks
 }

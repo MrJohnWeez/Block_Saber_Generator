@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿// Created by MrJohnWeez
+// March 2020
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using LightBuzz.Archiver;
@@ -7,6 +10,9 @@ using System.Threading.Tasks;
 using System;
 using System.IO;
 
+/// <summary>
+/// Wrapper class for LightBuzz zip plugin
+/// </summary>
 public static class Archive
 {
 	/// <summary>
