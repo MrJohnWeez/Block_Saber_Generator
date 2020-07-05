@@ -18,7 +18,6 @@ experience set @p[scores={PlayerPlaying=1}] 0 levels
 experience set @p[scores={PlayerPlaying=1}] 0 points
 
 gamemode adventure @p[scores={PlayerPlaying=1}]
-gamerule doMobLoot false
 gamerule sendCommandFeedback false
 
 #Spawn main points

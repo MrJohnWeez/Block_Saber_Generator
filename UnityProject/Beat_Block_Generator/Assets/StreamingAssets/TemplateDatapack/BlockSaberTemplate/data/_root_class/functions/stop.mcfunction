@@ -1,7 +1,7 @@
 # Verify Resourcepack
-execute in minecraft:the_end positioned 0 150.0 500 run summon item ~ ~ ~ {Item:{id:"minecraft:dead_fire_coral_block",Count:1b,display:{Name:"[{\"text\":\"Red Saber\",\"italic\":false}]"},Unbreakable:1b,HideFlags:63,CanDestroy:["minecraft:air"],CanPlaceOn:["minecraft:air"],Enchantments:[{id:"minecraft:unbreaking",lvl:3}]}}
+execute at @a run summon item ~ ~ ~ {Item:{id:"minecraft:dead_fire_coral_block",Count:1b,display:{Name:"[{\"text\":\"Red Saber\",\"italic\":false}]"},Unbreakable:1b,HideFlags:63,CanDestroy:["minecraft:air"],CanPlaceOn:["minecraft:air"],Enchantments:[{id:"minecraft:unbreaking",lvl:3}]}}
 scoreboard players set #BlockSaberGlobal TempVar1 0
-execute in minecraft:the_end positioned 0 150.0 500 as @e[type=item,name="Red Saber",distance=..2] run scoreboard players set #BlockSaberGlobal TempVar1 1
+execute as @e[type=item,name="Red Saber",distance=..2] run scoreboard players set #BlockSaberGlobal TempVar1 1
 execute if score #BlockSaberGlobal TempVar1 matches 0 run function _root_class:resourcepack_error
 
 kill @e[tag=blockBeat]
@@ -26,6 +26,7 @@ scoreboard players set #BlockSaberGlobal XpLevels 1
 scoreboard players set #BlockSaberGlobal NodeRowID 0
 scoreboard players set #BlockSaberGlobal Combo 0
 
+kill @e[type=item,distance=..6,name="Red Saber"]
 execute in minecraft:the_end positioned 0 150.0 500 as @e[type=item,distance=..6] run kill @s
 
 function _root_class:spawn_titles
