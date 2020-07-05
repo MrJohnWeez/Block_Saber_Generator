@@ -4,12 +4,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System;
 using UnityEngine;
 using System.Text;
 using BeatSaber.packInfo;
 using BeatSaber;
 using BeatSaber.beatMapData.notes;
 using MrJohnWeez.Extensions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Minecraft.Generator
 {
@@ -18,42 +21,60 @@ namespace Minecraft.Generator
 		/// <summary>
 		/// Generate a minecraft datapack from Beat Saber data
 		/// </summary>
-		public static int FromBeatSaberData(string unzippedFolderPath, string datapackOutputPath, PackInfo packInfo, List<BeatMapSong> beatMapSongList)
+		public static Task<int> FromBeatSaberData(string unzippedFolderPath, string datapackOutputPath, PackInfo packInfo, List<BeatMapSong> beatMapSongList, CancellationToken cancellationToken)
 		{
-			// Validate inputs
-			if (!Directory.Exists(unzippedFolderPath) || packInfo == null || beatMapSongList == null)
-				return 0;
-
-			DataPackData dpd = new DataPackData(unzippedFolderPath, datapackOutputPath, packInfo, beatMapSongList);
-
-			if (beatMapSongList.Count > 0)
+			return Task.Run(() =>
 			{
-				Debug.Log("Copying Template...");
-				string copiedTemplatePath = Path.Combine(unzippedFolderPath, Globals.C_TemplateDataPackName);
-				if (SafeFileManagement.DirectoryCopy(Globals.pathOfDatapackTemplate, unzippedFolderPath, true, Globals.excludeExtensions, Globals.C_numberOfIORetryAttempts))
+				// Validate inputs
+				if (!Directory.Exists(unzippedFolderPath) || packInfo == null || beatMapSongList == null)
+					return 0;
+
+				DataPackData dpd = new DataPackData(unzippedFolderPath, datapackOutputPath, packInfo, beatMapSongList);
+
+				if (beatMapSongList.Count > 0)
 				{
-					if (SafeFileManagement.MoveDirectory(copiedTemplatePath, dpd.datapackRootPath, Globals.C_numberOfIORetryAttempts))
+					// Copying Template
+					string copiedTemplatePath = Path.Combine(unzippedFolderPath, Globals.C_TemplateDataPackName);
+					if (SafeFileManagement.DirectoryCopy(Globals.pathOfDatapackTemplate, unzippedFolderPath, true, Globals.excludeExtensions, Globals.C_numberOfIORetryAttempts))
 					{
-						// Must change the folder names before searching for keys
-						string songname_uuidFolder = Path.Combine(dpd.datapackRootPath, Globals.C_Data, Globals.C_FolderUUID);
-						string newPath = Path.Combine(dpd.datapackRootPath, Globals.C_Data, dpd.folder_uuid);
-						SafeFileManagement.MoveDirectory(songname_uuidFolder, newPath, Globals.C_numberOfIORetryAttempts);
+						try
+						{
+							if (SafeFileManagement.MoveDirectory(copiedTemplatePath, dpd.datapackRootPath, Globals.C_numberOfIORetryAttempts))
+							{
+								cancellationToken.ThrowIfCancellationRequested();
 
-						Debug.Log("Updating Copied files...");
-						Filemanagement.UpdateAllCopiedFiles(dpd.datapackRootPath, dpd.keyVars, true, Globals.excludeKeyVarExtensions);
+								// Must change the folder names before searching for keys
+								string songname_uuidFolder = Path.Combine(dpd.datapackRootPath, Globals.C_Data, Globals.C_FolderUUID);
+								string newPath = Path.Combine(dpd.datapackRootPath, Globals.C_Data, dpd.folder_uuid);
+								SafeFileManagement.MoveDirectory(songname_uuidFolder, newPath, Globals.C_numberOfIORetryAttempts);
 
-						Debug.Log("Generating main datapack files...");
-						GenerateMCBeatData(beatMapSongList, packInfo, dpd);
+								// Updating Copied files
+								Filemanagement.UpdateAllCopiedFiles(dpd.datapackRootPath, dpd.keyVars, true, Globals.excludeKeyVarExtensions);
 
-						Debug.Log("Zipping files...");
-						Archive.Compress(dpd.datapackRootPath, dpd.fullOutputPath);
+								cancellationToken.ThrowIfCancellationRequested();
 
-						Debug.Log("Datapack Done");
-						return -1;
+								// Generating main datapack files
+								GenerateMCBeatData(beatMapSongList, packInfo, dpd);
+
+								cancellationToken.ThrowIfCancellationRequested();
+
+								// Zipping files
+								Archive.Compress(dpd.datapackRootPath, dpd.fullOutputPath);
+								return -1;
+							}
+						}
+						catch (OperationCanceledException wasCanceled)
+						{
+							throw wasCanceled;
+						}
+						catch (ObjectDisposedException wasAreadyCanceled)
+						{
+							throw wasAreadyCanceled;
+						}
 					}
 				}
-			}
-			return 0;
+				return 0;
+			});
 		}
 
 		/// <summary>

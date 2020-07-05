@@ -25,5 +25,6 @@ namespace BeatSaber.packInfo
 		public float _songTimeOffset;
 		public _customData _customData;
 		public _difficultyBeatmapSets[] _difficultyBeatmapSets;
+		public int _uuid;
 	}
 }

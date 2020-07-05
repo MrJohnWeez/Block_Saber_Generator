@@ -1,10 +1,15 @@
-﻿using System.Collections;
+﻿// Created by MrJohnWeez
+// June 2020
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.IO;
 using Minecraft;
+using System.Threading;
+using System.Threading.Tasks;
 
 public class ConversionObject : MonoBehaviour
 {
@@ -46,6 +51,7 @@ public class ConversionObject : MonoBehaviour
 	[Header("Toggle Images")]
 	[SerializeField] private Sprite _trashOpen = null;
 	[SerializeField] private Sprite _trashClosed = null;
+	private CancellationTokenSource _asyncSourceCancel = null;
 
 	/// <summary>
 	/// Sets up the ConversionObject object ready for conversion
@@ -63,10 +69,12 @@ public class ConversionObject : MonoBehaviour
 		_progressBar.value = 0;
 	}
 
-	public void Convert()
+	public async Task ConvertAsync()
 	{
 		_progressBar.value = 0;
-		int errorCode = ConvertZip.Convert(InputPath, OutputPath);
+		_asyncSourceCancel = new CancellationTokenSource();
+		int uuid = UnityEngine.Random.Range(-99999999, 99999999);
+		int errorCode = await ConvertZip.ConvertAsync(InputPath, OutputPath, uuid, _asyncSourceCancel.Token);
 		if(errorCode > 0)
 		{
 			Debug.Log("There was error: " + errorCode);
@@ -76,6 +84,8 @@ public class ConversionObject : MonoBehaviour
 		{
 			Finished();
 		}
+		_asyncSourceCancel.Dispose();
+		_asyncSourceCancel = null;
 		OnObjectFinished?.Invoke(this);
 	}
 
@@ -83,6 +93,8 @@ public class ConversionObject : MonoBehaviour
 	#region ButtonFunctions
 	public void DeleteSelf()
 	{
+		if(_asyncSourceCancel != null)
+			_asyncSourceCancel?.Cancel();
 		OnObjectDeleted?.Invoke(this);
 		Destroy(gameObject);
 	}

@@ -40,7 +40,7 @@ namespace Minecraft.Generator
 			keyVars = new Dictionary<string, string>();
 			folder_uuid = SafeFileManagement.GetFileName(Path.GetFileName(unzippedFolderPath)).MakeMinecraftSafe();
 			packName = Globals.C_Datapack + folder_uuid;
-			UUIDVar = UnityEngine.Random.Range(-999999999, 999999999).ToString("X");
+			UUIDVar = packInfo._uuid.ToString("X");
 
 			// Paths
 			datapackRootPath = Path.Combine(unzippedFolderPath, packName);
@@ -56,7 +56,7 @@ namespace Minecraft.Generator
 			// Set up Keys
 			keyVars["MAPPER_NAME"] = packInfo._levelAuthorName;
 			keyVars["BEATS_PER_MINUTE"] = packInfo._beatsPerMinute.ToString();
-			keyVars["SONGID"] = ((int)Random.Range(-999999999, 999999999)).ToString();
+			keyVars["SONGID"] = packInfo._uuid.ToString();
 			keyVars["MOVESPEED"] = metersPerTick.ToString();
 			keyVars["SONGTITLE"] = packInfo._songName + " " + packInfo._songSubName;
 			keyVars["SONGSHORTNAME"] = packInfo._songName;

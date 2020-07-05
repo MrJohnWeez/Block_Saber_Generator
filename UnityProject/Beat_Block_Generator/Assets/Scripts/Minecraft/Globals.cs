@@ -46,10 +46,9 @@ namespace Minecraft
 		public const string C_Datapack = "DataPack_";
 		public const string C_BlockSaberBase = "_root_class";
 		public const string C_FolderUUID = "folder_uuid";
-		public static readonly string streamingAssets = Path.Combine(Application.dataPath, "StreamingAssets");
-		public static readonly string pathOfResourcepackTemplate = Path.Combine(streamingAssets, "TemplateResourcepack");
-		public static readonly string pathOfDatapackTemplate = Path.Combine(streamingAssets, "TemplateDatapack");
-		public static readonly string pathOfTemplateStrings = Path.Combine(streamingAssets, C_TemplateStrings);
+		public static readonly string pathOfResourcepackTemplate = Path.Combine(ProcessManager.streamingAssets, "TemplateResourcepack");
+		public static readonly string pathOfDatapackTemplate = Path.Combine(ProcessManager.streamingAssets, "TemplateDatapack");
+		public static readonly string pathOfTemplateStrings = Path.Combine(ProcessManager.streamingAssets, C_TemplateStrings);
 		public static readonly TemplateStrings templateStrings = JsonUtility.FromJson<TemplateStrings>(SafeFileManagement.GetFileContents(pathOfTemplateStrings));
 
 		// Beat saber data
