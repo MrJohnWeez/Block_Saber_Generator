@@ -1,16 +1,18 @@
+execute if score #BlockSaberGlobal HealthPoints matches 100.. run scoreboard players set #BlockSaberGlobal HealthPoints 100
+
 # Update the combo score
-setblock 0 140 0 birch_sign
+execute in minecraft:the_end run setblock 0 140 500 birch_sign
 data modify entity @e[type=armor_stand,tag=comboDisplayNumber,limit=1] CustomName set value '""'
-data merge block 0 140 0 {Text1:'{"score":{"name":"#BlockSaberGlobal","objective":"Combo"}}'}
-data modify entity @e[type=armor_stand,tag=comboDisplayNumber,limit=1] CustomName set from block 0 140 0 Text1
-setblock 0 140 0 air
+execute in minecraft:the_end run data merge block 0 140 500 {Text1:'{"score":{"name":"#BlockSaberGlobal","objective":"Combo"}}'}
+execute in minecraft:the_end run data modify entity @e[type=armor_stand,tag=comboDisplayNumber,limit=1] CustomName set from block 0 140 500 Text1
+execute in minecraft:the_end run setblock 0 140 500 air
 
 # Update the mutiplier score
-setblock 0 140 0 birch_sign
-data modify entity @e[type=armor_stand,tag=multiplierValue,limit=1] CustomName set value '""'
-data merge block 0 140 0 {Text1:'{"score":{"name":"#BlockSaberGlobal","objective":"Multiplier"}}'}
-data modify entity @e[type=armor_stand,tag=multiplierValue,limit=1] CustomName set from block 0 140 0 Text1
-setblock 0 140 0 air
+execute in minecraft:the_end run setblock 0 140 500 birch_sign
+execute in minecraft:the_end run data modify entity @e[type=armor_stand,tag=multiplierValue,limit=1] CustomName set value '""'
+execute in minecraft:the_end run data merge block 0 140 500 {Text1:'{"score":{"name":"#BlockSaberGlobal","objective":"Multiplier"}}'}
+execute in minecraft:the_end run data modify entity @e[type=armor_stand,tag=multiplierValue,limit=1] CustomName set from block 0 140 500 Text1
+execute in minecraft:the_end run setblock 0 140 500 air
 
 
 # c# code
