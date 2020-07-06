@@ -19,7 +19,6 @@ scoreboard objectives add TempVar3 dummy
 scoreboard objectives add PlayerScore dummy
 scoreboard objectives add Multiplier dummy
 scoreboard objectives add PlayingSong dummy
-scoreboard objectives add XpLevels dummy
 scoreboard objectives add HealthPoints dummy
 scoreboard objectives add CopyTemp dummy
 

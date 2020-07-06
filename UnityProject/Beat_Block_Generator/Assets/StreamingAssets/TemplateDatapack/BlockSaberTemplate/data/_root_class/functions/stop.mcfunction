@@ -22,7 +22,6 @@ scoreboard players set #BlockSaberGlobal FinishedCount 0
 scoreboard players set #BlockSaberGlobal Multiplier 1
 scoreboard players set #BlockSaberGlobal PlayingSong 0
 scoreboard players set #BlockSaberGlobal HealthPoints 50
-scoreboard players set #BlockSaberGlobal XpLevels 1
 scoreboard players set #BlockSaberGlobal NodeRowID 0
 scoreboard players set #BlockSaberGlobal Combo 0
 
