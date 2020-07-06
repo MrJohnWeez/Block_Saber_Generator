@@ -15,6 +15,11 @@ public class WebManager: MonoBehaviour
 	/// </summary>
     public void ToMrJohnWeezHelpSite()
 	{
+		Application.OpenURL("https://www.mrjohnweez.com/blocksaber.html");
+	}
+
+	public void ToMrJohnWeezSite()
+	{
 		Application.OpenURL("https://www.mrjohnweez.com/");
 	}
 }
