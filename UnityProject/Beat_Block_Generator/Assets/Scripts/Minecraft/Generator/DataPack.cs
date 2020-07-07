@@ -145,6 +145,7 @@ namespace Minecraft.Generator
 				SafeFileManagement.AppendFile(commandBasePath, playSongCommand);
 
 				string completedSongCommand = string.Format(Globals.templateStrings._completedSong,
+															difficultyNumber,
 															songDifficultyID);
 				string completedSongPath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_MapDifficultyCompleted);
 				SafeFileManagement.AppendFile(completedSongPath, completedSongCommand);
