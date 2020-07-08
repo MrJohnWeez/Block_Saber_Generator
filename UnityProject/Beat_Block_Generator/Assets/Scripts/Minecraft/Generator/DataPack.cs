@@ -403,6 +403,11 @@ namespace Minecraft.Generator
 		{
 			//_lineIndex = col
 			//_lineLayer = row
+			int nodeType = node._type;
+			int nodeDir = node._cutDirection;
+
+			nodeType = nodeType <= 3 ? nodeType : 0;
+			nodeDir = nodeDir <= 8 ? nodeDir : 8;
 
 			double beatsPerTick = bpm / 60.0d / 20;
 			double exactTick = node._time / beatsPerTick;
@@ -421,7 +426,7 @@ namespace Minecraft.Generator
 										nodeRowID);
 			commandList.AppendFormat(Globals.templateStrings._nodeTypeCommand,
 										wholeTick,
-										Globals.noteTypes[node._type][node._cutDirection]);
+										Globals.noteTypes[nodeType][nodeDir]);
 		}
 
 		/// <summary>
