@@ -4,63 +4,101 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System;
 using UnityEngine;
 using System.Text;
 using BeatSaber.packInfo;
 using BeatSaber;
 using BeatSaber.beatMapData.notes;
 using MrJohnWeez.Extensions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Minecraft.Generator
 {
+	/// <summary>
+	/// Class that allows for quick conversion of Beat Saber data to a Minecraft datapack
+	/// </summary>
 	public static class DataPack
 	{
 		/// <summary>
 		/// Generate a minecraft datapack from Beat Saber data
 		/// </summary>
-		public static int FromBeatSaberData(string unzippedFolderPath, string datapackOutputPath, PackInfo packInfo, List<BeatMapSong> beatMapSongList)
+		/// <param name="unzippedFolderPath">Path of unzipped Beat Saber data</param>
+		/// <param name="datapackOutputPath">Path to output datapack</param>
+		/// <param name="packInfo">Beat Saber Parsed info</param>
+		/// <param name="beatMapSongList">List of Beat Saber song data</param>
+		/// <param name="cancellationToken">Token that allows async function to be canceled</param>
+		/// <returns></returns>
+		public static Task<int> FromBeatSaberData(string unzippedFolderPath, string datapackOutputPath, PackInfo packInfo, List<BeatMapSong> beatMapSongList, CancellationToken cancellationToken)
 		{
-			// Validate inputs
-			if (!Directory.Exists(unzippedFolderPath) || packInfo == null || beatMapSongList == null)
-				return 0;
-
-			DataPackData dpd = new DataPackData(unzippedFolderPath, datapackOutputPath, packInfo, beatMapSongList);
-
-			if (beatMapSongList.Count > 0)
+			return Task.Run(() =>
 			{
-				Debug.Log("Copying Template...");
-				string copiedTemplatePath = Path.Combine(unzippedFolderPath, Globals.C_TemplateDataPackName);
-				if (SafeFileManagement.DirectoryCopy(Globals.pathOfDatapackTemplate, unzippedFolderPath, true, Globals.excludeExtensions, Globals.C_numberOfIORetryAttempts))
+				
+				// Validate inputs
+				if (!Directory.Exists(unzippedFolderPath) || packInfo == null || beatMapSongList == null)
+					return 0;
+
+				DataPackData dpd = new DataPackData(unzippedFolderPath, datapackOutputPath, packInfo, beatMapSongList);
+
+				if (beatMapSongList.Count > 0)
 				{
-					if (SafeFileManagement.MoveDirectory(copiedTemplatePath, dpd.datapackRootPath, Globals.C_numberOfIORetryAttempts))
+					// Copying Template
+					string copiedTemplatePath = Path.Combine(unzippedFolderPath, Globals.C_TemplateDataPackName);
+					if (SafeFileManagement.DirectoryCopy(Globals.pathOfDatapackTemplate, unzippedFolderPath, true, Globals.excludeExtensions, Globals.C_numberOfIORetryAttempts))
 					{
-						// Must change the folder names before searching for keys
-						string songname_uuidFolder = Path.Combine(dpd.datapackRootPath, Globals.C_Data, Globals.C_FolderUUID);
-						string newPath = Path.Combine(dpd.datapackRootPath, Globals.C_Data, dpd.folder_uuid);
-						SafeFileManagement.MoveDirectory(songname_uuidFolder, newPath, Globals.C_numberOfIORetryAttempts);
+						try
+						{
+							if (SafeFileManagement.MoveDirectory(copiedTemplatePath, dpd.datapackRootPath, Globals.C_numberOfIORetryAttempts))
+							{
+								cancellationToken.ThrowIfCancellationRequested();
 
-						Debug.Log("Updating Copied files...");
-						Filemanagement.UpdateAllCopiedFiles(dpd.datapackRootPath, dpd.keyVars, true, Globals.excludeKeyVarExtensions);
+								// Must change the folder names before searching for keys
+								string songname_uuidFolder = Path.Combine(dpd.datapackRootPath, Globals.C_Data, Globals.C_FolderUUID);
+								string newPath = Path.Combine(dpd.datapackRootPath, Globals.C_Data, dpd.folder_uuid);
+								SafeFileManagement.MoveDirectory(songname_uuidFolder, newPath, Globals.C_numberOfIORetryAttempts);
 
-						Debug.Log("Generating main datapack files...");
-						GenerateMCBeatData(beatMapSongList, packInfo, dpd);
+								// Updating Copied files
+								Filemanagement.UpdateAllCopiedFiles(dpd.datapackRootPath, dpd.keyVars, true, Globals.excludeKeyVarExtensions);
 
-						Debug.Log("Zipping files...");
-						Archive.Compress(dpd.datapackRootPath, dpd.fullOutputPath);
+								cancellationToken.ThrowIfCancellationRequested();
 
-						Debug.Log("Datapack Done");
-						return -1;
+								// Generating main datapack files
+								int errorCode = GenerateMCBeatData(beatMapSongList, packInfo, dpd);
+								if (errorCode >= 0)
+									return errorCode;
+
+								cancellationToken.ThrowIfCancellationRequested();
+
+								// Zipping files
+								Archive.Compress(dpd.datapackRootPath, dpd.fullOutputPath);
+								return -1;
+							}
+						}
+						catch (OperationCanceledException wasCanceled)
+						{
+							throw wasCanceled;
+						}
+						catch (ObjectDisposedException wasAreadyCanceled)
+						{
+							throw wasAreadyCanceled;
+						}
 					}
 				}
-			}
-			return 0;
+				return 0;
+			});
 		}
 
 		/// <summary>
 		/// Main generation of minecraft commands for beat saber data
 		/// </summary>
-		public static void GenerateMCBeatData(List<BeatMapSong> beatMapSongList, PackInfo packInfo, DataPackData dpd)
+		/// <param name="beatMapSongList">List of Beat Saber song data</param>
+		/// <param name="packInfo">Beat Saber Parsed info</param>
+		/// <param name="dpd">Data used for datapack generation</param>
+		/// <returns></returns>
+		public static int GenerateMCBeatData(List<BeatMapSong> beatMapSongList, PackInfo packInfo, DataPackData dpd)
 		{
+			
 			StringBuilder difficultyDisplayCommands = new StringBuilder();
 			StringBuilder scoreboardCommands = new StringBuilder();
 			StringBuilder spawnOrginCommands = new StringBuilder();
@@ -70,6 +108,9 @@ namespace Minecraft.Generator
 			// Itterate though each song difficulty
 			foreach (BeatMapSong song in beatMapSongList)
 			{
+				if (song.beatMapData == null)
+					return 3;
+
 				string difficultyName = song.difficultyBeatmaps._difficulty.MakeMinecraftSafe();
 
 				// Append running command lists
@@ -104,6 +145,7 @@ namespace Minecraft.Generator
 				SafeFileManagement.AppendFile(commandBasePath, playSongCommand);
 
 				string completedSongCommand = string.Format(Globals.templateStrings._completedSong,
+															difficultyNumber,
 															songDifficultyID);
 				string completedSongPath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_MapDifficultyCompleted);
 				SafeFileManagement.AppendFile(completedSongPath, completedSongCommand);
@@ -127,6 +169,7 @@ namespace Minecraft.Generator
 			// Add back button in tellraw
 			difficultyDisplayCommands.Append(Globals.templateStrings._mainMenuBack);
 			SafeFileManagement.AppendFile(difficultiesFunctionPath, difficultyDisplayCommands.ToString());
+			return -1;
 		}
 
 		/// <summary>
@@ -135,6 +178,8 @@ namespace Minecraft.Generator
 		/// <param name="song">Beatmap data for a song and difficulty</param>
 		/// <param name="difficultyName">Minecraft safe difficulty name</param>
 		/// <param name="commandBasePath">Base folder path to generate new mcfunctions</param>
+		/// <param name="packInfo">Beat Saber Parsed info</param>
+		/// <param name="dpd">Data used for datapack generation</param>
 		public static void GenerateNotes(BeatMapSong song, string difficultyName, string commandBasePath, PackInfo packInfo, DataPackData dpd)
 		{
 			_notes[] notes = song.beatMapData._notes;
@@ -216,6 +261,8 @@ namespace Minecraft.Generator
 		/// <param name="song">Beatmap data for a song and difficulty</param>
 		/// <param name="difficultyName">Minecraft safe difficulty name</param>
 		/// <param name="commandBasePath">Base folder path to generate new mcfunctions</param>
+		/// <param name="packInfo">Beat Saber Parsed info</param>
+		/// <param name="dpd">Data used for datapack generation</param>
 		public static void GenerateObsicles(BeatMapSong song, string difficultyName, string commandBasePath,PackInfo packInfo, DataPackData dpd)
 		{
 			_obstacles[] obstacles = song.beatMapData._obstacles;
@@ -356,6 +403,11 @@ namespace Minecraft.Generator
 		{
 			//_lineIndex = col
 			//_lineLayer = row
+			int nodeType = node._type;
+			int nodeDir = node._cutDirection;
+
+			nodeType = nodeType <= 3 ? nodeType : 0;
+			nodeDir = nodeDir <= 8 ? nodeDir : 8;
 
 			double beatsPerTick = bpm / 60.0d / 20;
 			double exactTick = node._time / beatsPerTick;
@@ -374,7 +426,7 @@ namespace Minecraft.Generator
 										nodeRowID);
 			commandList.AppendFormat(Globals.templateStrings._nodeTypeCommand,
 										wholeTick,
-										Globals.noteTypes[node._type][node._cutDirection]);
+										Globals.noteTypes[nodeType][nodeDir]);
 		}
 
 		/// <summary>

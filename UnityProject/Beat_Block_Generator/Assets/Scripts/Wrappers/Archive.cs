@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿// Created by MrJohnWeez
+// March 2020
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using LightBuzz.Archiver;
@@ -7,6 +10,9 @@ using System.Threading.Tasks;
 using System;
 using System.IO;
 
+/// <summary>
+/// Wrapper class for LightBuzz zip plugin
+/// </summary>
 public static class Archive
 {
 	/// <summary>
@@ -15,25 +21,21 @@ public static class Archive
 	/// <param name="source">File path of folder or file</param>
 	/// <param name="destination">Folder path of output with zip name</param>
 	/// <returns></returns>
-	public static Task CompressAsync(string source, string destinationWithZipName, ProgressAmount<float> progess, CancellationToken cancellationToken, bool deleteAfterArchiving = false)
+	public static Task CompressAsync(string source, string destinationWithZipName, CancellationToken cancellationToken, bool deleteAfterArchiving = false)
 	{
 		return Task.Run(() =>
 		{
 			try
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				progess.ReportValue(0, "Compressing into .zip", "Compressing files (may take a while)");
 				Archiver.Compress(source, destinationWithZipName);
 				if(deleteAfterArchiving)
 				{
-					progess.ReportValue(0.7f, "Compressing into .zip", "Deleting temp files");
-
 					if (Directory.Exists(source))
 						Directory.Delete(source, true);
 					else if (File.Exists(source))
 						File.Delete(source);
 				}
-				progess.ReportValue(1, "Compressing into .zip", "Finished");
 			}
 			catch (OperationCanceledException wasCanceled)
 			{
@@ -52,25 +54,21 @@ public static class Archive
 	/// <param name="source">File path of zip file</param>
 	/// <param name="destination">Folder path of output with zip name</param>
 	/// <returns></returns>
-	public static Task DecompressAsync(string source, string destinationWithZipName, ProgressAmount<float> progess, CancellationToken cancellationToken, bool deleteAfterArchiving = false)
+	public static Task DecompressAsync(string source, string destinationWithZipName, CancellationToken cancellationToken, bool deleteAfterArchiving = false)
 	{
 		return Task.Run(() =>
 		{
 			try
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				progess.ReportValue(0, "Decompressing files", "Decompressing files (may take a while)");
 				Archiver.Decompress(source, destinationWithZipName);
 				if (deleteAfterArchiving)
 				{
-					progess.ReportValue(0.7f, "Decompressing files", "Deleting temp files");
-
 					if(Directory.Exists(source))
 						Directory.Delete(source, true);
 					else if(File.Exists(source))
 						File.Delete(source);
 				}
-				progess.ReportValue(0, "Decompressing files", "Finished");
 			}
 			catch (OperationCanceledException wasCanceled)
 			{

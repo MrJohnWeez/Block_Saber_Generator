@@ -3,10 +3,14 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class ProcessManager : MonoBehaviour
 {
+	public static string temporaryPath = "";
+	public static string streamingAssets = "";
+
 	[SerializeField] private SelectionManager _selectionManager = null;
 	[SerializeField] private GameObject _conversionPrefab = null;
 	[SerializeField] private GameObject _processingRoot = null;
@@ -14,17 +18,29 @@ public class ProcessManager : MonoBehaviour
 	private List<ConversionObject> _currentConvert = new List<ConversionObject>();
 	private List<ConversionObject> _finishedConvert = new List<ConversionObject>();
 
-	private void Update()
+	#region UnityCallbacks
+	private void Start()
+	{
+		temporaryPath = Application.temporaryCachePath;
+		streamingAssets = Path.Combine(Application.dataPath, "StreamingAssets");
+	}
+
+	private async void Update()
 	{
 		if(_currentConvert.Count < 3 && _waitingConvert.Count > 0)
 		{
 			ConversionObject nextToConvert = _waitingConvert[0];
 			_waitingConvert.RemoveAt(0);
 			_currentConvert.Add(nextToConvert);
-			nextToConvert.Convert();
+			await nextToConvert.ConvertAsync();
 		}
 	}
+	#endregion UnityCallbacks
 
+	/// <summary>
+	/// Add file for conversion
+	/// </summary>
+	/// <param name="filePath">Path of the Beat Saber zip file</param>
 	public void AddFile(string filePath)
 	{
 		GameObject newConversion = Instantiate(_conversionPrefab, _processingRoot.transform);
@@ -38,11 +54,11 @@ public class ProcessManager : MonoBehaviour
 		}
 	}
 
+	#region Callbacks
 	private void ConversionFinished(ConversionObject conversionObject)
 	{
 		_currentConvert.Remove(conversionObject);
 		_finishedConvert.Add(conversionObject);
-		Debug.Log("Conversion Finished for path: " + conversionObject.InputPath);
 	}
 
 	private void ConversionDeleted(ConversionObject conversionObject)
@@ -50,6 +66,7 @@ public class ProcessManager : MonoBehaviour
 		RemoveConversion(conversionObject);
 		Debug.Log("Deleted item with path: " + conversionObject.InputPath);
 	}
+	#endregion Callbacks
 
 	private void RemoveConversion(ConversionObject conversionObject)
 	{

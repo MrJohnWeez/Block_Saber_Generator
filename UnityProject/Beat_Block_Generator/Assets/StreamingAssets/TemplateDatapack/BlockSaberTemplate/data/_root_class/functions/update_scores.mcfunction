@@ -1,16 +1,18 @@
+execute if score #BlockSaberGlobal HealthPoints matches 100.. run scoreboard players set #BlockSaberGlobal HealthPoints 100
+
 # Update the combo score
-setblock 0 140 0 birch_sign
+execute in minecraft:the_end run setblock 0 140 500 birch_sign
 data modify entity @e[type=armor_stand,tag=comboDisplayNumber,limit=1] CustomName set value '""'
-data merge block 0 140 0 {Text1:'{"score":{"name":"#BlockSaberGlobal","objective":"Combo"}}'}
-data modify entity @e[type=armor_stand,tag=comboDisplayNumber,limit=1] CustomName set from block 0 140 0 Text1
-setblock 0 140 0 air
+execute in minecraft:the_end run data merge block 0 140 500 {Text1:'{"score":{"name":"#BlockSaberGlobal","objective":"Combo"}}'}
+execute in minecraft:the_end run data modify entity @e[type=armor_stand,tag=comboDisplayNumber,limit=1] CustomName set from block 0 140 500 Text1
+execute in minecraft:the_end run setblock 0 140 500 air
 
 # Update the mutiplier score
-setblock 0 140 0 birch_sign
-data modify entity @e[type=armor_stand,tag=multiplierValue,limit=1] CustomName set value '""'
-data merge block 0 140 0 {Text1:'{"score":{"name":"#BlockSaberGlobal","objective":"Multiplier"}}'}
-data modify entity @e[type=armor_stand,tag=multiplierValue,limit=1] CustomName set from block 0 140 0 Text1
-setblock 0 140 0 air
+execute in minecraft:the_end run setblock 0 140 500 birch_sign
+execute in minecraft:the_end run data modify entity @e[type=armor_stand,tag=multiplierValue,limit=1] CustomName set value '""'
+execute in minecraft:the_end run data merge block 0 140 500 {Text1:'{"score":{"name":"#BlockSaberGlobal","objective":"Multiplier"}}'}
+execute in minecraft:the_end run data modify entity @e[type=armor_stand,tag=multiplierValue,limit=1] CustomName set from block 0 140 500 Text1
+execute in minecraft:the_end run setblock 0 140 500 air
 
 
 # c# code
@@ -83,5 +85,5 @@ execute if score #BlockSaberGlobal HealthPoints matches 96..97 run data modify e
 execute if score #BlockSaberGlobal HealthPoints matches 98..99 run data modify entity @e[type=armor_stand,tag=healthDisplay,limit=1] CustomName set value "[\"\",{\"text\":\"▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏\",\"color\":\"white\"},{\"text\":\"▏\",\"color\":\"dark_gray\"}]"
 execute if score #BlockSaberGlobal HealthPoints matches 100.. run data modify entity @e[type=armor_stand,tag=healthDisplay,limit=1] CustomName set value "[\"\",{\"text\":\"▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏\",\"color\":\"white\"},{\"text\":\"\",\"color\":\"dark_gray\"}]"
 
-execute if score #BlockSaberGlobal HealthPoints matches ..-1 if score #BlockSaberGlobal XpLevels matches 1 run function _root_class:map_difficulty_failed
-execute if score #BlockSaberGlobal HealthPoints matches 100 if score #BlockSaberGlobal HealthPoints matches 1..7 run scoreboard players operation #BlockSaberGlobal XpLevels *= #CONST Const_2
+execute if score #BlockSaberGlobal HealthPoints matches ..-1 if score #BlockSaberGlobal Multiplier matches 1 run function _root_class:map_difficulty_failed
+execute if score #BlockSaberGlobal HealthPoints matches 100 if score #BlockSaberGlobal Multiplier matches 1..7 run scoreboard players operation #BlockSaberGlobal Multiplier *= #CONST Const_2

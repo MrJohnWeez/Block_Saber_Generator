@@ -1,4 +1,7 @@
-﻿using BeatSaber.beatMapData.customData;
+﻿// Created by MrJohnWeez
+// June 2020
+
+using BeatSaber.beatMapData.customData;
 using BeatSaber.beatMapData.events;
 using BeatSaber.beatMapData.notes;
 using System;

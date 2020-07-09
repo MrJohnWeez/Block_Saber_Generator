@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿// Created by MrJohnWeez
+// June 2020
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
@@ -25,5 +28,6 @@ namespace BeatSaber.packInfo
 		public float _songTimeOffset;
 		public _customData _customData;
 		public _difficultyBeatmapSets[] _difficultyBeatmapSets;
+		public int _uuid;
 	}
 }
