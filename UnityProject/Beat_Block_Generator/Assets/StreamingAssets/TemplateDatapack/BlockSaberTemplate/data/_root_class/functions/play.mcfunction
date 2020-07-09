@@ -11,9 +11,9 @@ scoreboard players set #BlockSaberGlobal HighBlockHeight 1518
 scoreboard players set #BlockSaberGlobal MidBlockHeight 1515
 scoreboard players set #BlockSaberGlobal LowBlockHeight 1512
 
-effect give @p[scores={PlayerPlaying=1}] saturation 1000000 20 true
-effect give @p[scores={PlayerPlaying=1}] resistance 1000000 20 true
-effect give @p[scores={PlayerPlaying=1}] night_vision 1000000 1 true
+effect give @a saturation 1000000 20 true
+effect give @a resistance 1000000 20 true
+effect give @a night_vision 1000000 1 true
 experience set @p[scores={PlayerPlaying=1}] 0 levels
 experience set @p[scores={PlayerPlaying=1}] 0 points
 
