@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
+/// <summary>
+/// Handles the async conversion of up to 3 files at a time
+/// </summary>
 public class ProcessManager : MonoBehaviour
 {
 	public static string temporaryPath = "";
