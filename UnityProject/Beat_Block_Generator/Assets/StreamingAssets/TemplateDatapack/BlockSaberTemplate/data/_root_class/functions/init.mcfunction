@@ -43,4 +43,4 @@ scoreboard players set #CONST Const_2 2
 gamerule sendCommandFeedback false
 
 # Auto Display Songs
-execute at @a as @a run function _root_class:stop_main_menu
+execute as @r at @s run function _root_class:stop_main_menu

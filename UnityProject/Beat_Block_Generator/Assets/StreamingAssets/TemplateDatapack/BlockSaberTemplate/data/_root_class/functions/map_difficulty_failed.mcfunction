@@ -3,7 +3,7 @@ scoreboard players set #BlockSaberGlobal FinishedNotes 0
 scoreboard players set #BlockSaberGlobal FinishedObsicles 0
 
 kill @e[tag=node]
-stopsound @p[scores={PlayerPlaying=1}] music
+stopsound @a music
 
 # http://patorjk.com/software/taag/#p=display&f=ANSI%20Regular&t=LEVEL
 # Level
