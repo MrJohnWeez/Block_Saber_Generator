@@ -61,6 +61,11 @@ namespace Minecraft.Generator
 								// Updating Copied files
 								Filemanagement.UpdateAllCopiedFiles(dpd.datapackRootPath, dpd.keyVars, true, Globals.excludeKeyVarExtensions);
 
+								// Copying Image Icon
+								string mapIcon = Path.Combine(unzippedFolderPath, packInfo._coverImageFilename);
+								string packIcon = Path.Combine(dpd.datapackRootPath, Globals.C_PackIcon);
+								SafeFileManagement.CopyFileTo(mapIcon, packIcon, true, Globals.C_numberOfIORetryAttempts);
+
 								cancellationToken.ThrowIfCancellationRequested();
 
 								// Generating main datapack files
