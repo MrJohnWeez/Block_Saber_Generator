@@ -2,19 +2,19 @@
 #
 # Get latest from https://github.com/github/gitignore/blob/master/Unity.gitignore
 #
-/UnityProject/Beat_Block_Generator/[Ll]ibrary/
-/UnityProject/Beat_Block_Generator/[Tt]emp/
-/UnityProject/Beat_Block_Generator/[Oo]bj/
-/UnityProject/Beat_Block_Generator/[Bb]uild/
-/UnityProject/Beat_Block_Generator/[Bb]uilds/
-/UnityProject/Beat_Block_Generator/[Ll]ogs/
-/UnityProject/Beat_Block_Generator/[Mm]emoryCaptures/
+/UnityProject/Block_Saber_Generator/[Ll]ibrary/
+/UnityProject/Block_Saber_Generator/[Tt]emp/
+/UnityProject/Block_Saber_Generator/[Oo]bj/
+/UnityProject/Block_Saber_Generator/[Bb]uild/
+/UnityProject/Block_Saber_Generator/[Bb]uilds/
+/UnityProject/Block_Saber_Generator/[Ll]ogs/
+/UnityProject/Block_Saber_Generator/[Mm]emoryCaptures/
 
 /[Bb]uild/
 /[Bb]uilds/
 
 # Never ignore Asset meta data
-!/UnityProject/Beat_Block_Generator/[Aa]ssets/**/*.meta
+!/UnityProject/Block_Saber_Generator/[Aa]ssets/**/*.meta
 
 # Uncomment this line if you wish to ignore the asset store tools plugin
 # /[Aa]ssets/AssetStoreTools*
@@ -58,4 +58,4 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
-UnityProject/Beat_Block_Generator/Assets/Converted_Files.meta
+UnityProject/Block_Saber_Generator/Assets/Converted_Files.meta
