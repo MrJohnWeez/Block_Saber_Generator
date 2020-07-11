@@ -4,4 +4,4 @@ execute if score #BlockSaberGlobal SongID matches SONGID if score #BlockSaberGlo
 execute if score #BlockSaberGlobal SongID matches SONGID run function folder_uuid:game_controls
 
 # Temp debug info
-scoreboard players operation MrJohnWeez CopyTemp = #BlockSaberGlobal TickCount
+# scoreboard players operation MrJohnWeez CopyTemp = #BlockSaberGlobal TickCount
