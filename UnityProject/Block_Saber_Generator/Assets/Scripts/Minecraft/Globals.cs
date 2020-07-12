@@ -56,7 +56,12 @@ namespace Minecraft
 		public static readonly string pathOfDatapackTemplate = Path.Combine(ProcessManager.streamingAssets, "TemplateDatapack");
 		public static readonly string pathOfTemplateStrings = Path.Combine(ProcessManager.streamingAssets, C_TemplateStrings);
 		public static readonly TemplateStrings templateStrings = JsonUtility.FromJson<TemplateStrings>(SafeFileManagement.GetFileContents(pathOfTemplateStrings));
-
+		public static readonly string[] obsicalTypes = new string[4] {
+																		"wall_1x1",
+																		"wall_1x3",
+																		"wall_2x1",
+																		"wall_2x3"
+																	};
 		// Beat saber data
 		public static readonly string[][] noteTypes = new string[4][] {new string[9]
 																	{

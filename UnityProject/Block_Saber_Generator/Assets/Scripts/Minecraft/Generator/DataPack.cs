@@ -379,18 +379,121 @@ namespace Minecraft.Generator
 				int tickOffset = meterLengths != 0 ? (int)System.Math.Truncate(meterLengths / metersPerTick) : 0;
 				double extraOffset = meterLengths != 0 ? meterLengths % metersPerTick : 0;
 
-				for (int height = 0; height < heightOfWallInNotes; height++)
+				maxWholeTick = minWholeTick + tickOffset;
+
+				// TODO: Simplify code below
+				// The code below generates red walls as optimized models (max of 4 entities per tick)
+				if (widthOfWallInNotes == 1)
 				{
-					for (int width = 0; width < widthOfWallInNotes; width++)
+					if(heightOfWallInNotes == 1)
 					{
-						maxWholeTick = minWholeTick + tickOffset;
-						commandList.AppendFormat(Globals.templateStrings._positionCommand,
+						commandList.AppendFormat(Globals.templateStrings._wallCommand,
 												maxWholeTick,
-												0.3 * obstacle._lineIndex + 0.3d * width,
-												0.6d - 0.3d * height,
-												-extraOffset);
-						addToNumberOfCommands += 2;
+												0.3 * obstacle._lineIndex,
+												0.6d,
+												-extraOffset,
+												Globals.obsicalTypes[0]);
 					}
+					else
+					{
+						commandList.AppendFormat(Globals.templateStrings._wallCommand,
+												maxWholeTick,
+												0.3 * obstacle._lineIndex,
+												0.3d,
+												-extraOffset,
+												Globals.obsicalTypes[1]);
+					}
+					addToNumberOfCommands += 2;
+				}
+				else if(widthOfWallInNotes == 2)
+				{
+					if (heightOfWallInNotes == 1)
+					{
+						commandList.AppendFormat(Globals.templateStrings._wallCommand,
+												maxWholeTick,
+												0.3 * obstacle._lineIndex,
+												0.6d,
+												-extraOffset,
+												Globals.obsicalTypes[2]);
+					}
+					else
+					{
+						commandList.AppendFormat(Globals.templateStrings._wallCommand,
+												maxWholeTick,
+												0.3 * obstacle._lineIndex,
+												0.3d,
+												-extraOffset,
+												Globals.obsicalTypes[3]);
+					}
+					addToNumberOfCommands += 2;
+				}
+				else if (widthOfWallInNotes == 3)
+				{
+					if (heightOfWallInNotes == 1)
+					{
+						commandList.AppendFormat(Globals.templateStrings._wallCommand,
+												maxWholeTick,
+												0.3 * obstacle._lineIndex,
+												0.6d,
+												-extraOffset,
+												Globals.obsicalTypes[2]);
+						commandList.AppendFormat(Globals.templateStrings._wallCommand,
+												maxWholeTick,
+												0.3 * (obstacle._lineIndex + 2),
+												0.6d,
+												-extraOffset,
+												Globals.obsicalTypes[0]);
+					}
+					else
+					{
+						commandList.AppendFormat(Globals.templateStrings._wallCommand,
+												maxWholeTick,
+												0.3 * obstacle._lineIndex,
+												0.3d,
+												-extraOffset,
+												Globals.obsicalTypes[3]);
+						commandList.AppendFormat(Globals.templateStrings._wallCommand,
+												maxWholeTick,
+												0.3 * (obstacle._lineIndex + 2),
+												0.3d,
+												-extraOffset,
+												Globals.obsicalTypes[1]);
+					}
+					addToNumberOfCommands += 4;
+				}
+				else if (widthOfWallInNotes == 4)
+				{
+					if (heightOfWallInNotes == 1)
+					{
+						commandList.AppendFormat(Globals.templateStrings._wallCommand,
+												maxWholeTick,
+												0.3 * obstacle._lineIndex,
+												0.6d,
+												-extraOffset,
+												Globals.obsicalTypes[2]);
+						commandList.AppendFormat(Globals.templateStrings._wallCommand,
+												maxWholeTick,
+												0.3 * (obstacle._lineIndex + 2),
+												0.6d,
+												-extraOffset,
+												Globals.obsicalTypes[2]);
+					}
+					else
+					{
+						commandList.AppendFormat(Globals.templateStrings._wallCommand,
+												maxWholeTick,
+												0.3 * obstacle._lineIndex,
+												0.3d,
+												-extraOffset,
+												Globals.obsicalTypes[3]);
+						commandList.AppendFormat(Globals.templateStrings._wallCommand,
+												maxWholeTick,
+												0.3 * (obstacle._lineIndex + 2),
+												0.3d,
+												-extraOffset,
+												Globals.obsicalTypes[3]);
+					}
+					addToNumberOfCommands += 4;
 				}
 			}
 		}
