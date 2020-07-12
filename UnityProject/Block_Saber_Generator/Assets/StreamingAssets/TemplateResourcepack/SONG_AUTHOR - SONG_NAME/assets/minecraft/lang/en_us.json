@@ -22,7 +22,10 @@
     "block.minecraft.dead_bubble_coral_block": "Red Dot Note",
     
     "block.minecraft.dead_tube_coral_block": "Bomb Note",
-    "block.minecraft.ice": "Red Wall",
+    "block.minecraft.ice": "Red Wall 1x1",
+    "block.minecraft.orange_stained_glass": "Red Wall 1x3",
+    "block.minecraft.magenta_stained_glass": "Red Wall 2x3",
+    "block.minecraft.light_blue_stained_glass": "Red Wall 2x1",
     
     "item.minecraft.name_tag": "Blue Saber",
     "item.minecraft.spectral_arrow": "Main Menu"

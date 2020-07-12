@@ -15,7 +15,7 @@ namespace Minecraft
 		public string _mainMenuBack = "";
 		public string _spawnNotesBaseCommand = "";
 		public string _scoreboardCommand = "";
-		public string _positionCommand = "";
+		public string _wallCommand = "";
 		public string _playCommands = "";
 		public string _baseCommand = "";
 		public string _scoreCommand = "";

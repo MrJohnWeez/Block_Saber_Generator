@@ -7,7 +7,7 @@
   "_spawnOrginCommands": "execute if score #BlockSaberGlobal Difficulty matches {1} at @e[type=armor_stand,tag=playerOrgin] run summon armor_stand ~-0.45 ~1.2 ~{0:F18} {{Tags:[nodeSpawnOrgin,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}}\r\n",
   "_playSongCommand": "execute if score #BlockSaberGlobal TickCount matches {0} in minecraft:the_end run playsound minecraft:{1} music @a 0 150.0 500 1\r\n",
   "_baseCommand": "execute if score #BlockSaberGlobal TickCount matches {0}..{1} run function {2}:{3}\r\n",
-  "_positionCommand": "execute if score #BlockSaberGlobal TickCount matches {0} at @e[type=armor_stand, tag=nodeSpawnOrgin] run teleport @e[type=armor_stand, tag=nodeCursor] ~{1} ~{2} ~{3:F18}\r\nexecute if score #BlockSaberGlobal TickCount matches {0} as @e[type=armor_stand, tag=nodeCursor] run function _types:box\r\n",
+  "_wallCommand": "execute if score #BlockSaberGlobal TickCount matches {0} at @e[type=armor_stand, tag=nodeSpawnOrgin] run teleport @e[type=armor_stand, tag=nodeCursor] ~{1} ~{2} ~{3:F18}\r\nexecute if score #BlockSaberGlobal TickCount matches {0} as @e[type=armor_stand, tag=nodeCursor] run function _types:{4}\r\n",
   "_scoreCommand": "execute if score #BlockSaberGlobal TickCount matches {0} run scoreboard players set #BlockSaberGlobal NodeRowID {1}\r\n",
   "_nodePositionCommand": "execute if score #BlockSaberGlobal TickCount matches {0} at @e[type=armor_stand, tag=nodeSpawnOrgin] run teleport @e[type=armor_stand, tag=nodeCursor] ~{1} ~{2} ~{3:F18}\r\n",
   "_nodeTypeCommand": "execute if score #BlockSaberGlobal TickCount matches {0} as @e[type=armor_stand, tag=nodeCursor] run function _types:{1}\r\n",

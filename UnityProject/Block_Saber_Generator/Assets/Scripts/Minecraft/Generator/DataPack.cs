@@ -372,6 +372,7 @@ namespace Minecraft.Generator
 
 			int widthOfWallInNotes = obstacle._width;
 			int heightOfWallInNotes = obstacle._type == 0 ? 3 : 1;
+			int isHeightTall = obstacle._type == 0 ? 1 : 0;
 
 			for (int length = 0; length < lengthOfWallInNotes; length++)
 			{
@@ -379,18 +380,51 @@ namespace Minecraft.Generator
 				int tickOffset = meterLengths != 0 ? (int)System.Math.Truncate(meterLengths / metersPerTick) : 0;
 				double extraOffset = meterLengths != 0 ? meterLengths % metersPerTick : 0;
 
-				for (int height = 0; height < heightOfWallInNotes; height++)
+				maxWholeTick = minWholeTick + tickOffset;
+				
+				// The code below generates red walls as optimized models (max of 4 entities per tick)
+				if (widthOfWallInNotes == 1 || widthOfWallInNotes == 2)
 				{
-					for (int width = 0; width < widthOfWallInNotes; width++)
-					{
-						maxWholeTick = minWholeTick + tickOffset;
-						commandList.AppendFormat(Globals.templateStrings._positionCommand,
-												maxWholeTick,
-												0.3 * obstacle._lineIndex + 0.3d * width,
-												0.6d - 0.3d * height,
-												-extraOffset);
-						addToNumberOfCommands += 2;
-					}
+					int obsicalType = widthOfWallInNotes == 1 ? isHeightTall : isHeightTall + 2;
+					commandList.AppendFormat(Globals.templateStrings._wallCommand,
+											maxWholeTick,
+											0.3 * obstacle._lineIndex,
+											0.6d + -0.3 * isHeightTall,
+											-extraOffset,
+											Globals.obsicalTypes[obsicalType]);
+					addToNumberOfCommands += 2;
+				}
+				else if (widthOfWallInNotes == 3)
+				{
+					commandList.AppendFormat(Globals.templateStrings._wallCommand,
+											maxWholeTick,
+											0.3 * obstacle._lineIndex,
+											0.6d + -0.3 * isHeightTall,
+											-extraOffset,
+											Globals.obsicalTypes[isHeightTall + 2]);
+					commandList.AppendFormat(Globals.templateStrings._wallCommand,
+											maxWholeTick,
+											0.3 * (obstacle._lineIndex + 2),
+											0.6d + -0.3 * isHeightTall,
+											-extraOffset,
+											Globals.obsicalTypes[isHeightTall]);
+					addToNumberOfCommands += 4;
+				}
+				else if (widthOfWallInNotes == 4)
+				{
+					commandList.AppendFormat(Globals.templateStrings._wallCommand,
+											maxWholeTick,
+											0.3 * obstacle._lineIndex,
+											0.6d + -0.3 * isHeightTall,
+											-extraOffset,
+											Globals.obsicalTypes[isHeightTall + 2]);
+					commandList.AppendFormat(Globals.templateStrings._wallCommand,
+											maxWholeTick,
+											0.3 * (obstacle._lineIndex + 2),
+											0.6d + -0.3 * isHeightTall,
+											-extraOffset,
+											Globals.obsicalTypes[isHeightTall + 2]);
+					addToNumberOfCommands += 4;
 				}
 			}
 		}
