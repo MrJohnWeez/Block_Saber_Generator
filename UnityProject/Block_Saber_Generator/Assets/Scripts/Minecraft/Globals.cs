@@ -34,6 +34,7 @@ namespace Minecraft
 		public const string C_SetSpawnOrgin = "set_spawn_orgin.mcfunction";
 		public const string C_TemplateStrings = "TemplateStrings.json";
 		public const string C_MapDifficultyCompleted = "map_difficulty_completed.mcfunction";
+		public const string C_Tick = "tick.mcfunction";
 
 		// Sub words
 		public const string C_LvlNoteName = "_lvl_note_";

@@ -109,6 +109,8 @@ namespace Minecraft.Generator
 			StringBuilder spawnOrginCommands = new StringBuilder();
 			StringBuilder spawnNotesBaseCommands = new StringBuilder();
 			int difficultyNumber = 1;
+			bool oneTimeRun = false;
+
 
 			// Itterate though each song difficulty
 			foreach (BeatMapSong song in beatMapSongList)
@@ -158,6 +160,17 @@ namespace Minecraft.Generator
 				// Generate main note/obsicle data
 				GenerateNotes(song, difficultyName, commandBasePath, packInfo, dpd);
 				GenerateObsicles(song, difficultyName, commandBasePath, packInfo, dpd);
+
+				if(!oneTimeRun)
+				{
+					oneTimeRun = true;
+					string displayTitle = string.Format(Globals.templateStrings._displayTitle,
+														songDifficultyID,
+														dpd.keyVars["SONGID"],
+														dpd.keyVars["folder_uuid"]);
+					string tickFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_Tick);
+					SafeFileManagement.AppendFile(tickFilePath, displayTitle);
+				}
 
 				difficultyNumber++;
 			}
