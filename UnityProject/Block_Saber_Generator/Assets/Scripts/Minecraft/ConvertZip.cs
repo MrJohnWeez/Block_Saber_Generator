@@ -175,7 +175,7 @@ namespace Minecraft
 				{
 					string songData = Path.Combine(rootFilePath, difficultyBeatmaps._beatmapFilename);
 					BeatMapData beatMapData = JsonUtility.FromJson<BeatMapData>(SafeFileManagement.GetFileContents(songData));
-					beatMapSongList.Add(new BeatMapSong(beatMapData, difficultyBeatmaps));
+					beatMapSongList.Add(new BeatMapSong(beatMapData, difficultyBeatmaps, difficultyBeatmapSets._beatmapCharacteristicName));
 				}
 			}
 			return beatMapSongList;
