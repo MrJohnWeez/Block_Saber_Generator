@@ -19,6 +19,8 @@ experience set @p[scores={PlayerPlaying=1}] 0 points
 
 gamemode adventure @p[scores={PlayerPlaying=1}]
 gamerule sendCommandFeedback false
+gamerule announceAdvancements false
+difficulty normal
 
 #Spawn main points
 execute in minecraft:the_end run summon armor_stand 0 150.0 500 {Tags:[playerOrgin,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
