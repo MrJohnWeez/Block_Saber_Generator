@@ -118,61 +118,69 @@ namespace Minecraft.Generator
 				if (song.beatMapData == null)
 					return 3;
 
-				string difficultyName = song.difficultyBeatmaps._difficulty.MakeMinecraftSafe();
-
-				// Append running command lists
-				string songDifficultyID = dpd.UUIDVar + difficultyNumber.ToString();
-				scoreboardCommands.AppendFormat(Globals.templateStrings._scoreboardCommand,
-												songDifficultyID);
-
-				spawnOrginCommands.AppendFormat(Globals.templateStrings._spawnOrginCommands,
-												-dpd.metersPerTick * dpd.ticksStartOffset,
-												difficultyNumber);
-
-				spawnNotesBaseCommands.AppendFormat(Globals.templateStrings._spawnNotesBaseCommand,
-													difficultyNumber,
-													dpd.folder_uuid,
-													difficultyName);
-
-				CreateDifficultyDisplay(songDifficultyID, difficultyName, dpd.folder_uuid, ref difficultyDisplayCommands);
-
-
-				// Write difficulty-specific-file commands
-				string playCommands = string.Format(Globals.templateStrings._playCommands,
-													difficultyNumber,
-													dpd.folder_uuid);
-				string playPath = Path.Combine(dpd.folder_uuidFunctionsPath, difficultyName + "_play" + Globals.C_McFunction);
-				SafeFileManagement.SetFileContents(playPath, playCommands);
-
-
-				string playSongCommand = string.Format(Globals.templateStrings._playSongCommand,
-														dpd.ticksStartOffset - 1,
-														dpd.folder_uuid);
-				string commandBasePath = Path.Combine(dpd.folder_uuidFunctionsPath, difficultyName + Globals.C_McFunction);
-				SafeFileManagement.AppendFile(commandBasePath, playSongCommand);
-
-				string completedSongCommand = string.Format(Globals.templateStrings._completedSong,
-															difficultyNumber,
-															songDifficultyID);
-				string completedSongPath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_MapDifficultyCompleted);
-				SafeFileManagement.AppendFile(completedSongPath, completedSongCommand);
-
-				// Generate main note/obsicle data
-				GenerateNotes(song, difficultyName, commandBasePath, packInfo, dpd);
-				GenerateObsicles(song, difficultyName, commandBasePath, packInfo, dpd);
-
-				if(!oneTimeRun)
+				if(song.beatMapData._notes.Length > 0 || song.beatMapData._obstacles.Length > 0)
 				{
-					oneTimeRun = true;
-					string displayTitle = string.Format(Globals.templateStrings._displayTitle,
-														songDifficultyID,
-														dpd.keyVars["SONGID"],
-														dpd.keyVars["folder_uuid"]);
-					string tickFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_Tick);
-					SafeFileManagement.AppendFile(tickFilePath, displayTitle);
-				}
+					string difficultyName = "";
 
-				difficultyNumber++;
+					if (!song.beatmapCharacteristicName.IsEmpty())
+						difficultyName = song.beatmapCharacteristicName.MakeMinecraftSafe() + "_" + song.difficultyBeatmaps._difficulty.MakeMinecraftSafe();
+					else
+						difficultyName = song.difficultyBeatmaps._difficulty.MakeMinecraftSafe();
+
+					// Append running command lists
+					string songDifficultyID = dpd.UUIDVar + difficultyNumber.ToString();
+					scoreboardCommands.AppendFormat(Globals.templateStrings._scoreboardCommand,
+													songDifficultyID);
+
+					spawnOrginCommands.AppendFormat(Globals.templateStrings._spawnOrginCommands,
+													-dpd.metersPerTick * dpd.ticksStartOffset,
+													difficultyNumber);
+
+					spawnNotesBaseCommands.AppendFormat(Globals.templateStrings._spawnNotesBaseCommand,
+														difficultyNumber,
+														dpd.folder_uuid,
+														difficultyName);
+
+					CreateDifficultyDisplay(songDifficultyID, difficultyName, dpd.folder_uuid, ref difficultyDisplayCommands);
+
+
+					// Write difficulty-specific-file commands
+					string playCommands = string.Format(Globals.templateStrings._playCommands,
+														difficultyNumber,
+														dpd.folder_uuid);
+					string playPath = Path.Combine(dpd.folder_uuidFunctionsPath, difficultyName + "_play" + Globals.C_McFunction);
+					SafeFileManagement.SetFileContents(playPath, playCommands);
+
+
+					string playSongCommand = string.Format(Globals.templateStrings._playSongCommand,
+															dpd.ticksStartOffset - 1,
+															dpd.folder_uuid);
+					string commandBasePath = Path.Combine(dpd.folder_uuidFunctionsPath, difficultyName + Globals.C_McFunction);
+					SafeFileManagement.AppendFile(commandBasePath, playSongCommand);
+
+					string completedSongCommand = string.Format(Globals.templateStrings._completedSong,
+																difficultyNumber,
+																songDifficultyID);
+					string completedSongPath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_MapDifficultyCompleted);
+					SafeFileManagement.AppendFile(completedSongPath, completedSongCommand);
+
+					// Generate main note/obsicle data
+					GenerateNotes(song, difficultyName, commandBasePath, packInfo, dpd);
+					GenerateObsicles(song, difficultyName, commandBasePath, packInfo, dpd);
+
+					if (!oneTimeRun)
+					{
+						oneTimeRun = true;
+						string displayTitle = string.Format(Globals.templateStrings._displayTitle,
+															songDifficultyID,
+															dpd.keyVars["SONGID"],
+															dpd.keyVars["folder_uuid"]);
+						string tickFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_Tick);
+						SafeFileManagement.AppendFile(tickFilePath, displayTitle);
+					}
+
+					difficultyNumber++;
+				}
 			}
 
 			// Write collected commands to files

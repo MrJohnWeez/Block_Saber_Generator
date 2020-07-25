@@ -13,11 +13,13 @@ namespace BeatSaber
 	{
 		public BeatMapData beatMapData;
 		public _difficultyBeatmaps difficultyBeatmaps;
+		public string beatmapCharacteristicName;
 
-		public BeatMapSong(BeatMapData beatMapData, _difficultyBeatmaps difficultyBeatmaps)
+		public BeatMapSong(BeatMapData beatMapData, _difficultyBeatmaps difficultyBeatmaps, string beatmapCharacteristicName = "")
 		{
 			this.beatMapData = beatMapData;
 			this.difficultyBeatmaps = difficultyBeatmaps;
+			this.beatmapCharacteristicName = beatmapCharacteristicName;
 		}
 	}
 }
