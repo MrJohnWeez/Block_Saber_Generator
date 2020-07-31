@@ -6,7 +6,7 @@ ___
 
 ## Play Beat Saber in Minecraft
 
-    A unity 3d program that converts any Beat Saber map into a minecraft data/resource pack, allowing you to play Beat Saber in Minecraft!
+A unity 3d program that converts any Beat Saber map into a minecraft data/resource pack, allowing you to play Beat Saber in Minecraft!
 
 ## Trailer
 
@@ -52,7 +52,7 @@ ___
 
 ## About
 
-    I have worked on this over the past few summer months. Over about 80 hours of work I was able to create a program to convert Beat Saber maps into Minecraft 1.16+ Data/Resource packs. I think it turned out good for a just for fun project.
+I have worked on this over the past few summer months. Over about 80 hours of work I was able to create a program to convert Beat Saber maps into Minecraft 1.16+ Data/Resource packs. I think it turned out good for a just for fun project.
 
 ## Logo
 
@@ -62,4 +62,4 @@ ___
 
 ## Disclaimer
 
-    This is not affiliated, associated, authorized, endorsed by, or in any way officially connected to Beat Saber, Minecraft, Beat Games, Beastsaber, or Mojang
+This is not affiliated, associated, authorized, endorsed by, or in any way officially connected to Beat Saber, Minecraft, Beat Games, Beastsaber, or Mojang
