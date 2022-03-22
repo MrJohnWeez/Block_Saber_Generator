@@ -1,8 +1,9 @@
-﻿{
+{
     "files.exclude":
     {
         "**/.DS_Store":true,
         "**/.git":true,
+        "**/.gitignore":true,
         "**/.gitmodules":true,
         "**/*.booproj":true,
         "**/*.pidb":true,
@@ -48,8 +49,12 @@
         "library/":true,
         "obj/":true,
         "Obj/":true,
-        "ProjectSettings/":true,
         "temp/":true,
         "Temp/":true
-    }
+    },
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "cSpell.words": [
+        "Datas"
+    ]
 }
