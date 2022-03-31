@@ -1521,6 +1521,7 @@ GameObject:
   - component: {fileID: 584248685}
   - component: {fileID: 584248684}
   - component: {fileID: 584248683}
+  - component: {fileID: 584248686}
   m_Layer: 5
   m_Name: FindSongs
   m_TagString: Untagged
@@ -1593,9 +1594,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 855217012}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: ToBeastSaberSite
+      - m_Target: {fileID: 584248686}
+        m_TargetAssemblyTypeName: Utilities.Components.URLOpener, Assembly-CSharp-firstpass
+        m_MethodName: OpenURL
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1643,6 +1644,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 584248681}
   m_CullTransparentMesh: 0
+--- !u!114 &584248686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 584248681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59987f3dbe6387b44832407505f456e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _url: https://bsaber.com/songs/top/
 --- !u!1 &618854946
 GameObject:
   m_ObjectHideFlags: 0
@@ -1667,13 +1681,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 618854946}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2016961630}
-  m_RootOrder: 0
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &618854948
 MonoBehaviour:
@@ -1687,10 +1701,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9ca0d88ccbb5bb43861ff2060e376ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _selectionManager: {fileID: 1633107594}
-  _conversionPrefab: {fileID: 8998686529291936901, guid: 1749d53d01470fb4382cddc6c590255b,
-    type: 3}
-  _processingRoot: {fileID: 1341726358}
 --- !u!1 &695194338
 GameObject:
   m_ObjectHideFlags: 0
@@ -1967,50 +1977,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 751886600}
   m_CullTransparentMesh: 0
---- !u!1 &855217011
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 855217013}
-  - component: {fileID: 855217012}
-  m_Layer: 0
-  m_Name: WebManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &855217012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 855217011}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f758d94cb1468d64993d29bcaa374db8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &855217013
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 855217011}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2016961630}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &868926625
 GameObject:
   m_ObjectHideFlags: 0
@@ -3002,6 +2968,7 @@ GameObject:
   - component: {fileID: 1320314130}
   - component: {fileID: 1320314129}
   - component: {fileID: 1320314131}
+  - component: {fileID: 1320314132}
   m_Layer: 5
   m_Name: Watermark
   m_TagString: Untagged
@@ -3111,9 +3078,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 855217012}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: ToMrJohnWeezSite
+      - m_Target: {fileID: 1320314132}
+        m_TargetAssemblyTypeName: Utilities.Components.URLOpener, Assembly-CSharp-firstpass
+        m_MethodName: OpenURL
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3123,6 +3090,19 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1320314132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1320314127}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59987f3dbe6387b44832407505f456e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _url: https://www.mrjohnweez.com
 --- !u!1 &1341726358
 GameObject:
   m_ObjectHideFlags: 0
@@ -3579,6 +3559,7 @@ GameObject:
   - component: {fileID: 1582998304}
   - component: {fileID: 1582998303}
   - component: {fileID: 1582998302}
+  - component: {fileID: 1582998305}
   m_Layer: 5
   m_Name: HelpButton
   m_TagString: Untagged
@@ -3651,9 +3632,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 855217012}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: ToMrJohnWeezHelpSite
+      - m_Target: {fileID: 1582998305}
+        m_TargetAssemblyTypeName: Utilities.Components.URLOpener, Assembly-CSharp-firstpass
+        m_MethodName: OpenURL
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3701,6 +3682,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1582998300}
   m_CullTransparentMesh: 0
+--- !u!114 &1582998305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582998300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59987f3dbe6387b44832407505f456e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _url: https://www.mrjohnweez.com/blocksaber.html
 --- !u!1 &1633107591
 GameObject:
   m_ObjectHideFlags: 0
@@ -3815,8 +3809,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c67d2123a79016e45927f50160f4d324, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _processManager: {fileID: 618854948}
-  _outputPathText: {fileID: 1676527598}
 --- !u!95 &1633107595
 Animator:
   serializedVersion: 4
@@ -3872,7 +3864,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 66.339966, y: 40}
+  m_AnchoredPosition: {x: 66.33984, y: 40}
   m_SizeDelta: {x: -212.67993, y: 47.398163}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1676527598
@@ -4277,39 +4269,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1923667615}
   m_CullTransparentMesh: 0
---- !u!1 &2016961629
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2016961630}
-  m_Layer: 0
-  m_Name: Managers
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2016961630
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2016961629}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 618854947}
-  - {fileID: 855217013}
-  m_Father: {fileID: 0}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2109178038
 GameObject:
   m_ObjectHideFlags: 0
