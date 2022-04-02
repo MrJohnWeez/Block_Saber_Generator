@@ -20,6 +20,6 @@ gamerule announceAdvancements false
 difficulty normal
 
 #Spawn main points
-execute in minecraft:the_end run summon armor_stand 0 150.0 500 {Tags:[playerOrgin,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute in minecraft:the_end run summon armor_stand 0 150.0 500 {Tags:[fakePlayerEyes,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute in minecraft:the_end run summon armor_stand 0 150.0 500 {Tags:[nodeCursor,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute in minecraft:the_end run summon armor_stand 0 150.0 500 {Tags:[playerOrgin,blocksaber],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute in minecraft:the_end run summon armor_stand 0 150.0 500 {Tags:[fakePlayerEyes,blocksaber],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute in minecraft:the_end run summon armor_stand 0 150.0 500 {Tags:[nodeCursor,blocksaber],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}

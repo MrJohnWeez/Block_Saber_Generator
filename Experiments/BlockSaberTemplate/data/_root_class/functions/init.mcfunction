@@ -45,9 +45,6 @@ gamerule sendCommandFeedback false
 gamerule announceAdvancements false
 difficulty normal
 
-# Auto Display Songs
-# execute as @r at @s run function _root_class:stop_main_menu
-
 scoreboard objectives add EndIsLoaded dummy
 scoreboard players set #BlockSaberGlobal EndIsLoaded 0
 scoreboard objectives add LevelMapSpawned dummy
