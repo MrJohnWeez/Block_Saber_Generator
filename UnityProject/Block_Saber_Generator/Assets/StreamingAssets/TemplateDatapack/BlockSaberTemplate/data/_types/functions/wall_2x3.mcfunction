@@ -1,1 +1,1 @@
-execute at @s run summon armor_stand ~ ~ ~ {Tags:[wall_2x3,node,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,ArmorItems:[{},{},{},{Count:1b,id:"minecraft:magenta_stained_glass",tag:{Enchantments:[{lvl:3,id:"minecraft:unbreaking"}]}}],Marker:1b,Invulnerable:1b,Small:1b}
+execute at @s run summon armor_stand ~ ~ ~ {Tags:[wall_2x3,node,blocksaber],DisabledSlots:4096,Invisible:1b,NoGravity:1b,ArmorItems:[{},{},{},{Count:1b,id:"minecraft:stick",tag:{CustomModelData:23,Enchantments:[{lvl:3,id:"minecraft:unbreaking"}]}}],Marker:1b,Invulnerable:1b,Small:1b}

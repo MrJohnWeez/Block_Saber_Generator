@@ -17,21 +17,21 @@ execute in minecraft:the_end run setblock 0 140 500 air
 
 # c# code
 #   string part1 = "\"[\\\"\\\",{\\\"text\\\":\\\"";
-#   		string part2 = "\\\",\\\"color\\\":\\\"white\\\"},{\\\"text\\\":\\\"";
-#   		string part3 = "\\\",\\\"color\\\":\\\"dark_gray\\\"}]\"\n\r";
-#   		StringBuilder sb = new StringBuilder();
-#   		for(int i = 0; i <= 100; i += 2)
-#   		{
-#   			sb.AppendFormat("execute if score #BlockSaberGlobal HealthPoints matches {0}..{1} run data modify entity @e[type=armor_stand,tag=healthDisplay,#   limit=1] CustomName set value ", i, i+1);
-#   			sb.Append(part1);
-#   			for(int x = 0; x < i / 2; x++)
-#   			{sb.Append("▏");}
-#   			sb.Append(part2);
-#   			for(int x = 0; x < (100 - i) / 2; x++)
-#   			{sb.Append("▏");}
-#   			sb.Append(part3);
-#   		}
-#   		Console.WriteLine(sb.ToString());
+#   string part2 = "\\\",\\\"color\\\":\\\"white\\\"},{\\\"text\\\":\\\"";
+#   string part3 = "\\\",\\\"color\\\":\\\"dark_gray\\\"}]\"\n\r";
+#   StringBuilder sb = new StringBuilder();
+#   for(int i = 0; i <= 100; i += 2)
+#   {
+#       sb.AppendFormat("execute if score #BlockSaberGlobal HealthPoints matches {0}..{1} run data modify entity @e[type=armor_stand,tag=healthDisplay,#   limit=1] CustomName set value ", i, i+1);
+#       sb.Append(part1);
+#       for(int x = 0; x < i / 2; x++)
+#       {sb.Append("▏");}
+#       sb.Append(part2);
+#       for(int x = 0; x < (100 - i) / 2; x++)
+#       {sb.Append("▏");}
+#       sb.Append(part3);
+#   }
+#   Console.WriteLine(sb.ToString());
 
 execute if score #BlockSaberGlobal HealthPoints matches ..1 run data modify entity @e[type=armor_stand,tag=healthDisplay,limit=1] CustomName set value "[\"\",{\"text\":\"\",\"color\":\"white\"},{\"text\":\"▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏\",\"color\":\"dark_gray\"}]"
 execute if score #BlockSaberGlobal HealthPoints matches 2..3 run data modify entity @e[type=armor_stand,tag=healthDisplay,limit=1] CustomName set value "[\"\",{\"text\":\"▏\",\"color\":\"white\"},{\"text\":\"▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏\",\"color\":\"dark_gray\"}]"

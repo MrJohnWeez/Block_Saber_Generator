@@ -1,4 +1,4 @@
-#> Only if song is active does this code run at 20 tps
+# Only if song is active does this code run at 20 tps
 
 # Add tick count and spawn notes
 function folder_uuid:spawn_notes_base

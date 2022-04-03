@@ -1,5 +1,4 @@
 function _root_class:stop
-execute as @s run function _root_class:configure_base
 scoreboard players set @s PlayerPlaying 1
 
 # Give 3sec delay until song starts

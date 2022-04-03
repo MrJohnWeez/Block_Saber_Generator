@@ -1,6 +1,3 @@
 {
-    "block.minecraft.structure_void": "BeatSaber Void",
-    "block.minecraft.dead_fire_coral_block": "Red Saber",
-    "item.minecraft.name_tag": "Blue Saber",
-    "item.minecraft.spectral_arrow": "Main Menu"
+    "block.minecraft.structure_void": "BeatSaber Void"
 }
