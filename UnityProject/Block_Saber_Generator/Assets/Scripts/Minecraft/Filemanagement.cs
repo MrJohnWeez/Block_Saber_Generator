@@ -1,16 +1,11 @@
-﻿// Created by MrJohnWeez
-// June 2020
-
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
 
 namespace Minecraft
 {
     /// <summary>
-    /// Generaic file management that is common for Minecraft datapack and resource
+    /// Generic file management that is common for Minecraft datapack and resource
     /// pack generation
     /// </summary>
     public static class Filemanagement

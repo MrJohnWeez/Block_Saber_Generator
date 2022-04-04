@@ -53,10 +53,10 @@ namespace Minecraft
         public const string C_Datapack = "DataPack_";
         public const string C_BlockSaberBase = "_root_class";
         public const string C_FolderUUID = "folder_uuid";
-        // public static readonly string pathOfResourcepackTemplate = Path.Combine(ProcessManager.streamingAssets, "TemplateResourcepack");
-        // public static readonly string pathOfDatapackTemplate = Path.Combine(ProcessManager.streamingAssets, "TemplateDatapack");
-        // public static readonly string pathOfTemplateStrings = Path.Combine(ProcessManager.streamingAssets, C_TemplateStrings);
-        // public static readonly TemplateStrings templateStrings = JsonUtility.FromJson<TemplateStrings>(SafeFileManagement.GetFileContents(pathOfTemplateStrings));
+        public static readonly string pathOfResourcepackTemplate = Path.Combine(ProcessManager.streamingAssets, "TemplateResourcepack");
+        public static readonly string pathOfDatapackTemplate = Path.Combine(ProcessManager.streamingAssets, "TemplateDatapack");
+        public static readonly string pathOfTemplateStrings = Path.Combine(ProcessManager.streamingAssets, C_TemplateStrings);
+        public static readonly TemplateStrings templateStrings = JsonUtility.FromJson<TemplateStrings>(SafeFileManagement.GetFileContents(pathOfTemplateStrings));
         public static readonly string[] obsicalTypes = new string[4] {
                                                                         "wall_1x1",
                                                                         "wall_1x3",
