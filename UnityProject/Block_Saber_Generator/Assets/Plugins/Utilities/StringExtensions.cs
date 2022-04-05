@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Utilities
 {
     /// <summary>
-    /// Some functions to exetend the string class
+    /// Some functions to extend the string class
     /// </summary>
     public static class StringExtensions
     {
@@ -20,11 +20,14 @@ namespace Utilities
             if (!string.IsNullOrEmpty(value) && value.Length > positiveLength && newLength != 0)
             {
                 if (newLength > 0)
+                {
                     return value.Substring(0, newLength);
+                }
                 else
+                {
                     return value.Substring(value.Length - positiveLength, positiveLength);
+                }
             }
-
             return value;
         }
 

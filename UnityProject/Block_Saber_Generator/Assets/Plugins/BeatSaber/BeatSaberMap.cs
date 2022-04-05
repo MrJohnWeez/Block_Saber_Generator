@@ -1,36 +1,39 @@
 using System;
+using System.Collections.Generic;
 using BeatSaber.Data;
+using Utilities.Wrappers;
 
 namespace BeatSaber
 {
     public class BeatSaberMap
     {
-        private Info _info;
-        private MapData[] _mapDatas;
-        private string _extractedFilePath;
-        private Guid _guid;
+        private Info infoData;
+        private Dictionary<string, MapDataInfo> mapDataInfos;
+        private string extractedFilePath;
+        private Guid guidId;
 
 
-        public Info Info { get => _info; set => _info = value; }
+        public Info InfoData { get => infoData; set => infoData = value; }
 
-        public MapData[] MapData { get => _mapDatas; set => _mapDatas = value; }
+        public Dictionary<string, MapDataInfo> MapDataInfos { get => mapDataInfos; set => mapDataInfos = value; }
 
-        public string ExtractedFilePath { get => _extractedFilePath; set => _extractedFilePath = value; }
+        public string ExtractedFilePath { get => extractedFilePath; set => extractedFilePath = value; }
 
-        public Guid Guid { get => _guid; set => _guid = value; }
+        public Guid GuidId { get => guidId; set => guidId = value; }
 
 
-        public BeatSaberMap(Info info, MapData[] mapDatas, string filePath)
+        public BeatSaberMap(Info info, Dictionary<string, MapDataInfo> mapDataInfos, string filePath)
         {
-            _info = info;
-            _mapDatas = mapDatas;
-            _extractedFilePath = filePath;
-            _guid = Guid.NewGuid();
+            this.infoData = info;
+            this.mapDataInfos = mapDataInfos;
+            this.extractedFilePath = filePath;
+            this.guidId = Guid.NewGuid();
         }
+
 
         public void DeleteFolder()
         {
-            SafeFileManagement.DeleteDirectory(_extractedFilePath);
+            SafeFileManagement.DeleteDirectory(extractedFilePath);
         }
     }
 }

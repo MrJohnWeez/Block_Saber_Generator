@@ -1,6 +1,6 @@
 using System.Threading;
-using UnityEngine;
 using BeatSaber;
+using UnityEngine;
 
 public class Test : MonoBehaviour
 {
@@ -13,7 +13,7 @@ public class Test : MonoBehaviour
         var _asyncSourceCancel = new CancellationTokenSource();
         string zipPath = @"C:\Users\John\Desktop\TestPacks\TestPackSong.zip";
         beatData = MapLoader.GetDataFromMapZip(zipPath, temporaryPath, _asyncSourceCancel.Token).Result;
-        Debug.Log(beatData.Info.Version);
+        Debug.Log(beatData.InfoData.Version);
         beatData.DeleteFolder();
     }
 }

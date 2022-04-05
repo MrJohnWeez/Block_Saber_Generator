@@ -1,8 +1,9 @@
-﻿using BeatSaber;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
+using BeatSaber;
 using UnityEngine;
-using MrJohnWeez.Extensions;
+using Utilities;
+using Utilities.Wrappers;
 
 namespace Minecraft.Generator
 {
@@ -26,11 +27,11 @@ namespace Minecraft.Generator
 
         public DataPackData(string unzippedFolderPath, string datapackOutputPath, BeatSaberMap beatSaberMap)
         {
-            var packInfo = beatSaberMap.Info;
+            var packInfo = beatSaberMap.InfoData;
             keyVars = new Dictionary<string, string>();
             folder_uuid = SafeFileManagement.GetFileName(Path.GetFileName(unzippedFolderPath)).MakeMinecraftSafe();
             packName = Globals.C_Datapack + folder_uuid;
-            uuid = beatSaberMap.Guid.ToString("X");
+            uuid = beatSaberMap.GuidId.ToString("X");
 
             // Paths
             datapackRootPath = Path.Combine(unzippedFolderPath, packName);
@@ -54,7 +55,7 @@ namespace Minecraft.Generator
             keyVars["folder_uuid"] = folder_uuid;
 
             string listOfDifficulties = "";
-            var beatMapSets = beatSaberMap.Info.DifficultyBeatmapSets;
+            var beatMapSets = beatSaberMap.InfoData.DifficultyBeatmapSets;
             for (int beatMapCount = 0; beatMapCount < beatMapSets.Length; beatMapCount++)
             {
                 var beatMapInfos = beatMapSets[beatMapCount].DifficultyBeatmaps;

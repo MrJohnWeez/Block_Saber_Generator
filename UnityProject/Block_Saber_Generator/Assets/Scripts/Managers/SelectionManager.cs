@@ -1,10 +1,11 @@
-﻿using B83.Win32;
-using SFB;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
+using B83.Win32;
+using SFB;
 using TMPro;
+using UnityEngine;
 using Utilities;
+using Utilities.Wrappers;
 
 /// <summary>
 /// Manages the files section process and user settings
@@ -12,8 +13,6 @@ using Utilities;
 [RequireComponent(typeof(Animator))]
 public class SelectionManager : MonoBehaviour
 {
-
-
     [SerializeField] private ProcessManager _processManager = null;
     [SerializeField] private TMP_Text _outputPathText = null;
 
@@ -51,6 +50,7 @@ public class SelectionManager : MonoBehaviour
     protected void OnDisable()
     {
         UnityDragAndDropHook.UninstallHook();
+        UnityDragAndDropHook.OnDroppedFiles -= FilesDropped;
     }
 
     public void PointerEnter()

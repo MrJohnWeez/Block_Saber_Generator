@@ -1,15 +1,13 @@
-﻿// Created by MrJohnWeez
-// June 2020
-
-using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System;
-using UnityEngine;
 using System.Text;
-using MrJohnWeez.Extensions;
 using System.Threading;
 using System.Threading.Tasks;
+using BeatSaber;
+using BeatSaber.Data;
+using UnityEngine;
+using Utilities;
+using Utilities.Wrappers;
 
 namespace Minecraft.Generator
 {
@@ -27,18 +25,17 @@ namespace Minecraft.Generator
         /// <param name="beatMapSongList">List of Beat Saber song data</param>
         /// <param name="cancellationToken">Token that allows async function to be canceled</param>
         /// <returns></returns>
-        public static Task<int> FromBeatSaberData(string unzippedFolderPath, string datapackOutputPath, Info packInfo, List<BeatMapSong> beatMapSongList, CancellationToken cancellationToken)
+        public static Task<int> FromBeatSaberData(string datapackOutputPath, BeatSaberMap beatSaberMap, CancellationToken cancellationToken)
         {
             return Task.Run(() =>
             {
-
-                // Validate inputs
-                if (!Directory.Exists(unzippedFolderPath) || packInfo == null || beatMapSongList == null)
+                var unzippedFolderPath = beatSaberMap.ExtractedFilePath;
+                if (!Directory.Exists(unzippedFolderPath))
+                {
                     return 0;
-
-                DataPackData dpd = new DataPackData(unzippedFolderPath, datapackOutputPath, packInfo, beatMapSongList);
-
-                if (beatMapSongList.Count > 0)
+                }
+                DataPackData dataPackData = new DataPackData(unzippedFolderPath, datapackOutputPath, beatSaberMap);
+                if (beatSaberMap.InfoData.DifficultyBeatmapSets.Length > 0)
                 {
                     // Copying Template
                     string copiedTemplatePath = Path.Combine(unzippedFolderPath, Globals.C_TemplateDataPackName);
@@ -46,34 +43,35 @@ namespace Minecraft.Generator
                     {
                         try
                         {
-                            if (SafeFileManagement.MoveDirectory(copiedTemplatePath, dpd.datapackRootPath, Globals.C_numberOfIORetryAttempts))
+                            if (SafeFileManagement.MoveDirectory(copiedTemplatePath, dataPackData.datapackRootPath, Globals.C_numberOfIORetryAttempts))
                             {
                                 cancellationToken.ThrowIfCancellationRequested();
 
                                 // Must change the folder names before searching for keys
-                                string songname_uuidFolder = Path.Combine(dpd.datapackRootPath, Globals.C_Data, Globals.C_FolderUUID);
-                                string newPath = Path.Combine(dpd.datapackRootPath, Globals.C_Data, dpd.folder_uuid);
+                                string songname_uuidFolder = Path.Combine(dataPackData.datapackRootPath, Globals.C_Data, Globals.C_FolderUUID);
+                                string newPath = Path.Combine(dataPackData.datapackRootPath, Globals.C_Data, dataPackData.folder_uuid);
                                 SafeFileManagement.MoveDirectory(songname_uuidFolder, newPath, Globals.C_numberOfIORetryAttempts);
 
                                 // Updating Copied files
-                                Filemanagement.UpdateAllCopiedFiles(dpd.datapackRootPath, dpd.keyVars, true, Globals.excludeKeyVarExtensions);
+                                Filemanagement.UpdateAllCopiedFiles(dataPackData.datapackRootPath, dataPackData.keyVars, true, Globals.excludeKeyVarExtensions);
 
                                 // Copying Image Icon
-                                string mapIcon = Path.Combine(unzippedFolderPath, packInfo._coverImageFilename);
-                                string packIcon = Path.Combine(dpd.datapackRootPath, Globals.C_PackIcon);
+                                string mapIcon = Path.Combine(unzippedFolderPath, beatSaberMap.InfoData.CoverImageFilename);
+                                string packIcon = Path.Combine(dataPackData.datapackRootPath, Globals.C_PackIcon);
                                 SafeFileManagement.CopyFileTo(mapIcon, packIcon, true, Globals.C_numberOfIORetryAttempts);
 
                                 cancellationToken.ThrowIfCancellationRequested();
 
                                 // Generating main datapack files
-                                int errorCode = GenerateMCBeatData(beatMapSongList, packInfo, dpd);
+                                int errorCode = GenerateMCBeatData(beatSaberMap, dataPackData);
                                 if (errorCode >= 0)
+                                {
                                     return errorCode;
-
+                                }
                                 cancellationToken.ThrowIfCancellationRequested();
 
                                 // Zipping files
-                                Archive.Compress(dpd.datapackRootPath, dpd.fullOutputPath);
+                                Archive.Compress(dataPackData.datapackRootPath, dataPackData.fullOutputPath);
                                 return -1;
                             }
                         }
@@ -98,38 +96,30 @@ namespace Minecraft.Generator
         /// <param name="packInfo">Beat Saber Parsed info</param>
         /// <param name="dpd">Data used for datapack generation</param>
         /// <returns></returns>
-        public static int GenerateMCBeatData(List<BeatMapSong> beatMapSongList, Info packInfo, DataPackData dpd)
+        public static int GenerateMCBeatData(BeatSaberMap beatSaberMap, DataPackData dpd)
         {
-
             StringBuilder difficultyDisplayCommands = new StringBuilder();
             StringBuilder scoreboardCommands = new StringBuilder();
-            StringBuilder spawnOrginCommands = new StringBuilder();
+            StringBuilder spawnOriginCommands = new StringBuilder();
             StringBuilder spawnNotesBaseCommands = new StringBuilder();
             int difficultyNumber = 1;
             bool oneTimeRun = false;
 
-
-            // Itterate though each song difficulty
-            foreach (BeatMapSong song in beatMapSongList)
+            // Iterate though each song difficulty
+            var mapDataInfos = beatSaberMap.MapDataInfos;
+            foreach (var key in mapDataInfos.Keys)
             {
-                if (song.beatMapData == null)
-                    return 3;
-
-                if (song.beatMapData._notes.Length > 0 || song.beatMapData._obstacles.Length > 0)
+                var mapDataInfo = mapDataInfos[key];
+                if (mapDataInfo.MapData.Notes.Length > 0 || mapDataInfo.MapData.Obstacles.Length > 0)
                 {
-                    string difficultyName = "";
-
-                    if (!song.beatmapCharacteristicName.IsEmpty())
-                        difficultyName = song.beatmapCharacteristicName.MakeMinecraftSafe() + "_" + song.difficultyBeatmaps._difficulty.MakeMinecraftSafe();
-                    else
-                        difficultyName = song.difficultyBeatmaps._difficulty.MakeMinecraftSafe();
+                    string difficultyName = mapDataInfo.DifficultyBeatmapInfo.Difficulty.MakeMinecraftSafe();
 
                     // Append running command lists
-                    string songDifficultyID = dpd.UUIDVar + difficultyNumber.ToString();
+                    string songDifficultyID = dpd.uuid + difficultyNumber.ToString();
                     scoreboardCommands.AppendFormat(Globals.templateStrings._scoreboardCommand,
                                                     songDifficultyID);
 
-                    spawnOrginCommands.AppendFormat(Globals.templateStrings._spawnOrginCommands,
+                    spawnOriginCommands.AppendFormat(Globals.templateStrings._spawnOriginCommands,
                                                     -dpd.metersPerTick * dpd.ticksStartOffset,
                                                     difficultyNumber);
 
@@ -161,9 +151,9 @@ namespace Minecraft.Generator
                     string completedSongPath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_MapDifficultyCompleted);
                     SafeFileManagement.AppendFile(completedSongPath, completedSongCommand);
 
-                    // Generate main note/obsicle data
-                    GenerateNotes(song, difficultyName, commandBasePath, packInfo, dpd);
-                    GenerateObsicles(song, difficultyName, commandBasePath, packInfo, dpd);
+                    // Generate main note/obstacle data
+                    GenerateNotes(mapDataInfo.MapData, difficultyName, commandBasePath, beatSaberMap.InfoData, dpd);
+                    GenerateObstacles(mapDataInfo.MapData, difficultyName, commandBasePath, beatSaberMap.InfoData, dpd);
 
                     if (!oneTimeRun)
                     {
@@ -186,7 +176,7 @@ namespace Minecraft.Generator
             string setSpawnOrginFunctionPath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_SetSpawnOrgin);
 
             SafeFileManagement.AppendFile(dpd.spawnNotesBasePath, spawnNotesBaseCommands.ToString());
-            SafeFileManagement.AppendFile(setSpawnOrginFunctionPath, spawnOrginCommands.ToString());
+            SafeFileManagement.AppendFile(setSpawnOrginFunctionPath, spawnOriginCommands.ToString());
             SafeFileManagement.AppendFile(initFunctionPath, scoreboardCommands.ToString());
 
             // Add back button in tellraw
@@ -203,10 +193,8 @@ namespace Minecraft.Generator
         /// <param name="commandBasePath">Base folder path to generate new mcfunctions</param>
         /// <param name="packInfo">Beat Saber Parsed info</param>
         /// <param name="dpd">Data used for datapack generation</param>
-        public static void GenerateNotes(BeatMapSong song, string difficultyName, string commandBasePath, Info packInfo, DataPackData dpd)
+        public static void GenerateNotes(MapData song, string difficultyName, string commandBasePath, Info packInfo, DataPackData dpd)
         {
-            _notes[] notes = song.beatMapData._notes;
-
             double prevNodeTime = 0;
             int nodeRowID = 1;
             int currentLevel = 1;
@@ -216,6 +204,7 @@ namespace Minecraft.Generator
             int noteIndex = 0;
             int currentCommandLimit = Globals.C_CommandLimit;
 
+            var notes = song.Notes;
             // Main note generation
             while (noteIndex < notes.Length)
             {
@@ -223,18 +212,19 @@ namespace Minecraft.Generator
                 string commandLevelFileName = commandLevelName + Globals.C_McFunction;
                 string commandLevelFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, commandLevelFileName);
                 StringBuilder currentCommands = new StringBuilder();
-                // Continue to generate commands until all nodes and obsicles have been itterated though
+
+                // Continue to generate commands until all nodes and obstacles have been iterated though
                 while (noteIndex < notes.Length && currentNumberOfCommands < currentCommandLimit)
                 {
-                    if (prevNodeTime != notes[noteIndex]._time)
+                    if (prevNodeTime != notes[noteIndex].Time)
                     {
-                        prevNodeTime = notes[noteIndex]._time;
+                        prevNodeTime = notes[noteIndex].Time;
                         nodeRowID++;
                     }
 
-                    NodeDataToCommands(notes[noteIndex], packInfo._beatsPerMinute, dpd.metersPerTick, nodeRowID, ref currentCommands, ref currentTick);
+                    NodeDataToCommands(notes[noteIndex], packInfo.BeatsPerMinute, dpd.metersPerTick, nodeRowID, ref currentCommands, ref currentTick);
 
-                    prevNodeTime = notes[noteIndex]._time;
+                    prevNodeTime = notes[noteIndex].Time;
                     currentNumberOfCommands += 3;
                     noteIndex++;
                 }
@@ -258,7 +248,7 @@ namespace Minecraft.Generator
                 currentLevel++;
             }
 
-            // Note pretty buy create a command if no obsicles are present in a map
+            // Note pretty buy create a command if no obstacles are present in a map
             if (notes.Length == 0)
             {
                 currentTick += (int)(dpd.ticksStartOffset + 1); ;
@@ -279,17 +269,17 @@ namespace Minecraft.Generator
         }
 
         /// <summary>
-        /// Generate obsicles commands given a song and difficulty
+        /// Generate obstacles commands given a song and difficulty
         /// </summary>
         /// <param name="song">Beatmap data for a song and difficulty</param>
         /// <param name="difficultyName">Minecraft safe difficulty name</param>
         /// <param name="commandBasePath">Base folder path to generate new mcfunctions</param>
         /// <param name="packInfo">Beat Saber Parsed info</param>
         /// <param name="dpd">Data used for datapack generation</param>
-        public static void GenerateObsicles(BeatMapSong song, string difficultyName, string commandBasePath, Info packInfo, DataPackData dpd)
+        public static void GenerateObstacles(MapData song, string difficultyName, string commandBasePath, Info packInfo, DataPackData dpd)
         {
-            _obstacles[] obstacles = song.beatMapData._obstacles;
-            int obsicleIndex = 0;
+            Obstacle[] obstacles = song.Obstacles;
+            int obstacleIndex = 0;
             int currentLevel = 1;
             int currentTick = 0;
             int maxTick = 0;
@@ -299,9 +289,9 @@ namespace Minecraft.Generator
             int currentCommandLimit = Globals.C_CommandLimit;
 
             // Main note generation
-            while (obsicleIndex < obstacles.Length)
+            while (obstacleIndex < obstacles.Length)
             {
-                string commandLevelName = difficultyName + Globals.C_LvlObsicleName + currentLevel;
+                string commandLevelName = difficultyName + Globals.C_LvlObstacleName + currentLevel;
                 string commandLevelFileName = commandLevelName + Globals.C_McFunction;
                 string commandLevelFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, commandLevelFileName);
                 StringBuilder currentCommands = new StringBuilder();
@@ -310,23 +300,27 @@ namespace Minecraft.Generator
                 minTick = -1;
 
                 // Continue to generate commands until all nodes and obsicles have been itterated though
-                while (obsicleIndex < obstacles.Length && currentNumberOfCommands < currentCommandLimit)
+                while (obstacleIndex < obstacles.Length && currentNumberOfCommands < currentCommandLimit)
                 {
-                    ObsicleDataToCommands(obstacles[obsicleIndex], packInfo._beatsPerMinute, dpd.metersPerTick, ref currentCommands, ref currentNumberOfCommands, ref minNewTick, ref maxNewTick);
+                    ObstacleDataToCommands(obstacles[obstacleIndex], packInfo.BeatsPerMinute, dpd.metersPerTick, ref currentCommands, ref currentNumberOfCommands, ref minNewTick, ref maxNewTick);
                     if (minTick == -1)
+                    {
                         minTick = minNewTick;
+                    }
 
                     maxTick = Mathf.Max(maxTick, maxNewTick);
-                    obsicleIndex++;
+                    obstacleIndex++;
                 }
 
-                if (obsicleIndex >= obstacles.Length)
+                if (obstacleIndex >= obstacles.Length)
                 {
                     maxTick += (int)(dpd.ticksStartOffset + 1);
-                    currentCommands.AppendFormat(Globals.templateStrings._finishedObsicles,
+                    currentCommands.AppendFormat(Globals.templateStrings._finishedObstacles,
                                                 maxTick);
                     if (minTick == -1)
+                    {
                         minTick = maxTick - 1;
+                    }
                 }
 
                 SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands.ToString());
@@ -343,15 +337,15 @@ namespace Minecraft.Generator
                 currentLevel++;
             }
 
-            // Note pretty buy create a command if no obsicles are present in a map
+            // Note pretty buy create a command if no obstacles are present in a map
             if (obstacles.Length == 0)
             {
-                string commandLevelName = difficultyName + Globals.C_LvlObsicleName + currentLevel;
+                string commandLevelName = difficultyName + Globals.C_LvlObstacleName + currentLevel;
                 string commandLevelFileName = commandLevelName + Globals.C_McFunction;
                 string commandLevelFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, commandLevelFileName);
                 StringBuilder currentCommands = new StringBuilder();
                 currentTick++;
-                currentCommands.AppendFormat(Globals.templateStrings._finishedObsicles,
+                currentCommands.AppendFormat(Globals.templateStrings._finishedObstacles,
                                             currentTick);
                 SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands.ToString());
                 string baseCommand = string.Format(Globals.templateStrings._baseCommand,
@@ -364,38 +358,40 @@ namespace Minecraft.Generator
         }
 
         /// <summary>
-        /// Generate commands to produce a beat saber obsicle
+        /// Generate commands to produce a beat saber obstacle
         /// </summary>
-        /// <param name="obstacle">Obsicle data</param>
+        /// <param name="obstacle">Obstacle data</param>
         /// <param name="bpm">Beats per minute</param>
         /// <param name="metersPerTick">Distance note travels per tick</param>
         /// <param name="commandList">String Builder object to append to</param>
         /// <param name="addToNumberOfCommands">Output of number of commands generated</param>
         /// <param name="minWholeTick">Output of min minecraft tick used</param>
         /// <param name="maxWholeTick">Output of max minecraft tick used</param>
-        public static void ObsicleDataToCommands(_obstacles obstacle, float bpm, double metersPerTick, ref StringBuilder commandList, ref int addToNumberOfCommands, ref int minWholeTick, ref int maxWholeTick)
+        public static void ObstacleDataToCommands(Obstacle obstacle, float bpm, double metersPerTick, ref StringBuilder commandList, ref int addToNumberOfCommands, ref int minWholeTick, ref int maxWholeTick)
         {
             double beatsPerTick = bpm / 60.0d / 20;
-            double exactTick = obstacle._time / beatsPerTick;
+            double exactTick = obstacle.Time / beatsPerTick;
 
-            minWholeTick = (int)System.Math.Truncate(exactTick);
+            minWholeTick = (int)Math.Truncate(exactTick);
             double fractionTick = exactTick % beatsPerTick;
             double fractionMeters = fractionTick * metersPerTick;
 
             // Calculate the LWH of the rectangular prism to generate
-            int lengthOfWallInNotes = (int)System.Math.Truncate(obstacle._duration * 24);
+            int lengthOfWallInNotes = (int)Math.Truncate((double)obstacle.Duration * 24);
 
             if (lengthOfWallInNotes == 0)
+            {
                 lengthOfWallInNotes++;
+            }
 
-            int widthOfWallInNotes = obstacle._width;
-            int heightOfWallInNotes = obstacle._type == 0 ? 3 : 1;
-            int isHeightTall = obstacle._type == 0 ? 1 : 0;
+            int widthOfWallInNotes = obstacle.Width;
+            int heightOfWallInNotes = obstacle.Type == 0 ? 3 : 1;
+            int isHeightTall = obstacle.Type == 0 ? 1 : 0;
 
             for (int length = 0; length < lengthOfWallInNotes; length++)
             {
                 double meterLengths = fractionMeters + 0.21 * length;
-                int tickOffset = meterLengths != 0 ? (int)System.Math.Truncate(meterLengths / metersPerTick) : 0;
+                int tickOffset = meterLengths != 0 ? (int)Math.Truncate(meterLengths / metersPerTick) : 0;
                 double extraOffset = meterLengths != 0 ? meterLengths % metersPerTick : 0;
 
                 maxWholeTick = minWholeTick + tickOffset;
@@ -403,71 +399,71 @@ namespace Minecraft.Generator
                 // The code below generates red walls as optimized models (max of 4 entities per tick)
                 if (widthOfWallInNotes == 1 || widthOfWallInNotes == 2)
                 {
-                    int obsicalType = widthOfWallInNotes == 1 ? isHeightTall : isHeightTall + 2;
+                    int obstacleType = widthOfWallInNotes == 1 ? isHeightTall : isHeightTall + 2;
                     commandList.AppendFormat(Globals.templateStrings._wallCommand,
                                             maxWholeTick,
-                                            0.3 * obstacle._lineIndex,
+                                            0.3 * obstacle.LineIndex,
                                             0.6d + -0.3 * isHeightTall,
                                             -extraOffset,
-                                            Globals.obsicalTypes[obsicalType]);
+                                            Globals.obstacleTypes[obstacleType]);
                     addToNumberOfCommands += 2;
                 }
                 else if (widthOfWallInNotes == 3)
                 {
                     commandList.AppendFormat(Globals.templateStrings._wallCommand,
                                             maxWholeTick,
-                                            0.3 * obstacle._lineIndex,
+                                            0.3 * obstacle.LineIndex,
                                             0.6d + -0.3 * isHeightTall,
                                             -extraOffset,
-                                            Globals.obsicalTypes[isHeightTall + 2]);
+                                            Globals.obstacleTypes[isHeightTall + 2]);
                     commandList.AppendFormat(Globals.templateStrings._wallCommand,
                                             maxWholeTick,
-                                            0.3 * (obstacle._lineIndex + 2),
+                                            0.3 * (obstacle.LineIndex + 2),
                                             0.6d + -0.3 * isHeightTall,
                                             -extraOffset,
-                                            Globals.obsicalTypes[isHeightTall]);
+                                            Globals.obstacleTypes[isHeightTall]);
                     addToNumberOfCommands += 4;
                 }
                 else if (widthOfWallInNotes == 4)
                 {
                     commandList.AppendFormat(Globals.templateStrings._wallCommand,
                                             maxWholeTick,
-                                            0.3 * obstacle._lineIndex,
+                                            0.3 * obstacle.LineIndex,
                                             0.6d + -0.3 * isHeightTall,
                                             -extraOffset,
-                                            Globals.obsicalTypes[isHeightTall + 2]);
+                                            Globals.obstacleTypes[isHeightTall + 2]);
                     commandList.AppendFormat(Globals.templateStrings._wallCommand,
                                             maxWholeTick,
-                                            0.3 * (obstacle._lineIndex + 2),
+                                            0.3 * (obstacle.LineIndex + 2),
                                             0.6d + -0.3 * isHeightTall,
                                             -extraOffset,
-                                            Globals.obsicalTypes[isHeightTall + 2]);
+                                            Globals.obstacleTypes[isHeightTall + 2]);
                     addToNumberOfCommands += 4;
                 }
             }
         }
 
         /// <summary>
-        /// Generate all neciccary commands for node placement on beat
+        /// Generate all necessary commands for node placement on beat
         /// </summary>
-        /// <param name="node">Node data to use</param>
+        /// <param name="note">Node data to use</param>
         /// <param name="bpm">Beats per minute</param>
         /// <param name="metersPerTick">Distance note travels per tick</param>
         /// <param name="nodeRowID">Row id within minecraft</param>
         /// <param name="commandList">String Builder object to append to</param>
         /// <param name="wholeTick">Output of minecraft tick used</param>
-        public static void NodeDataToCommands(_notes node, float bpm, double metersPerTick, int nodeRowID, ref StringBuilder commandList, ref int wholeTick)
+        public static void NodeDataToCommands(Note note, float bpm, double metersPerTick, int nodeRowID, ref StringBuilder commandList, ref int wholeTick)
         {
             //_lineIndex = col
             //_lineLayer = row
-            int nodeType = node._type;
-            int nodeDir = node._cutDirection;
+            int nodeType = note.Type;
+            int nodeDir = note.CutDirection;
 
             nodeType = nodeType <= 3 ? nodeType : 0;
             nodeDir = nodeDir <= 8 ? nodeDir : 8;
 
             double beatsPerTick = bpm / 60.0d / 20;
-            double exactTick = node._time / beatsPerTick;
+            double exactTick = note.Time / beatsPerTick;
 
             wholeTick = (int)Mathf.Floor((float)exactTick);
             double fractionTick = exactTick % beatsPerTick;
@@ -475,8 +471,8 @@ namespace Minecraft.Generator
 
             commandList.AppendFormat(Globals.templateStrings._nodePositionCommand,
                                         wholeTick,
-                                        node._lineIndex * 0.3d,
-                                        node._lineLayer * 0.3d,
+                                        note.LineIndex * 0.3d,
+                                        note.LineLayer * 0.3d,
                                         -fractionMeters);
             commandList.AppendFormat(Globals.templateStrings._scoreCommand,
                                         wholeTick,

@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using MrJohnWeez.Extensions;
 using System.Threading.Tasks;
 using BeatSaber;
+using Utilities;
+using Utilities.Wrappers;
 
 namespace Minecraft.Generator
 {
@@ -19,11 +20,12 @@ namespace Minecraft.Generator
         /// <param name="packInfo">Beat Saber Infomation</param>
         /// <param name="cancellationToken">Token that allows async function to be canceled</param>
         /// <returns>-1 if successful</returns>
-        public static Task<int> FromBeatSaberData(string unzippedFolderPath, string datapackOutputPath, BeatSaberMap beatSaberMap)
+        public static Task<int> FromBeatSaberData(string datapackOutputPath, BeatSaberMap beatSaberMap)
         {
             return Task.Run(() =>
             {
-                var packInfo = beatSaberMap.Info;
+                var packInfo = beatSaberMap.InfoData;
+                var unzippedFolderPath = beatSaberMap.ExtractedFilePath;
                 if (!Directory.Exists(unzippedFolderPath) || packInfo == null)
                 {
                     return 0;

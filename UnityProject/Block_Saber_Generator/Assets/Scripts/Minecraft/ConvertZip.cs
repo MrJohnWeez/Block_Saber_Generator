@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Minecraft.Generator;
 using BeatSaber;
+using Minecraft.Generator;
+using UnityEngine;
+using Utilities.Wrappers;
 
 namespace Minecraft
 {
@@ -25,57 +26,47 @@ namespace Minecraft
             {
                 if (File.Exists(zipPath) && Directory.Exists(datapackOutputPath))
                 {
-                    // Decompressing files
-                    string tempUnZipPath = await UnZipFileAsync(zipPath, ProcessManager.temporaryPath, cancellationToken);
-
-                    // Parsing files
-                    Info packInfo = GetPackInfo(tempUnZipPath);
-                    if (packInfo != null)
+                    var beatSaberMap = await MapLoader.GetDataFromMapZip(zipPath, ProcessManager.temporaryPath, cancellationToken);
+                    var tempFolder = beatSaberMap.ExtractedFilePath;
+                    if (beatSaberMap != null)
                     {
                         try
                         {
-                            packInfo._uuid = uuid;
-                            List<BeatMapSong> beatMapSongList = await ParseBeatSaberDat(tempUnZipPath, packInfo);
-
-
-                            // Converting files
-                            packInfo = ConvertSoundFile(tempUnZipPath, packInfo);
-                            if (packInfo == null)
-                                return 4;
-
-                            packInfo = ConvertImageFiles(tempUnZipPath, packInfo);
-
+                            beatSaberMap = ConvertFilesEggToOgg(beatSaberMap);
+                            beatSaberMap = ConvertFilesJpgToPng(beatSaberMap);
                             cancellationToken.ThrowIfCancellationRequested();
-
-                            if (beatMapSongList.Count > 0 && packInfo != null)
+                            if (beatSaberMap.InfoData.DifficultyBeatmapSets.Length > 0)
                             {
                                 // Generating Resource pack
-                                int failCode = await ResourcePack.FromBeatSaberData(tempUnZipPath, datapackOutputPath, packInfo);
+                                int failCode = await ResourcePack.FromBeatSaberData(datapackOutputPath, beatSaberMap);
                                 if (failCode >= 0)
+                                {
                                     return failCode;
-
+                                }
                                 cancellationToken.ThrowIfCancellationRequested();
-
                                 // Generating Data pack
-                                failCode = await DataPack.FromBeatSaberData(tempUnZipPath, datapackOutputPath, packInfo, beatMapSongList, cancellationToken);
+                                failCode = await DataPack.FromBeatSaberData(datapackOutputPath, beatSaberMap, cancellationToken);
                                 if (failCode >= 0)
+                                {
                                     return failCode;
+                                }
                             }
                             else
+                            {
                                 return 2;
-
+                            }
                         }
                         catch (OperationCanceledException)
                         {
-                            SafeFileManagement.DeleteDirectory(tempUnZipPath);
+                            SafeFileManagement.DeleteDirectory(tempFolder);
                         }
                         catch (ObjectDisposedException)
                         {
-                            SafeFileManagement.DeleteDirectory(tempUnZipPath);
+                            SafeFileManagement.DeleteDirectory(tempFolder);
                         }
 
                         // Successfully converted map
-                        SafeFileManagement.DeleteDirectory(tempUnZipPath);
+                        SafeFileManagement.DeleteDirectory(tempFolder);
                         return -1;
                     }
                     return 1;
@@ -92,7 +83,7 @@ namespace Minecraft
             {
                 return beatSaberMap;
             }
-            beatSaberMap.Info.SongFilename = beatSaberMap.Info.SongFilename.Replace(".egg", ".ogg");
+            beatSaberMap.InfoData.SongFilename = beatSaberMap.InfoData.SongFilename.Replace(".egg", ".ogg");
             foreach (string path in files)
             {
                 string newName = path.Replace(".egg", ".ogg");
@@ -104,7 +95,7 @@ namespace Minecraft
         public static BeatSaberMap ConvertFilesJpgToPng(BeatSaberMap beatSaberMap)
         {
             string[] files = Directory.GetFiles(beatSaberMap.ExtractedFilePath, "*.jpg*", SearchOption.AllDirectories);
-            beatSaberMap.Info.CoverImageFilename = beatSaberMap.Info.CoverImageFilename.Replace(".jpg", ".png");
+            beatSaberMap.InfoData.CoverImageFilename = beatSaberMap.InfoData.CoverImageFilename.Replace(".jpg", ".png");
             foreach (string path in files)
             {
                 string newName = path.Replace(".jpg", ".png");

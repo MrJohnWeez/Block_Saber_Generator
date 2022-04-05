@@ -363,6 +363,6 @@ dotnet_diagnostic.CA1070.severity = none # Do not declare event fields as virtua
 # Disable other folders
 # https://issueexplorer.com/issue/OmniSharp/omnisharp-vscode/4718
 # https://editorconfig.org/
-[/Assets/{Plugins,AssetStore,SteamVR,SteamVR_Input,SteamVR_Resources,XR,uTerrains,RED_SIM}/**/*.cs]
+[/Assets/{Plugins/StandaloneFileBrowser,Plugins/TextMesh Pro,Plugins/UnityWindowsFileDrag-Drop,AssetStore}/**/*.cs]
 generated_code = true
 dotnet_analyzer_diagnostic.severity = none

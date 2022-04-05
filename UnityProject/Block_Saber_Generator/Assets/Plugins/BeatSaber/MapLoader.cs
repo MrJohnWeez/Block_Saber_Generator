@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BeatSaber.Data;
 using UnityEngine;
+using Utilities.Wrappers;
 
 namespace BeatSaber
 {
@@ -33,17 +34,17 @@ namespace BeatSaber
                 info = ConvertSoundFile(tempUnZipPath, info);
                 info = ConvertImageFiles(tempUnZipPath, info);
 
-                List<MapData> mapDatas = new List<MapData>();
-                foreach (var bms in info.DifficultyBeatmapSets)
+                Dictionary<string, MapDataInfo> mapDataInfos = new Dictionary<string, MapDataInfo>();
+                foreach (var beatMapSets in info.DifficultyBeatmapSets)
                 {
-                    foreach (var bm in bms.DifficultyBeatmaps)
+                    foreach (var beatMap in beatMapSets.DifficultyBeatmaps)
                     {
-                        string mapPath = Path.Combine(tempUnZipPath, bm.BeatmapFilename);
+                        string mapPath = Path.Combine(tempUnZipPath, beatMap.BeatmapFilename);
                         MapData mapData = JsonUtility.FromJson<MapData>(SafeFileManagement.GetFileContents(mapPath));
-                        mapDatas.Add(mapData);
+                        mapDataInfos.Add(beatMap.BeatmapFilename, new MapDataInfo(beatMap, mapData));
                     }
                 }
-                return new BeatSaberMap(info, mapDatas.ToArray(), tempUnZipPath);
+                return new BeatSaberMap(info, mapDataInfos, tempUnZipPath);
             });
         }
 
