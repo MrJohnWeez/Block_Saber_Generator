@@ -1701,9 +1701,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9ca0d88ccbb5bb43861ff2060e376ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _selectionManager: {fileID: 0}
-  _conversionPrefab: {fileID: 0}
-  _processingRoot: {fileID: 0}
+  _selectionManager: {fileID: 1633107594}
+  _conversionPrefab: {fileID: 8998686529291936901, guid: 1749d53d01470fb4382cddc6c590255b,
+    type: 3}
+  _processingRoot: {fileID: 1341726358}
 --- !u!1 &695194338
 GameObject:
   m_ObjectHideFlags: 0
@@ -3812,8 +3813,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c67d2123a79016e45927f50160f4d324, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _processManager: {fileID: 0}
-  _outputPathText: {fileID: 0}
+  _processManager: {fileID: 618854948}
+  _outputPathText: {fileID: 1676527598}
 --- !u!95 &1633107595
 Animator:
   serializedVersion: 4

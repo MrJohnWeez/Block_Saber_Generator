@@ -50,4 +50,4 @@ scoreboard players set #BlockSaberGlobal EndIsLoaded 0
 scoreboard objectives add LevelMapSpawned dummy
 scoreboard players set #BlockSaberGlobal LevelMapSpawned 0
 
-execute as @a run function _root_class:reset_player_position
+execute as @a[gamemode=!spectator] run function _root_class:reset_player_position

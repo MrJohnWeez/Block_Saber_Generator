@@ -115,9 +115,8 @@ namespace Minecraft.Generator
                     string difficultyName = mapDataInfo.DifficultyBeatmapInfo.Difficulty.MakeMinecraftSafe();
 
                     // Append running command lists
-                    string songDifficultyID = dpd.uuid + difficultyNumber.ToString();
-                    scoreboardCommands.AppendFormat(Globals.templateStrings._scoreboardCommand,
-                                                    songDifficultyID);
+                    string songDifficultyID = dpd.songGuid + difficultyNumber.ToString();
+                    scoreboardCommands.AppendFormat(Globals.templateStrings._scoreboardCommand, songDifficultyID);
 
                     spawnOriginCommands.AppendFormat(Globals.templateStrings._spawnOriginCommands,
                                                     -dpd.metersPerTick * dpd.ticksStartOffset,

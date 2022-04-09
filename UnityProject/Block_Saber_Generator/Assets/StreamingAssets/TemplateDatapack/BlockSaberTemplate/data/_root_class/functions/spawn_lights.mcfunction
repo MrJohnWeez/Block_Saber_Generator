@@ -1,5 +1,3 @@
-kill @e[type=marker,tag=light]
-
 # left rail
 summon marker ~-6 ~2 ~-12 {Tags:[blocksaber,light,left,rail]}
 summon marker ~-6 ~2 ~-13 {Tags:[blocksaber,light,left,rail]}

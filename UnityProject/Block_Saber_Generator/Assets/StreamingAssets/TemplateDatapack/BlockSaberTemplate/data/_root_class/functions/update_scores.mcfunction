@@ -85,5 +85,5 @@ execute if score #BlockSaberGlobal HealthPoints matches 96..97 run data modify e
 execute if score #BlockSaberGlobal HealthPoints matches 98..99 run data modify entity @e[type=armor_stand,tag=healthDisplay,limit=1] CustomName set value "[\"\",{\"text\":\"▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏\",\"color\":\"white\"},{\"text\":\"▏\",\"color\":\"dark_gray\"}]"
 execute if score #BlockSaberGlobal HealthPoints matches 100.. run data modify entity @e[type=armor_stand,tag=healthDisplay,limit=1] CustomName set value "[\"\",{\"text\":\"▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏\",\"color\":\"white\"},{\"text\":\"\",\"color\":\"dark_gray\"}]"
 
-execute if score #BlockSaberGlobal HealthPoints matches ..-1 if score #BlockSaberGlobal Multiplier matches 1 run function _root_class:map_difficulty_failed
+execute if score #BlockSaberGlobal HealthPoints matches ..-1 if score #BlockSaberGlobal Multiplier matches 1 run function _root_class:spawn_level_failed_titles
 execute if score #BlockSaberGlobal HealthPoints matches 100 if score #BlockSaberGlobal Multiplier matches 1..7 run scoreboard players operation #BlockSaberGlobal Multiplier *= #CONST Const_2

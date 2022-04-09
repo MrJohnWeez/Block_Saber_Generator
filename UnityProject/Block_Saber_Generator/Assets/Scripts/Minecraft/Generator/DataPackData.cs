@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using BeatSaber;
 using UnityEngine;
 using Utilities;
@@ -15,7 +16,7 @@ namespace Minecraft.Generator
         public Dictionary<string, string> keyVars;
         public string folder_uuid;
         public string packName;
-        public string uuid;
+        public string songGuid;
         public string datapackRootPath;
         public string fullOutputPath;
         public string blockSaberBaseFunctionsPath;
@@ -31,7 +32,7 @@ namespace Minecraft.Generator
             keyVars = new Dictionary<string, string>();
             folder_uuid = SafeFileManagement.GetFileName(Path.GetFileName(unzippedFolderPath)).MakeMinecraftSafe();
             packName = Globals.C_Datapack + folder_uuid;
-            uuid = beatSaberMap.GuidId.ToString("X");
+            songGuid = beatSaberMap.GuidId.ToString();
 
             // Paths
             datapackRootPath = Path.Combine(unzippedFolderPath, packName);
@@ -47,24 +48,29 @@ namespace Minecraft.Generator
             // Set up Keys
             keyVars["MAPPER_NAME"] = packInfo.LevelAuthorName;
             keyVars["BEATS_PER_MINUTE"] = packInfo.BeatsPerMinute.ToString();
-            keyVars["SONGID"] = uuid;
+            keyVars["SONGID"] = beatSaberMap.GuidId.GetHashCode().ToString();
             keyVars["MOVESPEED"] = metersPerTick.ToString();
             keyVars["SONGTITLE"] = packInfo.SongName + " " + packInfo.SongSubName;
             keyVars["SONGSHORTNAME"] = packInfo.SongName;
             keyVars["SONGARTIST"] = packInfo.SongAuthorName;
             keyVars["folder_uuid"] = folder_uuid;
 
-            string listOfDifficulties = "";
+            StringBuilder listOfDifficulties = new StringBuilder();
             var beatMapSets = beatSaberMap.InfoData.DifficultyBeatmapSets;
-            for (int beatMapCount = 0; beatMapCount < beatMapSets.Length; beatMapCount++)
+            for (int beatMapCounts = 0; beatMapCounts < beatMapSets.Length; beatMapCounts++)
             {
-                var beatMapInfos = beatMapSets[beatMapCount].DifficultyBeatmaps;
-                for (int difficulty = 0; difficulty < beatMapInfos.Length; difficulty++)
+                var beatMapInfos = beatMapSets[beatMapCounts].DifficultyBeatmaps;
+                int beatMapCount = beatMapInfos.Length;
+                for (int difficulty = 0; difficulty < beatMapCount; difficulty++)
                 {
-                    listOfDifficulties += beatMapInfos[difficulty].Difficulty + " | ";
+                    listOfDifficulties.Append(beatMapInfos[difficulty].Difficulty);
+                    if (difficulty < beatMapCount - 1)
+                    {
+                        listOfDifficulties.Append(" | ");
+                    }
                 }
             }
-            keyVars["DIFFICULTYLIST"] = listOfDifficulties;
+            keyVars["DIFFICULTYLIST"] = listOfDifficulties.ToString();
         }
     }
 }
