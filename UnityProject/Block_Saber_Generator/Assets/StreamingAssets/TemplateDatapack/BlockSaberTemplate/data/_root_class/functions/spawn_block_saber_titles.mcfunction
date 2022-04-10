@@ -34,10 +34,10 @@ summon armor_stand ~ ~8.6 ~-20 {Tags:[aboutNameCreated,blocksaber,title],CustomN
 summon armor_stand ~ ~8.3 ~-20 {Tags:[aboutNameCreated,blocksaber,title],CustomName:"[{\"text\":\"███████║██║  ██║██████╔╝███████╗██║  ██║\",\"color\":\"#FF0003\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
 summon armor_stand ~ ~8.0 ~-20 {Tags:[aboutNameCreated,blocksaber,title],CustomName:"[{\"text\":\"╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝\",\"color\":\"#FF0003\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
 
-summon armor_stand ~ ~-1 ~-7.0 {Tags:[healthDisplay,blocksaber],CustomName:"[\"\",{\"text\":\"▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏\",\"color\":\"dark_gray\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+summon armor_stand ~ ~ ~-7.0 {Tags:[healthDisplay,blocksaber],CustomName:"[\"\",{\"text\":\"▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏▏\",\"color\":\"dark_gray\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
 
-summon armor_stand ~-2.7 ~1.7 ~-6.0 {Tags:[comboDisplayTitle,blocksaber],CustomName:"[\"\",{\"text\":\"COMBO\",\"color\":\"white\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-summon armor_stand ~-2.7 ~1.4 ~-6.0 {Tags:[comboDisplayNumber,blocksaber],CustomName:"[\"\",{\"text\":\"0\",\"color\":\"white\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+summon armor_stand ~-3.3 ~1.7 ~-6.0 {Tags:[comboDisplayTitle,blocksaber],CustomName:"[\"\",{\"text\":\"COMBO\",\"color\":\"white\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+summon armor_stand ~-3.3 ~1.4 ~-6.0 {Tags:[comboDisplayNumber,blocksaber],CustomName:"[\"\",{\"text\":\"0\",\"color\":\"white\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
 
-summon armor_stand ~3.7 ~1.6 ~-6.0 {Tags:[multiplierTimes,blocksaber],CustomName:"[\"\",{\"text\":\"x\",\"color\":\"white\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-summon armor_stand ~3.7 ~1.5 ~-6.4 {Tags:[multiplierValue,blocksaber],CustomName:"[\"\",{\"text\":\"1\",\"color\":\"white\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+summon armor_stand ~3.5 ~1.6 ~-6.0 {Tags:[multiplierTimes,blocksaber],CustomName:"[\"\",{\"text\":\"x\",\"color\":\"white\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+summon armor_stand ~3.5 ~1.5 ~-6.4 {Tags:[multiplierValue,blocksaber],CustomName:"[\"\",{\"text\":\"1\",\"color\":\"white\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}

@@ -20,6 +20,5 @@ namespace Minecraft
         public string _finishedNotes = "";
         public string _playSongCommand = "";
         public string _completedSong = "";
-        public string _displayTitle = "";
     }
 }

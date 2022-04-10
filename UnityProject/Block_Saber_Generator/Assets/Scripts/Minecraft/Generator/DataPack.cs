@@ -157,12 +157,12 @@ namespace Minecraft.Generator
                     if (!oneTimeRun)
                     {
                         oneTimeRun = true;
-                        string displayTitle = string.Format(Globals.templateStrings._displayTitle,
-                                                            songDifficultyID,
-                                                            dpd.keyVars["SONGID"],
-                                                            dpd.keyVars["folder_uuid"]);
-                        string tickFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_Tick);
-                        SafeFileManagement.AppendFile(tickFilePath, displayTitle);
+                        // string displayTitle = string.Format(Globals.templateStrings._displayTitle,
+                        //                                     songDifficultyID,
+                        //                                     dpd.keyVars["SONGID"],
+                        //                                     dpd.keyVars["folder_uuid"]);
+                        // string tickFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_Tick);
+                        // SafeFileManagement.AppendFile(tickFilePath, displayTitle);
                     }
 
                     difficultyNumber++;

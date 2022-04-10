@@ -13,6 +13,5 @@
     "_nodeTypeCommand": "execute if score #BlockSaberGlobal TickCount matches {0} as @e[type=armor_stand, tag=nodeCursor] run function _types:{1}\r\n",
     "_finishedObstacles": "execute if score #BlockSaberGlobal TickCount matches {0} run scoreboard players set #BlockSaberGlobal FinishedObsicles 1\r\n",
     "_finishedNotes": "execute if score #BlockSaberGlobal TickCount matches {0} run scoreboard players set #BlockSaberGlobal FinishedNotes 1\r\n",
-    "_completedSong": "execute if score #BlockSaberGlobal FinishedCount matches 1 if score #BlockSaberGlobal Difficulty matches {0} run scoreboard players set #BlockSaberGlobal {1} 1\r\n",
-    "_displayTitle": "execute if score #BlockSaberGlobal {0} = #BlockSaberGlobal {0} as @e[type=armor_stand,tag=showTitle,tag=blocksaber,tag=!{1}] run function {2}:display_title"
+    "_completedSong": "execute if score #BlockSaberGlobal FinishedCount matches 1 if score #BlockSaberGlobal Difficulty matches {0} run scoreboard players set #BlockSaberGlobal {1} 1\r\n"
 }

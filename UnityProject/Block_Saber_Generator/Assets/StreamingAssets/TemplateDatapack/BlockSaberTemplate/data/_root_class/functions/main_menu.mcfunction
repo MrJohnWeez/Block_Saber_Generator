@@ -4,6 +4,14 @@ title @a clear
 title @a reset
 function _root_class:player_effects
 
+# World commands
+gamerule commandBlockOutput false
+gamerule sendCommandFeedback false
+gamerule logAdminCommands false
+gamerule doMobSpawning false
+gamerule announceAdvancements false
+difficulty normal
+
 # Reset vars
 scoreboard players set #BlockSaberGlobal SongID 0
 scoreboard players set #BlockSaberGlobal TickCount 0

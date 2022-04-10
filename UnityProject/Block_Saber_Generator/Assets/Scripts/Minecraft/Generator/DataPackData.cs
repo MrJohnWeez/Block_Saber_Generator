@@ -54,6 +54,7 @@ namespace Minecraft.Generator
             keyVars["SONGSHORTNAME"] = packInfo.SongName;
             keyVars["SONGARTIST"] = packInfo.SongAuthorName;
             keyVars["folder_uuid"] = folder_uuid;
+            keyVars["SONGDIFFICULTYID"] = songGuid + "1";
 
             StringBuilder listOfDifficulties = new StringBuilder();
             var beatMapSets = beatSaberMap.InfoData.DifficultyBeatmapSets;
