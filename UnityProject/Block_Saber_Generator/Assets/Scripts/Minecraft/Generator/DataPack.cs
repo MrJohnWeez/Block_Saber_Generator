@@ -115,9 +115,8 @@ namespace Minecraft.Generator
                     string difficultyName = mapDataInfo.DifficultyBeatmapInfo.Difficulty.MakeMinecraftSafe();
 
                     // Append running command lists
-                    string songDifficultyID = dpd.uuid + difficultyNumber.ToString();
-                    scoreboardCommands.AppendFormat(Globals.templateStrings._scoreboardCommand,
-                                                    songDifficultyID);
+                    string songDifficultyID = dpd.songGuid + difficultyNumber.ToString();
+                    scoreboardCommands.AppendFormat(Globals.templateStrings._scoreboardCommand, songDifficultyID);
 
                     spawnOriginCommands.AppendFormat(Globals.templateStrings._spawnOriginCommands,
                                                     -dpd.metersPerTick * dpd.ticksStartOffset,
@@ -158,12 +157,12 @@ namespace Minecraft.Generator
                     if (!oneTimeRun)
                     {
                         oneTimeRun = true;
-                        string displayTitle = string.Format(Globals.templateStrings._displayTitle,
-                                                            songDifficultyID,
-                                                            dpd.keyVars["SONGID"],
-                                                            dpd.keyVars["folder_uuid"]);
-                        string tickFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_Tick);
-                        SafeFileManagement.AppendFile(tickFilePath, displayTitle);
+                        // string displayTitle = string.Format(Globals.templateStrings._displayTitle,
+                        //                                     songDifficultyID,
+                        //                                     dpd.keyVars["SONGID"],
+                        //                                     dpd.keyVars["folder_uuid"]);
+                        // string tickFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_Tick);
+                        // SafeFileManagement.AppendFile(tickFilePath, displayTitle);
                     }
 
                     difficultyNumber++;

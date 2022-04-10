@@ -3,6 +3,8 @@
         "ms-dotnettools.csharp",
         "streetsidesoftware.code-spell-checker",
         "mycelo.embrace",
-        "2gua.rainbow-brackets"
+        "2gua.rainbow-brackets",
+        "SPGoding.datapack-language-server",
+        "Levertion.mcjson"
     ]
 }

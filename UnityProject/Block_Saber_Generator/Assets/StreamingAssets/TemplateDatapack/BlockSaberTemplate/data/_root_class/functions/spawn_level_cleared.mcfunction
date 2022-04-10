@@ -1,9 +1,8 @@
 scoreboard players add #BlockSaberGlobal FinishedCount 1
 execute if score #BlockSaberGlobal FinishedCount matches 1 run stopsound @a music
 execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run playsound minecraft:end_sound music @a 0 150.0 500 1
-execute if score #BlockSaberGlobal FinishedCount matches 1 as @p[scores={PlayerPlaying=1}] run function blocksaber:play
-
-
+kill @e[type=armor_stand,tag=showTitle,tag=blocksaber]
+execute if score #BlockSaberGlobal FinishedCount matches 1 as @p[scores={PlayerPlaying=1}] run function _root_class:song_list
 
 # http://patorjk.com/software/taag/#p=display&f=ANSI%20Regular&t=LEVEL
 # Level
@@ -12,12 +11,12 @@ execute if score #BlockSaberGlobal FinishedCount matches 1 as @p[scores={PlayerP
 # ██      █████   ██    ██ █████   ██      
 # ██      ██       ██  ██  ██      ██      
 # ███████ ███████   ████   ███████ ███████ 
-execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 154.5 480 {Tags:[aboutNameCreated,blocksaber],CustomName:"[{\"text\":\"██      ███████ ██    ██ ███████ ██      \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 154.2 480 {Tags:[aboutNameCreated,blocksaber],CustomName:"[{\"text\":\"██      ██      ██    ██ ██      ██      \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 153.9 480 {Tags:[aboutNameCreated,blocksaber],CustomName:"[{\"text\":\"██      █████   ██    ██ █████   ██      \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 153.6 480 {Tags:[aboutNameCreated,blocksaber],CustomName:"[{\"text\":\"██      ██       ██  ██  ██      ██      \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 153.3 480 {Tags:[aboutNameCreated,blocksaber],CustomName:"[{\"text\":\"██      ██       ██  ██  ██      ██      \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 153.0 480 {Tags:[aboutNameCreated,blocksaber],CustomName:"[{\"text\":\"███████ ███████   ████   ███████ ███████ \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 154.5 480 {Tags:[aboutNameCreated,blocksaber,title],CustomName:"[{\"text\":\"██      ███████ ██    ██ ███████ ██      \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 154.2 480 {Tags:[aboutNameCreated,blocksaber,title],CustomName:"[{\"text\":\"██      ██      ██    ██ ██      ██      \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 153.9 480 {Tags:[aboutNameCreated,blocksaber,title],CustomName:"[{\"text\":\"██      █████   ██    ██ █████   ██      \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 153.6 480 {Tags:[aboutNameCreated,blocksaber,title],CustomName:"[{\"text\":\"██      ██       ██  ██  ██      ██      \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 153.3 480 {Tags:[aboutNameCreated,blocksaber,title],CustomName:"[{\"text\":\"██      ██       ██  ██  ██      ██      \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 153.0 480 {Tags:[aboutNameCreated,blocksaber,title],CustomName:"[{\"text\":\"███████ ███████   ████   ███████ ███████ \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
 
 # http://patorjk.com/software/taag/#p=display&f=ANSI%20Regular&t=CLEARED
 # CLEARED
@@ -26,13 +25,11 @@ execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end 
 # ██      ██      █████   ███████ ██████  █████   ██   ██ 
 # ██      ██      ██      ██   ██ ██   ██ ██      ██   ██ 
 #  ██████ ███████ ███████ ██   ██ ██   ██ ███████ ██████  
-execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 152.0 480 {Tags:[aboutNameCreated,blocksaber],CustomName:"[{\"text\":\" ██████ ██      ███████  █████  ██████  ███████ ██████  \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 151.7 480 {Tags:[aboutNameCreated,blocksaber],CustomName:"[{\"text\":\"██      ██      ██      ██   ██ ██   ██ ██      ██   ██ \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 151.4 480 {Tags:[aboutNameCreated,blocksaber],CustomName:"[{\"text\":\"██      ██      █████   ███████ ██████  █████   ██   ██ \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 151.1 480 {Tags:[aboutNameCreated,blocksaber],CustomName:"[{\"text\":\"██      ██      ██      ██   ██ ██   ██ ██      ██   ██ \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 150.8 480 {Tags:[aboutNameCreated,blocksaber],CustomName:"[{\"text\":\" ██████ ███████ ███████ ██   ██ ██   ██ ███████ ██████  \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-
-
+execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 152.0 480 {Tags:[aboutNameCreated,blocksaber,title],CustomName:"[{\"text\":\" ██████ ██      ███████  █████  ██████  ███████ ██████  \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 151.7 480 {Tags:[aboutNameCreated,blocksaber,title],CustomName:"[{\"text\":\"██      ██      ██      ██   ██ ██   ██ ██      ██   ██ \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 151.4 480 {Tags:[aboutNameCreated,blocksaber,title],CustomName:"[{\"text\":\"██      ██      █████   ███████ ██████  █████   ██   ██ \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 151.1 480 {Tags:[aboutNameCreated,blocksaber,title],CustomName:"[{\"text\":\"██      ██      ██      ██   ██ ██   ██ ██      ██   ██ \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute if score #BlockSaberGlobal FinishedCount matches 1 in minecraft:the_end run summon armor_stand 0 150.8 480 {Tags:[aboutNameCreated,blocksaber,title],CustomName:"[{\"text\":\" ██████ ███████ ███████ ██   ██ ██   ██ ███████ ██████  \",\"color\":\"#6EFFEE\"}]",CustomNameVisible:1,DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
 
 
 # Firework commands
