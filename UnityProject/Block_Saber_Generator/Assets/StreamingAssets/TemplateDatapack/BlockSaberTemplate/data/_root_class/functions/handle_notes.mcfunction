@@ -9,4 +9,4 @@ execute as @e[tag=wall_1x1] run function _root_class:check_red_wall_1x1
 execute as @e[tag=wall_1x3] run function _root_class:check_red_wall_1x3
 execute as @e[tag=wall_2x1] run function _root_class:check_red_wall_2x1
 execute as @e[tag=wall_2x3] run function _root_class:check_red_wall_2x3
-execute as @e[type=armor_stand,tag=playerOrgin] run function _root_class:check_for_missed_items
+execute as @e[type=marker,tag=playerOrgin] run function _root_class:check_for_missed_items

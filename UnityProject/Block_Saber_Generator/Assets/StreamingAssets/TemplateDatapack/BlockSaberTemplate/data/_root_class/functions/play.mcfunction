@@ -19,9 +19,9 @@ scoreboard players set @s PlayerPlaying 1
 
 # Kill all song related pointers
 execute run kill @e[type=armor_stand,tag=title]
-execute run kill @e[type=armor_stand,tag=playerOrgin]
-execute run kill @e[type=armor_stand,tag=fakePlayerEyes]
-execute run kill @e[type=armor_stand,tag=nodeCursor]
+execute run kill @e[type=marker,tag=playerOrgin]
+execute run kill @e[type=marker,tag=fakePlayerEyes]
+execute run kill @e[type=marker,tag=nodeCursor]
 execute run kill @e[tag=node]
 
 # Give 3 seconds delay until song starts
@@ -39,6 +39,6 @@ experience set @p[scores={PlayerPlaying=1}] 0 points
 gamemode adventure @p[scores={PlayerPlaying=1}]
 
 #Spawn main points
-execute at @e[type=marker,tag=origin,limit=1] run summon armor_stand ~ ~ ~ {Tags:[playerOrgin,blocksaber],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute at @e[type=marker,tag=origin,limit=1] run summon armor_stand ~ ~ ~ {Tags:[fakePlayerEyes,blocksaber],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute at @e[type=marker,tag=origin,limit=1] run summon armor_stand ~ ~ ~ {Tags:[nodeCursor,blocksaber],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute at @e[type=marker,tag=origin,limit=1] run summon marker ~ ~ ~ {Tags:[playerOrgin,blocksaber]}
+execute at @e[type=marker,tag=origin,limit=1] run summon marker ~ ~ ~ {Tags:[fakePlayerEyes,blocksaber]}
+execute at @e[type=marker,tag=origin,limit=1] run summon marker ~ ~ ~ {Tags:[nodeCursor,blocksaber]}
