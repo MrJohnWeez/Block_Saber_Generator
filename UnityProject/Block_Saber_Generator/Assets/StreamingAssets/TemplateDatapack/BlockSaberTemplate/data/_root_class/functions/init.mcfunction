@@ -1,3 +1,11 @@
+# World commands
+gamerule commandBlockOutput false
+gamerule sendCommandFeedback false
+gamerule logAdminCommands false
+gamerule doMobSpawning false
+gamerule announceAdvancements false
+difficulty normal
+
 #Define Teams
 team add NoCollide
 team modify NoCollide collisionRule never
@@ -31,6 +39,13 @@ scoreboard objectives add LowBlockHeight dummy
 
 scoreboard objectives add SongID dummy
 scoreboard objectives add IsPlayerSneeking minecraft.custom:minecraft.sneak_time
+
+scoreboard objectives add GodModeEnabled dummy
+scoreboard objectives add LightShowEnabled dummy
+
+execute unless score #BlockSaberGlobal GodModeEnabled matches 1 run scoreboard players set #BlockSaberGlobal GodModeEnabled 0
+execute unless score #BlockSaberGlobal LightShowEnabled matches 0 run scoreboard players set #BlockSaberGlobal LightShowEnabled 1
+
 
 # Set Const
 scoreboard objectives add Const_3 dummy
