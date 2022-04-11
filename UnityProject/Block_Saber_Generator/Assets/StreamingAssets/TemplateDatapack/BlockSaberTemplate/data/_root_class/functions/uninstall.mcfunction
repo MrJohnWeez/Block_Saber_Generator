@@ -14,6 +14,4 @@ scoreboard objectives remove LowBlockHeight
 scoreboard objectives remove SongID
 scoreboard objectives remove IsPlayerSneeking
 
-gamerule doMobLoot true
 team remove NoCollide
-gamerule sendCommandFeedback true

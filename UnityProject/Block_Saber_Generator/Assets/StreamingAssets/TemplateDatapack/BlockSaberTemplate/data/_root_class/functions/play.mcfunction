@@ -1,28 +1,44 @@
-function _root_class:stop
-execute as @s run function _root_class:configure_base
+# Clear visuals of all
+stopsound @a music
+title @a clear
+title @a reset
+function _root_class:player_effects
+
+# Reset song vars
+scoreboard players set #BlockSaberGlobal IsPlayerSneeking 0
+scoreboard players set #BlockSaberGlobal FinishedNotes 0
+scoreboard players set #BlockSaberGlobal FinishedObsicles 0
+scoreboard players set #BlockSaberGlobal PlayerScore 0
+scoreboard players set #BlockSaberGlobal FinishedCount 0
+scoreboard players set #BlockSaberGlobal Multiplier 1
+scoreboard players set #BlockSaberGlobal HealthPoints 50
+scoreboard players set #BlockSaberGlobal NodeRowID 0
+scoreboard players set #BlockSaberGlobal Combo 0
+
 scoreboard players set @s PlayerPlaying 1
 
-# Give 3sec delay until song starts
+# Kill all song related pointers
+execute run kill @e[type=armor_stand,tag=title]
+execute run kill @e[type=marker,tag=playerOrgin]
+execute run kill @e[type=marker,tag=fakePlayerEyes]
+execute run kill @e[type=marker,tag=nodeCursor]
+execute run kill @e[tag=node]
+
+# Give 3 seconds delay until song starts
 scoreboard players set #BlockSaberGlobal TickCount -60
 
 # Set playtime vars
 scoreboard players set #BlockSaberGlobal PlayingSong 1
-scoreboard players set #BlockSaberGlobal HighBlockHeight 1518
-scoreboard players set #BlockSaberGlobal MidBlockHeight 1515
-scoreboard players set #BlockSaberGlobal LowBlockHeight 1512
+scoreboard players set #BlockSaberGlobal HighBlockHeight 1528
+scoreboard players set #BlockSaberGlobal MidBlockHeight 1525
+scoreboard players set #BlockSaberGlobal LowBlockHeight 1522
 
-effect give @a saturation 1000000 20 true
-effect give @a resistance 1000000 20 true
-effect give @a night_vision 1000000 1 true
 experience set @p[scores={PlayerPlaying=1}] 0 levels
 experience set @p[scores={PlayerPlaying=1}] 0 points
 
 gamemode adventure @p[scores={PlayerPlaying=1}]
-gamerule sendCommandFeedback false
-gamerule announceAdvancements false
-difficulty normal
 
 #Spawn main points
-execute in minecraft:the_end run summon armor_stand 0 150.0 500 {Tags:[playerOrgin,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute in minecraft:the_end run summon armor_stand 0 150.0 500 {Tags:[fakePlayerEyes,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
-execute in minecraft:the_end run summon armor_stand 0 150.0 500 {Tags:[nodeCursor,blockBeat],DisabledSlots:4096,Invisible:1b,NoGravity:1b,Marker:1b,Invulnerable:1b,Small:1b}
+execute at @e[type=marker,tag=origin,limit=1] run summon marker ~ ~ ~ {Tags:[playerOrgin,blocksaber]}
+execute at @e[type=marker,tag=origin,limit=1] run summon marker ~ ~ ~ {Tags:[fakePlayerEyes,blocksaber]}
+execute at @e[type=marker,tag=origin,limit=1] run summon marker ~ ~ ~ {Tags:[nodeCursor,blocksaber]}

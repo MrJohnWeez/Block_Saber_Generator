@@ -1,8 +1,9 @@
-﻿{
+{
     "files.exclude":
     {
         "**/.DS_Store":true,
         "**/.git":true,
+        "**/.gitignore":true,
         "**/.gitmodules":true,
         "**/*.booproj":true,
         "**/*.pidb":true,
@@ -50,6 +51,47 @@
         "Obj/":true,
         "ProjectSettings/":true,
         "temp/":true,
-        "Temp/":true
-    }
+        "Temp/":true,
+        "**/*.csproj":true,
+        "**/*.sln":true,
+        "UserSettings/":true,
+        "**/*.lighting":true,
+        ".vs/**": true,
+        "Library/**": true,
+        "obj/**": true,
+        "Temp/**": true,
+        "Builds/**": true,
+        "*.csproj": true,
+        "*.sln": true,
+        "**/*.*.meta": true,
+        "**/Library": true,
+        "**/ProjectSettings": true,
+        "**/Temp": true
+    },
+    "files.associations":
+    {
+        "*.asmdef": "json",
+        "*.asmref": "json",
+        "*.meta": "yaml",
+        "*.mat": "yaml",
+        "*.prefab": "yaml",
+        "*.controller": "yaml",
+        "*.anim": "yaml",
+        "*.renderTexture": "yaml",
+        "*.unity": "yaml",
+        "*.asset": "yaml",
+        "*.preset": "yaml",
+        "*.cubemap": "yaml",
+        "*.playable": "yaml",
+        "*.shadervariants": "yaml",
+        "packages.config": "xml"
+    },
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+     "csharp.suppressDotnetRestoreNotification": true,
+    "omnisharp.enableEditorConfigSupport": true,
+    "omnisharp.enableRoslynAnalyzers": true,
+    "cSpell.words": [
+        "Datas"
+    ]
 }
