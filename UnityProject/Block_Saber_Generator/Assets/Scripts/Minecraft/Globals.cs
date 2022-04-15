@@ -34,6 +34,7 @@ namespace Minecraft
         // Sub words
         public const string C_LvlNoteName = "_lvl_note_";
         public const string C_LvlObstacleName = "_lvl_obsicle_";
+        public const string C_LvlEventName = "_lvl_event_";
 
         // Folder Names
         public const string C_Minecraft = "minecraft";

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -103,7 +105,6 @@ namespace Minecraft.Generator
             StringBuilder spawnOriginCommands = new StringBuilder();
             StringBuilder spawnNotesBaseCommands = new StringBuilder();
             int difficultyNumber = 1;
-            bool oneTimeRun = false;
 
             // Iterate though each song difficulty
             var mapDataInfos = beatSaberMap.MapDataInfos;
@@ -150,20 +151,10 @@ namespace Minecraft.Generator
                     string completedSongPath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_MapDifficultyCompleted);
                     SafeFileManagement.AppendFile(completedSongPath, completedSongCommand);
 
-                    // Generate main note/obstacle data
+                    // Generate main note/obstacle data/light data
                     GenerateNotes(mapDataInfo.MapData, difficultyName, commandBasePath, beatSaberMap.InfoData, dpd);
                     GenerateObstacles(mapDataInfo.MapData, difficultyName, commandBasePath, beatSaberMap.InfoData, dpd);
-
-                    if (!oneTimeRun)
-                    {
-                        oneTimeRun = true;
-                        // string displayTitle = string.Format(Globals.templateStrings._displayTitle,
-                        //                                     songDifficultyID,
-                        //                                     dpd.keyVars["SONGID"],
-                        //                                     dpd.keyVars["folder_uuid"]);
-                        // string tickFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_Tick);
-                        // SafeFileManagement.AppendFile(tickFilePath, displayTitle);
-                    }
+                    GenerateEvents(mapDataInfo.MapData, difficultyName, commandBasePath, beatSaberMap.InfoData, dpd);
 
                     difficultyNumber++;
                 }
@@ -182,6 +173,98 @@ namespace Minecraft.Generator
             difficultyDisplayCommands.Append(Globals.templateStrings._mainMenuBack);
             SafeFileManagement.AppendFile(difficultiesFunctionPath, difficultyDisplayCommands.ToString());
             return -1;
+        }
+
+        public static void GenerateEvents(MapData song, string difficultyName, string commandBasePath, Info packInfo, DataPackData dpd)
+        {
+            double prevNodeTime = 0;
+            int nodeRowID = 1;
+            int currentLevel = 1;
+            int currentTick = 0;
+            int prevCurrentTick = 0;
+            int currentNumberOfCommands = 0;
+            int noteIndex = 0;
+            int currentCommandLimit = Globals.C_CommandLimit;
+
+            var bEvents = song.Events.Where(x => x.Value >= 0 && x.Value <= 11).ToArray();
+            // Main note generation
+            while (noteIndex < bEvents.Length)
+            {
+                string commandLevelName = difficultyName + Globals.C_LvlEventName + currentLevel;
+                string commandLevelFileName = commandLevelName + Globals.C_McFunction;
+                string commandLevelFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, commandLevelFileName);
+                StringBuilder currentCommands = new StringBuilder();
+
+                // Continue to generate commands until all events
+                while (noteIndex < bEvents.Length && currentNumberOfCommands < currentCommandLimit)
+                {
+                    if (prevNodeTime != bEvents[noteIndex].Time)
+                    {
+                        prevNodeTime = bEvents[noteIndex].Time;
+                        nodeRowID++;
+                    }
+
+                    EventDataToCommands(bEvents[noteIndex], packInfo.BeatsPerMinute, dpd.metersPerTick, nodeRowID, ref currentCommands, ref currentTick);
+
+                    prevNodeTime = bEvents[noteIndex].Time;
+                    currentNumberOfCommands += 3;
+                    noteIndex++;
+                }
+
+                if (noteIndex >= bEvents.Length)
+                {
+                    currentTick += (int)(dpd.ticksStartOffset + 1); ;
+                    currentCommands.AppendFormat(Globals.templateStrings._finishedEvents,
+                                                currentTick);
+                }
+
+                SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands.ToString());
+                string baseCommand = string.Format(Globals.templateStrings._baseCommand,
+                                                    prevCurrentTick,
+                                                    currentTick,
+                                                    dpd.folder_uuid,
+                                                    commandLevelName);
+                SafeFileManagement.AppendFile(commandBasePath, baseCommand);
+                prevCurrentTick = currentTick + 1;
+                currentCommandLimit = currentNumberOfCommands + Globals.C_CommandLimit;
+                currentLevel++;
+            }
+
+
+            // Note pretty buy create a command if no obstacles are present in a map
+            if (bEvents.Length == 0)
+            {
+                currentTick += (int)(dpd.ticksStartOffset + 1); ;
+                string commandLevelName = difficultyName + Globals.C_LvlEventName + currentLevel;
+                string commandLevelFileName = commandLevelName + Globals.C_McFunction;
+                string commandLevelFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, commandLevelFileName);
+                StringBuilder currentCommands = new StringBuilder();
+                SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands.ToString());
+                string baseCommand = string.Format(Globals.templateStrings._baseCommand,
+                                                    prevCurrentTick,
+                                                    currentTick,
+                                                    dpd.folder_uuid,
+                                                    commandLevelName);
+                SafeFileManagement.AppendFile(commandBasePath, baseCommand);
+                currentCommands.AppendFormat(Globals.templateStrings._finishedNotes, currentTick);
+            }
+        }
+
+        public static void EventDataToCommands(BeatSaber.Data.Event bEvent, float bpm, double metersPerTick, int nodeRowID, ref StringBuilder commandList, ref int wholeTick)
+        {
+            int valueType = bEvent.Value;
+            int typeType = bEvent.Type;
+
+            double beatsPerTick = bpm / 60.0d / 20;
+            double exactTick = bEvent.Time / beatsPerTick;
+            wholeTick = (int)Mathf.Floor((float)exactTick);
+
+            bool isLightOn = false;
+            int lightColor = 0;
+            string eventName = "";
+
+            commandList.AppendFormat(Globals.templateStrings._eventOnOff, wholeTick, eventName + "OnOff", isLightOn ? 1 : 0);
+            commandList.AppendFormat(Globals.templateStrings._eventColor, wholeTick, eventName + "Color", lightColor);
         }
 
         /// <summary>
