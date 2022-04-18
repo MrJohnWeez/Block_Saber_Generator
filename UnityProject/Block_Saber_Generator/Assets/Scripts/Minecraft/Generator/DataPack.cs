@@ -18,6 +18,14 @@ namespace Minecraft.Generator
     /// </summary>
     public static class DataPack
     {
+        public class EventFadeSave
+        {
+            public BeatSaber.Data.Event bEvent = null;
+            public string eventName = "";
+            public int tickCount = -1;
+
+        }
+
         /// <summary>
         /// Generate a minecraft datapack from Beat Saber data
         /// </summary>
@@ -177,8 +185,6 @@ namespace Minecraft.Generator
 
         public static void GenerateEvents(MapData song, string difficultyName, string commandBasePath, Info packInfo, DataPackData dpd)
         {
-            double prevNodeTime = 0;
-            int nodeRowID = 1;
             int currentLevel = 1;
             int currentTick = 0;
             int prevCurrentTick = 0;
@@ -187,6 +193,12 @@ namespace Minecraft.Generator
             int currentCommandLimit = Globals.C_CommandLimit;
 
             var bEvents = song.Events.Where(x => x.Value >= 0 && x.Value <= 11).ToArray();
+
+            List<EventFadeSave> autoOffTick = new List<EventFadeSave>();
+            for (int i = 0; i < 10; i++)
+            {
+                autoOffTick.Add(new EventFadeSave());
+            }
             // Main note generation
             while (noteIndex < bEvents.Length)
             {
@@ -198,24 +210,14 @@ namespace Minecraft.Generator
                 // Continue to generate commands until all events
                 while (noteIndex < bEvents.Length && currentNumberOfCommands < currentCommandLimit)
                 {
-                    if (prevNodeTime != bEvents[noteIndex].Time)
-                    {
-                        prevNodeTime = bEvents[noteIndex].Time;
-                        nodeRowID++;
-                    }
-
-                    EventDataToCommands(bEvents[noteIndex], packInfo.BeatsPerMinute, dpd.metersPerTick, nodeRowID, ref currentCommands, ref currentTick);
-
-                    prevNodeTime = bEvents[noteIndex].Time;
-                    currentNumberOfCommands += 3;
+                    currentNumberOfCommands += EventDataToCommands(bEvents[noteIndex], packInfo.BeatsPerMinute, dpd, ref currentCommands, ref currentTick, ref autoOffTick);
                     noteIndex++;
                 }
 
                 if (noteIndex >= bEvents.Length)
                 {
                     currentTick += (int)(dpd.ticksStartOffset + 1); ;
-                    currentCommands.AppendFormat(Globals.templateStrings._finishedEvents,
-                                                currentTick);
+                    currentCommands.AppendFormat(Globals.templateStrings._finishedEvents, currentTick);
                 }
 
                 SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands.ToString());
@@ -250,21 +252,92 @@ namespace Minecraft.Generator
             }
         }
 
-        public static void EventDataToCommands(BeatSaber.Data.Event bEvent, float bpm, double metersPerTick, int nodeRowID, ref StringBuilder commandList, ref int wholeTick)
+        public static int EventDataToCommands(BeatSaber.Data.Event bEvent, float bpm, DataPackData dpd, ref StringBuilder commandList, ref int wholeTick, ref List<EventFadeSave> autoOffTick)
         {
             int valueType = bEvent.Value;
+            string eventName;
             int typeType = bEvent.Type;
+            int indexValue;
+            int addedLines = 0;
+            switch (typeType)
+            {
+                case 0:
+                    eventName = "BackLasersGroup";
+                    indexValue = 0;
+                    break;
+                case 1:
+                    eventName = "RingLightsGroup";
+                    indexValue = 1;
+                    break;
+                case 2:
+                    eventName = "LeftRotatingLasersGroup";
+                    indexValue = 2;
+                    break;
+                case 3:
+                    eventName = "RightRotatingLasersGroup";
+                    indexValue = 3;
+                    break;
+                case 4:
+                    eventName = "CenterLightsGroup";
+                    indexValue = 4;
+                    break;
+                case 5:
+                    eventName = "BoostLight";
+                    indexValue = 5;
+                    break;
+                case 6:
+                    eventName = "ExtraLeftSideLights";
+                    indexValue = 6;
+                    break;
+                case 7:
+                    eventName = "ExtraRightSideLights";
+                    indexValue = 7;
+                    break;
+                case 10:
+                    eventName = "LeftSideLasers";
+                    indexValue = 8;
+                    break;
+                case 11:
+                    eventName = "RightSideLasers";
+                    indexValue = 9;
+                    break;
+                default:
+                    return addedLines;
+            }
 
             double beatsPerTick = bpm / 60.0d / 20;
             double exactTick = bEvent.Time / beatsPerTick;
-            wholeTick = (int)Mathf.Floor((float)exactTick);
+            wholeTick = (int)Mathf.Floor((float)exactTick) + (int)dpd.ticksStartOffset;
 
-            bool isLightOn = false;
-            int lightColor = 0;
-            string eventName = "";
+            for (int i = 0; i < autoOffTick.Count; i++)
+            {
+                if (autoOffTick[i].bEvent != null && autoOffTick[i].bEvent.Type != typeType && autoOffTick[i].tickCount >= 0 && autoOffTick[i].tickCount <= wholeTick)
+                {
+                    commandList.AppendFormat(Globals.templateStrings._eventOnOff, autoOffTick[i].tickCount, autoOffTick[i].eventName + "OnOff", 0);
+                    commandList.AppendFormat(Globals.templateStrings._eventColor, autoOffTick[i].tickCount, autoOffTick[i].eventName + "Color", 0);
+                    addedLines += 2;
+                    Debug.Log("Added fade end");
+                }
+            }
+            if ((valueType == 3 || valueType == 7))
+            {
+                autoOffTick[indexValue].tickCount = wholeTick + 40;
+                autoOffTick[indexValue].bEvent = bEvent;
+                autoOffTick[indexValue].eventName = eventName;
+            }
+            else
+            {
+                autoOffTick[indexValue].tickCount = -1;
+                autoOffTick[indexValue].bEvent = null;
+                autoOffTick[indexValue].eventName = "";
+            }
+
+            bool isLightOn = valueType != 0;
+            int lightColor = (valueType > 0 && valueType <= 4) ? 16 : 0;
 
             commandList.AppendFormat(Globals.templateStrings._eventOnOff, wholeTick, eventName + "OnOff", isLightOn ? 1 : 0);
             commandList.AppendFormat(Globals.templateStrings._eventColor, wholeTick, eventName + "Color", lightColor);
+            return addedLines + 2;
         }
 
         /// <summary>

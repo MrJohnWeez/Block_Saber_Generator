@@ -2,7 +2,7 @@ execute if score #BlockSaberGlobal BackLasersGroupOnOff matches 1 run function _
 execute if score #BlockSaberGlobal RingLightsGroupOnOff matches 1 run function _root_class:handle_lights_ring_lights_group
 execute if score #BlockSaberGlobal LeftRotatingLasersGroupOnOff matches 1 run function _root_class:handle_lights_left_rotating_lasers_group
 execute if score #BlockSaberGlobal RightRotatingLasersGroupOnOff matches 1 run function _root_class:handle_lights_right_rotating_lasers_group
-execute if score #BlockSaberGlobal CenterLightsGroup matches 1 run function _root_class:handle_lights_center_lights_group
+execute if score #BlockSaberGlobal CenterLightsGroupOnOff matches 1 run function _root_class:handle_lights_center_lights_group
 execute if score #BlockSaberGlobal BoostLightOnOff matches 1 run function _root_class:handle_lights_boost_light
 execute if score #BlockSaberGlobal ExtraLeftSideLightsOnOff matches 1 run function _root_class:handle_lights_extra_left_side_lights
 execute if score #BlockSaberGlobal ExtraRightSideLightsOnOff matches 1 run function _root_class:handle_lights_extra_right_side_lights

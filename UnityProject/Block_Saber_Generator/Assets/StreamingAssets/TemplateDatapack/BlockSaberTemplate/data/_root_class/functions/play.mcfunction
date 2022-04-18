@@ -30,7 +30,7 @@ scoreboard players set #BlockSaberGlobal BackLasersGroupOnOff 0
 scoreboard players set #BlockSaberGlobal RingLightsGroupOnOff 0
 scoreboard players set #BlockSaberGlobal LeftRotatingLasersGroupOnOff 0
 scoreboard players set #BlockSaberGlobal RightRotatingLasersGroupOnOff 0
-scoreboard players set #BlockSaberGlobal CenterLightsGroup 0
+scoreboard players set #BlockSaberGlobal CenterLightsGroupOnOff 0
 scoreboard players set #BlockSaberGlobal BoostLightOnOff 0
 scoreboard players set #BlockSaberGlobal ExtraLeftSideLightsOnOff 0
 scoreboard players set #BlockSaberGlobal ExtraRightSideLightsOnOff 0

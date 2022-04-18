@@ -47,7 +47,7 @@ scoreboard objectives add BackLasersGroupOnOff dummy
 scoreboard objectives add RingLightsGroupOnOff dummy
 scoreboard objectives add LeftRotatingLasersGroupOnOff dummy
 scoreboard objectives add RightRotatingLasersGroupOnOff dummy
-scoreboard objectives add CenterLightsGroup dummy
+scoreboard objectives add CenterLightsGroupOnOff dummy
 scoreboard objectives add BoostLightOnOff dummy
 scoreboard objectives add ExtraLeftSideLightsOnOff dummy
 scoreboard objectives add ExtraRightSideLightsOnOff dummy
