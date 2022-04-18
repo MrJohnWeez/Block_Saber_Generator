@@ -15,9 +15,12 @@ namespace Minecraft
         public string _scoreCommand = "";
         public string _nodePositionCommand = "";
         public string _nodeTypeCommand = "";
+        public string _eventOnOff = "";
+        public string _eventColor = "";
         public string _spawnOriginCommands = "";
         public string _finishedObstacles = "";
         public string _finishedNotes = "";
+        public string _finishedEvents = "";
         public string _playSongCommand = "";
         public string _completedSong = "";
     }

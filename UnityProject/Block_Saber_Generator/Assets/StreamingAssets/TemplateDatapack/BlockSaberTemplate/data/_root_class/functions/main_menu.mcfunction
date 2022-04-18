@@ -27,6 +27,28 @@ scoreboard players set #BlockSaberGlobal HealthPoints 50
 scoreboard players set #BlockSaberGlobal NodeRowID 0
 scoreboard players set #BlockSaberGlobal Combo 0
 
+scoreboard players set #BlockSaberGlobal BackLasersGroupColor 0
+scoreboard players set #BlockSaberGlobal RingLightsGroupColor 0
+scoreboard players set #BlockSaberGlobal LeftRotatingLasersGroupColor 0
+scoreboard players set #BlockSaberGlobal RightRotatingLasersGroupColor 0
+scoreboard players set #BlockSaberGlobal CenterLightsGroupColor 0
+scoreboard players set #BlockSaberGlobal BoostLightColor 0
+scoreboard players set #BlockSaberGlobal ExtraLeftSideLightsColor 0
+scoreboard players set #BlockSaberGlobal ExtraRightSideLightsColor 0
+scoreboard players set #BlockSaberGlobal LeftSideLasersColor 0
+scoreboard players set #BlockSaberGlobal RightSideLasersColor 0
+
+scoreboard players set #BlockSaberGlobal BackLasersGroupOnOff 0
+scoreboard players set #BlockSaberGlobal RingLightsGroupOnOff 0
+scoreboard players set #BlockSaberGlobal LeftRotatingLasersGroupOnOff 0
+scoreboard players set #BlockSaberGlobal RightRotatingLasersGroupOnOff 0
+scoreboard players set #BlockSaberGlobal CenterLightsGroupOnOff 0
+scoreboard players set #BlockSaberGlobal BoostLightOnOff 0
+scoreboard players set #BlockSaberGlobal ExtraLeftSideLightsOnOff 0
+scoreboard players set #BlockSaberGlobal ExtraRightSideLightsOnOff 0
+scoreboard players set #BlockSaberGlobal LeftSideLasersOnOff 0
+scoreboard players set #BlockSaberGlobal RightSideLasersOnOff 0
+
 # Clear playing
 scoreboard players set @a PlayerPlaying 0
 

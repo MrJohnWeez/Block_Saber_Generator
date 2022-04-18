@@ -11,7 +11,10 @@
     "_scoreCommand": "execute if score #BlockSaberGlobal TickCount matches {0} run scoreboard players set #BlockSaberGlobal NodeRowID {1}\r\n",
     "_nodePositionCommand": "execute if score #BlockSaberGlobal TickCount matches {0} at @e[type=marker, tag=nodeSpawnOrigin] run teleport @e[type=marker, tag=nodeCursor] ~{1} ~{2} ~{3:F18}\r\n",
     "_nodeTypeCommand": "execute if score #BlockSaberGlobal TickCount matches {0} as @e[type=marker, tag=nodeCursor] run function _types:{1}\r\n",
+    "_eventOnOff": "execute if score #BlockSaberGlobal TickCount matches {0} run scoreboard players set #BlockSaberGlobal {1} {2}\r\n",
+    "_eventColor": "execute if score #BlockSaberGlobal TickCount matches {0} run scoreboard players set #BlockSaberGlobal {1} {2}\r\n",
     "_finishedObstacles": "execute if score #BlockSaberGlobal TickCount matches {0} run scoreboard players set #BlockSaberGlobal FinishedObsicles 1\r\n",
     "_finishedNotes": "execute if score #BlockSaberGlobal TickCount matches {0} run scoreboard players set #BlockSaberGlobal FinishedNotes 1\r\n",
+    "_finishedEvents": "execute if score #BlockSaberGlobal TickCount matches {0} run scoreboard players set #BlockSaberGlobal FinishedEvents 1\r\n",
     "_completedSong": "execute if score #BlockSaberGlobal FinishedCount matches 1 if score #BlockSaberGlobal Difficulty matches {0} run scoreboard players set #BlockSaberGlobal {1} 1\r\n"
 }

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +18,14 @@ namespace Minecraft.Generator
     /// </summary>
     public static class DataPack
     {
+        public class EventFadeSave
+        {
+            public BeatSaber.Data.Event bEvent = null;
+            public string eventName = "";
+            public int tickCount = -1;
+
+        }
+
         /// <summary>
         /// Generate a minecraft datapack from Beat Saber data
         /// </summary>
@@ -103,7 +113,6 @@ namespace Minecraft.Generator
             StringBuilder spawnOriginCommands = new StringBuilder();
             StringBuilder spawnNotesBaseCommands = new StringBuilder();
             int difficultyNumber = 1;
-            bool oneTimeRun = false;
 
             // Iterate though each song difficulty
             var mapDataInfos = beatSaberMap.MapDataInfos;
@@ -150,20 +159,10 @@ namespace Minecraft.Generator
                     string completedSongPath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_MapDifficultyCompleted);
                     SafeFileManagement.AppendFile(completedSongPath, completedSongCommand);
 
-                    // Generate main note/obstacle data
+                    // Generate main note/obstacle data/light data
                     GenerateNotes(mapDataInfo.MapData, difficultyName, commandBasePath, beatSaberMap.InfoData, dpd);
                     GenerateObstacles(mapDataInfo.MapData, difficultyName, commandBasePath, beatSaberMap.InfoData, dpd);
-
-                    if (!oneTimeRun)
-                    {
-                        oneTimeRun = true;
-                        // string displayTitle = string.Format(Globals.templateStrings._displayTitle,
-                        //                                     songDifficultyID,
-                        //                                     dpd.keyVars["SONGID"],
-                        //                                     dpd.keyVars["folder_uuid"]);
-                        // string tickFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_Tick);
-                        // SafeFileManagement.AppendFile(tickFilePath, displayTitle);
-                    }
+                    GenerateEvents(mapDataInfo.MapData, difficultyName, commandBasePath, beatSaberMap.InfoData, dpd);
 
                     difficultyNumber++;
                 }
@@ -182,6 +181,163 @@ namespace Minecraft.Generator
             difficultyDisplayCommands.Append(Globals.templateStrings._mainMenuBack);
             SafeFileManagement.AppendFile(difficultiesFunctionPath, difficultyDisplayCommands.ToString());
             return -1;
+        }
+
+        public static void GenerateEvents(MapData song, string difficultyName, string commandBasePath, Info packInfo, DataPackData dpd)
+        {
+            int currentLevel = 1;
+            int currentTick = 0;
+            int prevCurrentTick = 0;
+            int currentNumberOfCommands = 0;
+            int noteIndex = 0;
+            int currentCommandLimit = Globals.C_CommandLimit;
+
+            var bEvents = song.Events.Where(x => x.Value >= 0 && x.Value <= 11).ToArray();
+
+            List<EventFadeSave> autoOffTick = new List<EventFadeSave>();
+            for (int i = 0; i < 10; i++)
+            {
+                autoOffTick.Add(new EventFadeSave());
+            }
+            // Main note generation
+            while (noteIndex < bEvents.Length)
+            {
+                string commandLevelName = difficultyName + Globals.C_LvlEventName + currentLevel;
+                string commandLevelFileName = commandLevelName + Globals.C_McFunction;
+                string commandLevelFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, commandLevelFileName);
+                StringBuilder currentCommands = new StringBuilder();
+
+                // Continue to generate commands until all events
+                while (noteIndex < bEvents.Length && currentNumberOfCommands < currentCommandLimit)
+                {
+                    currentNumberOfCommands += EventDataToCommands(bEvents[noteIndex], packInfo.BeatsPerMinute, dpd, ref currentCommands, ref currentTick, ref autoOffTick);
+                    noteIndex++;
+                }
+
+                if (noteIndex >= bEvents.Length)
+                {
+                    currentTick += (int)(dpd.ticksStartOffset + 1); ;
+                    currentCommands.AppendFormat(Globals.templateStrings._finishedEvents, currentTick);
+                }
+
+                SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands.ToString());
+                string baseCommand = string.Format(Globals.templateStrings._baseCommand,
+                                                    prevCurrentTick,
+                                                    currentTick,
+                                                    dpd.folder_uuid,
+                                                    commandLevelName);
+                SafeFileManagement.AppendFile(commandBasePath, baseCommand);
+                prevCurrentTick = currentTick + 1;
+                currentCommandLimit = currentNumberOfCommands + Globals.C_CommandLimit;
+                currentLevel++;
+            }
+
+
+            // Note pretty buy create a command if no obstacles are present in a map
+            if (bEvents.Length == 0)
+            {
+                currentTick += (int)(dpd.ticksStartOffset + 1); ;
+                string commandLevelName = difficultyName + Globals.C_LvlEventName + currentLevel;
+                string commandLevelFileName = commandLevelName + Globals.C_McFunction;
+                string commandLevelFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, commandLevelFileName);
+                StringBuilder currentCommands = new StringBuilder();
+                SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands.ToString());
+                string baseCommand = string.Format(Globals.templateStrings._baseCommand,
+                                                    prevCurrentTick,
+                                                    currentTick,
+                                                    dpd.folder_uuid,
+                                                    commandLevelName);
+                SafeFileManagement.AppendFile(commandBasePath, baseCommand);
+                currentCommands.AppendFormat(Globals.templateStrings._finishedNotes, currentTick);
+            }
+        }
+
+        public static int EventDataToCommands(BeatSaber.Data.Event bEvent, float bpm, DataPackData dpd, ref StringBuilder commandList, ref int wholeTick, ref List<EventFadeSave> autoOffTick)
+        {
+            int valueType = bEvent.Value;
+            string eventName;
+            int typeType = bEvent.Type;
+            int indexValue;
+            int addedLines = 0;
+            switch (typeType)
+            {
+                case 0:
+                    eventName = "BackLasersGroup";
+                    indexValue = 0;
+                    break;
+                case 1:
+                    eventName = "RingLightsGroup";
+                    indexValue = 1;
+                    break;
+                case 2:
+                    eventName = "LeftRotatingLasersGroup";
+                    indexValue = 2;
+                    break;
+                case 3:
+                    eventName = "RightRotatingLasersGroup";
+                    indexValue = 3;
+                    break;
+                case 4:
+                    eventName = "CenterLightsGroup";
+                    indexValue = 4;
+                    break;
+                case 5:
+                    eventName = "BoostLight";
+                    indexValue = 5;
+                    break;
+                case 6:
+                    eventName = "ExtraLeftSideLights";
+                    indexValue = 6;
+                    break;
+                case 7:
+                    eventName = "ExtraRightSideLights";
+                    indexValue = 7;
+                    break;
+                case 10:
+                    eventName = "LeftSideLasers";
+                    indexValue = 8;
+                    break;
+                case 11:
+                    eventName = "RightSideLasers";
+                    indexValue = 9;
+                    break;
+                default:
+                    return addedLines;
+            }
+
+            double beatsPerTick = bpm / 60.0d / 20;
+            double exactTick = bEvent.Time / beatsPerTick;
+            wholeTick = (int)Mathf.Floor((float)exactTick) + (int)dpd.ticksStartOffset;
+
+            for (int i = 0; i < autoOffTick.Count; i++)
+            {
+                if (autoOffTick[i].bEvent != null && autoOffTick[i].bEvent.Type != typeType && autoOffTick[i].tickCount >= 0 && autoOffTick[i].tickCount <= wholeTick)
+                {
+                    commandList.AppendFormat(Globals.templateStrings._eventOnOff, autoOffTick[i].tickCount, autoOffTick[i].eventName + "OnOff", 0);
+                    commandList.AppendFormat(Globals.templateStrings._eventColor, autoOffTick[i].tickCount, autoOffTick[i].eventName + "Color", 0);
+                    addedLines += 2;
+                    Debug.Log("Added fade end");
+                }
+            }
+            if ((valueType == 3 || valueType == 7))
+            {
+                autoOffTick[indexValue].tickCount = wholeTick + 40;
+                autoOffTick[indexValue].bEvent = bEvent;
+                autoOffTick[indexValue].eventName = eventName;
+            }
+            else
+            {
+                autoOffTick[indexValue].tickCount = -1;
+                autoOffTick[indexValue].bEvent = null;
+                autoOffTick[indexValue].eventName = "";
+            }
+
+            bool isLightOn = valueType != 0;
+            int lightColor = (valueType > 0 && valueType <= 4) ? 16 : 0;
+
+            commandList.AppendFormat(Globals.templateStrings._eventOnOff, wholeTick, eventName + "OnOff", isLightOn ? 1 : 0);
+            commandList.AppendFormat(Globals.templateStrings._eventColor, wholeTick, eventName + "Color", lightColor);
+            return addedLines + 2;
         }
 
         /// <summary>

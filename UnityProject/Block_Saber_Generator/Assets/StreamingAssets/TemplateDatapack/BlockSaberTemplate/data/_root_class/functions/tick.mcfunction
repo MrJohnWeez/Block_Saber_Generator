@@ -6,3 +6,5 @@ scoreboard players set #BlockSaberGlobal EndIsLoaded 0
 function _root_class:give_sabers
 execute in minecraft:the_end positioned 0 150.0 500 as @e[type=item,distance=..4,nbt={Item:{tag:{display:{Name:"{\"text\":\"Main Menu\",\"italic\":false}"}}}}] as @p[scores={PlayerPlaying=1}] run execute in the_end positioned 0 150.0 500 run function _root_class:setup_level_map
 function _root_class:keep_players_in_bounds
+
+execute if score #BlockSaberGlobal LightShowEnabled matches 1 run function _root_class:handle_lights
