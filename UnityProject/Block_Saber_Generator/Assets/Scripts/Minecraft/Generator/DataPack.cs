@@ -316,7 +316,6 @@ namespace Minecraft.Generator
                     commandList.AppendFormat(Globals.templateStrings._eventOnOff, autoOffTick[i].tickCount, autoOffTick[i].eventName + "OnOff", 0);
                     commandList.AppendFormat(Globals.templateStrings._eventColor, autoOffTick[i].tickCount, autoOffTick[i].eventName + "Color", 0);
                     addedLines += 2;
-                    Debug.Log("Added fade end");
                 }
             }
             if ((valueType == 3 || valueType == 7))
@@ -333,7 +332,7 @@ namespace Minecraft.Generator
             }
 
             bool isLightOn = valueType != 0;
-            int lightColor = (valueType > 0 && valueType <= 4) ? 16 : 0;
+            int lightColor = (valueType > 0 && valueType <= 4) ? 16 : 24;
 
             commandList.AppendFormat(Globals.templateStrings._eventOnOff, wholeTick, eventName + "OnOff", isLightOn ? 1 : 0);
             commandList.AppendFormat(Globals.templateStrings._eventColor, wholeTick, eventName + "Color", lightColor);
