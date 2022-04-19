@@ -1,2 +1,0 @@
-scoreboard players operation #TempPlayer TempVar2 = @s NodeRowID
-execute as @e[type=magma_cube,tag=note,distance=..6] if score @s NodeRowID = #TempPlayer TempVar2 run function _root_class:note_was_wrong
