@@ -31,6 +31,10 @@ namespace BeatSaber
 
                 string infoPath = Path.Combine(tempUnZipPath, "info.dat");
                 Info info = JsonUtility.FromJson<Info>(SafeFileManagement.GetFileContents(infoPath));
+                if (info == null)
+                {
+                    return null;
+                }
                 info = ConvertSoundFile(tempUnZipPath, info);
                 info = ConvertImageFiles(tempUnZipPath, info);
 

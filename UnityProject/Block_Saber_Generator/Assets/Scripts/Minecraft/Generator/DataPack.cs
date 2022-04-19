@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BeatSaber;
 using BeatSaber.Data;
+using MJW.Conversion;
 using UnityEngine;
 using Utilities;
 using Utilities.Wrappers;
@@ -35,68 +36,67 @@ namespace Minecraft.Generator
         /// <param name="beatMapSongList">List of Beat Saber song data</param>
         /// <param name="cancellationToken">Token that allows async function to be canceled</param>
         /// <returns></returns>
-        public static Task<int> FromBeatSaberData(string datapackOutputPath, BeatSaberMap beatSaberMap, CancellationToken cancellationToken)
+        public static Task<ConversionError> FromBeatSaberData(string datapackOutputPath, BeatSaberMap beatSaberMap, CancellationToken cancellationToken)
         {
-            return Task.Run(() =>
+            var unzippedFolderPath = beatSaberMap.ExtractedFilePath;
+            if (!Directory.Exists(unzippedFolderPath))
             {
-                var unzippedFolderPath = beatSaberMap.ExtractedFilePath;
-                if (!Directory.Exists(unzippedFolderPath))
+                return Task.FromResult(ConversionError.UnzipError);
+            }
+            DataPackData dataPackData = new DataPackData(unzippedFolderPath, datapackOutputPath, beatSaberMap);
+            if (beatSaberMap.InfoData.DifficultyBeatmapSets.Length == 0)
+            {
+                return Task.FromResult(ConversionError.NoMapData);
+            }
+            // Copying Template
+            string copiedTemplatePath = Path.Combine(unzippedFolderPath, Globals.C_TemplateDataPackName);
+            if (!SafeFileManagement.DirectoryCopy(Globals.pathOfDatapackTemplate, unzippedFolderPath, true, Globals.excludeExtensions, Globals.C_numberOfIORetryAttempts))
+            {
+                return Task.FromResult(ConversionError.FailedToCopyFile);
+            }
+            try
+            {
+                if (SafeFileManagement.MoveDirectory(copiedTemplatePath, dataPackData.datapackRootPath, Globals.C_numberOfIORetryAttempts))
                 {
-                    return 0;
-                }
-                DataPackData dataPackData = new DataPackData(unzippedFolderPath, datapackOutputPath, beatSaberMap);
-                if (beatSaberMap.InfoData.DifficultyBeatmapSets.Length > 0)
-                {
-                    // Copying Template
-                    string copiedTemplatePath = Path.Combine(unzippedFolderPath, Globals.C_TemplateDataPackName);
-                    if (SafeFileManagement.DirectoryCopy(Globals.pathOfDatapackTemplate, unzippedFolderPath, true, Globals.excludeExtensions, Globals.C_numberOfIORetryAttempts))
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    // Must change the folder names before searching for keys
+                    string songname_uuidFolder = Path.Combine(dataPackData.datapackRootPath, Globals.C_Data, Globals.C_FolderUUID);
+                    string newPath = Path.Combine(dataPackData.datapackRootPath, Globals.C_Data, dataPackData.folder_uuid);
+                    SafeFileManagement.MoveDirectory(songname_uuidFolder, newPath, Globals.C_numberOfIORetryAttempts);
+
+                    // Updating Copied files
+                    Filemanagement.UpdateAllCopiedFiles(dataPackData.datapackRootPath, dataPackData.keyVars, true, Globals.excludeKeyVarExtensions);
+
+                    // Copying Image Icon
+                    string mapIcon = Path.Combine(unzippedFolderPath, beatSaberMap.InfoData.CoverImageFilename);
+                    string packIcon = Path.Combine(dataPackData.datapackRootPath, Globals.C_PackIcon);
+                    SafeFileManagement.CopyFileTo(mapIcon, packIcon, true, Globals.C_numberOfIORetryAttempts);
+
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    // Generating main datapack files
+                    var mcBeatDataError = GenerateMCBeatData(beatSaberMap, dataPackData);
+                    if (mcBeatDataError != ConversionError.None)
                     {
-                        try
-                        {
-                            if (SafeFileManagement.MoveDirectory(copiedTemplatePath, dataPackData.datapackRootPath, Globals.C_numberOfIORetryAttempts))
-                            {
-                                cancellationToken.ThrowIfCancellationRequested();
-
-                                // Must change the folder names before searching for keys
-                                string songname_uuidFolder = Path.Combine(dataPackData.datapackRootPath, Globals.C_Data, Globals.C_FolderUUID);
-                                string newPath = Path.Combine(dataPackData.datapackRootPath, Globals.C_Data, dataPackData.folder_uuid);
-                                SafeFileManagement.MoveDirectory(songname_uuidFolder, newPath, Globals.C_numberOfIORetryAttempts);
-
-                                // Updating Copied files
-                                Filemanagement.UpdateAllCopiedFiles(dataPackData.datapackRootPath, dataPackData.keyVars, true, Globals.excludeKeyVarExtensions);
-
-                                // Copying Image Icon
-                                string mapIcon = Path.Combine(unzippedFolderPath, beatSaberMap.InfoData.CoverImageFilename);
-                                string packIcon = Path.Combine(dataPackData.datapackRootPath, Globals.C_PackIcon);
-                                SafeFileManagement.CopyFileTo(mapIcon, packIcon, true, Globals.C_numberOfIORetryAttempts);
-
-                                cancellationToken.ThrowIfCancellationRequested();
-
-                                // Generating main datapack files
-                                int errorCode = GenerateMCBeatData(beatSaberMap, dataPackData);
-                                if (errorCode >= 0)
-                                {
-                                    return errorCode;
-                                }
-                                cancellationToken.ThrowIfCancellationRequested();
-
-                                // Zipping files
-                                Archive.Compress(dataPackData.datapackRootPath, dataPackData.fullOutputPath);
-                                return -1;
-                            }
-                        }
-                        catch (OperationCanceledException wasCanceled)
-                        {
-                            throw wasCanceled;
-                        }
-                        catch (ObjectDisposedException wasAreadyCanceled)
-                        {
-                            throw wasAreadyCanceled;
-                        }
+                        return Task.FromResult(mcBeatDataError);
                     }
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    // Zipping files
+                    Archive.Compress(dataPackData.datapackRootPath, dataPackData.fullOutputPath);
+                    return Task.FromResult(ConversionError.None);
                 }
-                return 0;
-            });
+            }
+            catch (OperationCanceledException wasCanceled)
+            {
+                throw wasCanceled;
+            }
+            catch (ObjectDisposedException wasAreadyCanceled)
+            {
+                throw wasAreadyCanceled;
+            }
+            return Task.FromResult(ConversionError.OtherFail);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Minecraft.Generator
         /// <param name="packInfo">Beat Saber Parsed info</param>
         /// <param name="dpd">Data used for datapack generation</param>
         /// <returns></returns>
-        public static int GenerateMCBeatData(BeatSaberMap beatSaberMap, DataPackData dpd)
+        public static ConversionError GenerateMCBeatData(BeatSaberMap beatSaberMap, DataPackData dpd)
         {
             StringBuilder difficultyDisplayCommands = new StringBuilder();
             StringBuilder scoreboardCommands = new StringBuilder();
@@ -126,36 +126,21 @@ namespace Minecraft.Generator
                     // Append running command lists
                     string songDifficultyID = dpd.songGuid + difficultyNumber.ToString();
                     scoreboardCommands.AppendFormat(Globals.templateStrings._scoreboardCommand, songDifficultyID);
-
-                    spawnOriginCommands.AppendFormat(Globals.templateStrings._spawnOriginCommands,
-                                                    -dpd.metersPerTick * dpd.ticksStartOffset,
-                                                    difficultyNumber);
-
-                    spawnNotesBaseCommands.AppendFormat(Globals.templateStrings._spawnNotesBaseCommand,
-                                                        difficultyNumber,
-                                                        dpd.folder_uuid,
-                                                        difficultyName);
+                    spawnOriginCommands.AppendFormat(Globals.templateStrings._spawnOriginCommands, -dpd.metersPerTick * dpd.ticksStartOffset, difficultyNumber);
+                    spawnNotesBaseCommands.AppendFormat(Globals.templateStrings._spawnNotesBaseCommand, difficultyNumber, dpd.folder_uuid, difficultyName);
 
                     CreateDifficultyDisplay(songDifficultyID, difficultyName, dpd.folder_uuid, ref difficultyDisplayCommands);
 
-
                     // Write difficulty-specific-file commands
-                    string playCommands = string.Format(Globals.templateStrings._playCommands,
-                                                        difficultyNumber,
-                                                        dpd.folder_uuid);
+                    string playCommands = string.Format(Globals.templateStrings._playCommands, difficultyNumber, dpd.folder_uuid);
                     string playPath = Path.Combine(dpd.folder_uuidFunctionsPath, difficultyName + "_play" + Globals.C_McFunction);
                     SafeFileManagement.SetFileContents(playPath, playCommands);
 
-
-                    string playSongCommand = string.Format(Globals.templateStrings._playSongCommand,
-                                                            dpd.ticksStartOffset - 1,
-                                                            dpd.folder_uuid);
+                    string playSongCommand = string.Format(Globals.templateStrings._playSongCommand, dpd.ticksStartOffset - 1, dpd.folder_uuid);
                     string commandBasePath = Path.Combine(dpd.folder_uuidFunctionsPath, difficultyName + Globals.C_McFunction);
                     SafeFileManagement.AppendFile(commandBasePath, playSongCommand);
 
-                    string completedSongCommand = string.Format(Globals.templateStrings._completedSong,
-                                                                difficultyNumber,
-                                                                songDifficultyID);
+                    string completedSongCommand = string.Format(Globals.templateStrings._completedSong, difficultyNumber, songDifficultyID);
                     string completedSongPath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_MapDifficultyCompleted);
                     SafeFileManagement.AppendFile(completedSongPath, completedSongCommand);
 
@@ -180,7 +165,7 @@ namespace Minecraft.Generator
             // Add back button in tellraw
             difficultyDisplayCommands.Append(Globals.templateStrings._mainMenuBack);
             SafeFileManagement.AppendFile(difficultiesFunctionPath, difficultyDisplayCommands.ToString());
-            return -1;
+            return ConversionError.None;
         }
 
         public static void GenerateEvents(MapData song, string difficultyName, string commandBasePath, Info packInfo, DataPackData dpd)
@@ -386,8 +371,7 @@ namespace Minecraft.Generator
                 if (noteIndex >= notes.Length)
                 {
                     currentTick += (int)(dpd.ticksStartOffset + 1); ;
-                    currentCommands.AppendFormat(Globals.templateStrings._finishedNotes,
-                                                currentTick);
+                    currentCommands.AppendFormat(Globals.templateStrings._finishedNotes, currentTick);
                 }
 
                 SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands.ToString());
@@ -438,7 +422,6 @@ namespace Minecraft.Generator
             int currentTick = 0;
             int maxTick = 0;
             int minTick = -1;
-            int prevCurrentTick = 0;
             int currentNumberOfCommands = 0;
             int currentCommandLimit = Globals.C_CommandLimit;
 
@@ -453,7 +436,7 @@ namespace Minecraft.Generator
                 int minNewTick = 0;
                 minTick = -1;
 
-                // Continue to generate commands until all nodes and obsicles have been itterated though
+                // Continue to generate commands until all nodes and obstacles have been iterated though
                 while (obstacleIndex < obstacles.Length && currentNumberOfCommands < currentCommandLimit)
                 {
                     ObstacleDataToCommands(obstacles[obstacleIndex], packInfo.BeatsPerMinute, dpd.metersPerTick, ref currentCommands, ref currentNumberOfCommands, ref minNewTick, ref maxNewTick);
@@ -461,7 +444,6 @@ namespace Minecraft.Generator
                     {
                         minTick = minNewTick;
                     }
-
                     maxTick = Mathf.Max(maxTick, maxNewTick);
                     obstacleIndex++;
                 }
@@ -469,8 +451,7 @@ namespace Minecraft.Generator
                 if (obstacleIndex >= obstacles.Length)
                 {
                     maxTick += (int)(dpd.ticksStartOffset + 1);
-                    currentCommands.AppendFormat(Globals.templateStrings._finishedObstacles,
-                                                maxTick);
+                    currentCommands.AppendFormat(Globals.templateStrings._finishedObstacles, maxTick);
                     if (minTick == -1)
                     {
                         minTick = maxTick - 1;
@@ -484,14 +465,12 @@ namespace Minecraft.Generator
                                                     dpd.folder_uuid,
                                                     commandLevelName);
                 SafeFileManagement.AppendFile(commandBasePath, baseCommand);
-                prevCurrentTick = currentTick + 1;
                 currentCommandLimit = currentNumberOfCommands + Globals.C_CommandLimit;
                 minTick = 0;
                 maxTick = 0;
                 currentLevel++;
             }
 
-            // Note pretty buy create a command if no obstacles are present in a map
             if (obstacles.Length == 0)
             {
                 string commandLevelName = difficultyName + Globals.C_LvlObstacleName + currentLevel;
@@ -499,8 +478,7 @@ namespace Minecraft.Generator
                 string commandLevelFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, commandLevelFileName);
                 StringBuilder currentCommands = new StringBuilder();
                 currentTick++;
-                currentCommands.AppendFormat(Globals.templateStrings._finishedObstacles,
-                                            currentTick);
+                currentCommands.AppendFormat(Globals.templateStrings._finishedObstacles, currentTick);
                 SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands.ToString());
                 string baseCommand = string.Format(Globals.templateStrings._baseCommand,
                                                     minTick,
@@ -539,7 +517,6 @@ namespace Minecraft.Generator
             }
 
             int widthOfWallInNotes = obstacle.Width;
-            int heightOfWallInNotes = obstacle.Type == 0 ? 3 : 1;
             int isHeightTall = obstacle.Type == 0 ? 1 : 0;
 
             for (int length = 0; length < lengthOfWallInNotes; length++)
@@ -608,8 +585,6 @@ namespace Minecraft.Generator
         /// <param name="wholeTick">Output of minecraft tick used</param>
         public static void NodeDataToCommands(Note note, float bpm, double metersPerTick, int nodeRowID, ref StringBuilder commandList, ref int wholeTick)
         {
-            //_lineIndex = col
-            //_lineLayer = row
             int nodeType = note.Type;
             int nodeDir = note.CutDirection;
 
@@ -628,12 +603,8 @@ namespace Minecraft.Generator
                                         note.LineIndex * 0.3d,
                                         note.LineLayer * 0.3d,
                                         -fractionMeters);
-            commandList.AppendFormat(Globals.templateStrings._scoreCommand,
-                                        wholeTick,
-                                        nodeRowID);
-            commandList.AppendFormat(Globals.templateStrings._nodeTypeCommand,
-                                        wholeTick,
-                                        Globals.noteTypes[nodeType][nodeDir]);
+            commandList.AppendFormat(Globals.templateStrings._scoreCommand, wholeTick, nodeRowID);
+            commandList.AppendFormat(Globals.templateStrings._nodeTypeCommand, wholeTick, Globals.noteTypes[nodeType][nodeDir]);
         }
 
         /// <summary>

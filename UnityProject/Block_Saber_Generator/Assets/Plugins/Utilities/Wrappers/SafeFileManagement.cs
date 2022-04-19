@@ -1,8 +1,8 @@
-﻿using SFB;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using SFB;
 using UnityEngine;
 
 namespace Utilities.Wrappers
@@ -81,7 +81,7 @@ namespace Utilities.Wrappers
             int index = inFileName.LastIndexOf(".");
             if (index > 0)
             {
-                return inFileName.Substring(0, index);
+                return inFileName[..index];
             }
             return inFileName;
         }
@@ -90,7 +90,7 @@ namespace Utilities.Wrappers
         /// Get Files within given directory
         /// </summary>
         /// <param name="sourceDirName">Source directory</param>
-        /// <param name="retryAttempts">Number of attemps to retry get</param>
+        /// <param name="retryAttempts">Number of attempts to retry get</param>
         /// <returns>FileInfo array and Null if errors</returns>
         public static FileInfo[] GetFilesInfo(string sourceDirName, int retryAttempts = 0)
         {
@@ -129,7 +129,7 @@ namespace Utilities.Wrappers
         /// Get File paths within a directory
         /// </summary>
         /// <param name="sourceDirName">Source directory</param>
-        /// <param name="retryAttempts">Number of attemps to retry get</param>
+        /// <param name="retryAttempts">Number of attempts to retry get</param>
         /// <returns>Full name paths string array and Empty list if error</returns>
         public static string[] GetFilesPaths(string sourceDirName, int retryAttempts = 0)
         {
@@ -146,7 +146,7 @@ namespace Utilities.Wrappers
         /// Get directory paths within a directory
         /// </summary>
         /// <param name="sourceDirName">Source directory</param>
-        /// <param name="retryAttempts">Number of attemps to retry get</param>
+        /// <param name="retryAttempts">Number of attempts to retry get</param>
         /// <returns>Full name paths string array and Empty list if error</returns>
         public static string[] GetDirectoryPaths(string sourceDirName, int retryAttempts = 0)
         {
@@ -168,10 +168,10 @@ namespace Utilities.Wrappers
         /// </summary>
         /// <param name="fileInfo">Source file info</param>
         /// <param name="destFileName">Destination file path</param>
-        /// <param name="overWirteFile">Should file be overwitten</param>
-        /// <param name="retryAttempts">Number of attemps to retry move</param>
-        /// <returns>True if sucessful</returns>
-        public static bool CopyFileTo(FileInfo fileInfo, string destFileName, bool overWirteFile = false, int retryAttempts = 0)
+        /// <param name="overWriteFile">Should file be overwitten</param>
+        /// <param name="retryAttempts">Number of attempts to retry move</param>
+        /// <returns>True if successful</returns>
+        public static bool CopyFileTo(FileInfo fileInfo, string destFileName, bool overWriteFile = false, int retryAttempts = 0)
         {
             int currAttempts = 0;
             bool didCopy = false;
@@ -179,7 +179,7 @@ namespace Utilities.Wrappers
             {
                 try
                 {
-                    fileInfo.CopyTo(destFileName, overWirteFile);
+                    fileInfo.CopyTo(destFileName, overWriteFile);
                     didCopy = true;
                 }
                 catch (UnauthorizedAccessException accessDenied)
@@ -204,21 +204,21 @@ namespace Utilities.Wrappers
         /// </summary>
         /// <param name="fromFileName">Source file path</param>
         /// <param name="destFileName">Destination file path</param>
-        /// <param name="overWirteFile">Should file be overwitten</param>
-        /// <param name="retryAttempts">Number of attemps to retry move</param>
-        /// <returns>True if sucessful</returns>
-        public static bool CopyFileTo(string fromFileName, string destFileName, bool overWirteFile = false, int retryAttempts = 0)
+        /// <param name="overWriteFile">Should file be overwitten</param>
+        /// <param name="retryAttempts">Number of attempt to retry move</param>
+        /// <returns>True if successful</returns>
+        public static bool CopyFileTo(string fromFileName, string destFileName, bool overWriteFile = false, int retryAttempts = 0)
         {
-            return CopyFileTo(new FileInfo(fromFileName), destFileName, overWirteFile, retryAttempts);
+            return CopyFileTo(new FileInfo(fromFileName), destFileName, overWriteFile, retryAttempts);
         }
 
         /// <summary>
         /// Safely moves a file to a new destination
         /// </summary>
-        /// <param name="sourceDirName">Cource File</param>
+        /// <param name="sourceDirName">Source File</param>
         /// <param name="destDirName">Destination file</param>
-        /// <param name="retryAttempts">Number of attemps to retry move</param>
-        /// <returns>True if sucessful</returns>
+        /// <param name="retryAttempts">Number of attempts to retry move</param>
+        /// <returns>True if successful</returns>
         public static bool MoveFile(string sourceFileName, string destFileName, int retryAttempts = 0)
         {
             if (File.Exists(sourceFileName))
@@ -271,10 +271,10 @@ namespace Utilities.Wrappers
 
         #region DirecotryManagement
         /// <summary>
-        /// Get Directoies within given directory
+        /// Get Directories within given directory
         /// </summary>
         /// <param name="sourceDirName">Source directory</param>
-        /// <param name="retryAttempts">Number of attemps to retry get</param>
+        /// <param name="retryAttempts">Number of attempts to retry get</param>
         /// <returns>FileInfo array and Null if errors</returns>
         public static DirectoryInfo[] GetDirectoryInfo(string sourceDirName, int retryAttempts = 0)
         {
@@ -310,7 +310,7 @@ namespace Utilities.Wrappers
         }
 
         /// <summary>
-        /// Opens a native file browers and retunrs a path selcted
+        /// Opens a native file browers and returns a path selected
         /// </summary>
         /// <param name="dialogTitle">What to display on the window popup</param>
         /// <param name="startingFolder">The folder to start user in</param>
@@ -333,7 +333,7 @@ namespace Utilities.Wrappers
         /// <returns>Lowest folder name</returns>
         public static string GetFolderName(string inFolderPath)
         {
-            string fullPath = Path.GetFullPath(SafeFileManagement.GetFileName(inFolderPath)).TrimEnd(Path.DirectorySeparatorChar);
+            string fullPath = Path.GetFullPath(GetFileName(inFolderPath)).TrimEnd(Path.DirectorySeparatorChar);
             string projectName = Path.GetFileName(fullPath);
             return projectName;
         }
@@ -344,7 +344,7 @@ namespace Utilities.Wrappers
         /// <param name="sourceDirName">The folder to copy files from</param>
         /// <param name="destDirName">The location to copy files to</param>
         /// <param name="copySubDirs">Should sub files and folders be copied</param>
-        /// <param name="excludeExtensions">String array of any file extensitions to not copy</param>
+        /// <param name="excludeExtensions">String array of any file extensions to not copy</param>
         /// <param name="retryAttempts">Number of retried system will preform if errors are encountered</param>
         /// <returns>True if successful</returns>
         public static bool DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs, string[] excludeExtensions = null, int retryAttempts = 0)
@@ -402,7 +402,7 @@ namespace Utilities.Wrappers
         /// Get Directories within given path
         /// </summary>
         /// <param name="sourceDirName">Source direcotry</param>
-        /// <param name="retryAttempts">Number of attemps to retry get</param>
+        /// <param name="retryAttempts">Number of attempts to retry get</param>
         /// <returns>DirectoryInfo array and Null if errors</returns>
         public static DirectoryInfo[] GetDirectories(string sourceDirName, int retryAttempts = 0)
         {
@@ -442,8 +442,8 @@ namespace Utilities.Wrappers
         /// </summary>
         /// <param name="sourceDirName">Source Directory</param>
         /// <param name="destDirName">Destination directory</param>
-        /// <param name="retryAttempts">Number of attemps to retry move</param>
-        /// <returns>True if sucessful</returns>
+        /// <param name="retryAttempts">Number of attempts to retry move</param>
+        /// <returns>True if successful</returns>
         public static bool MoveDirectory(string sourceDirName, string destDirName, int retryAttempts = 0)
         {
             if (Directory.Exists(sourceDirName))

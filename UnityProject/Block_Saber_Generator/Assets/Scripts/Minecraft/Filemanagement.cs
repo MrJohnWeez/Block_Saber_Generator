@@ -12,7 +12,7 @@ namespace Minecraft
     public static class Filemanagement
     {
         /// <summary>
-        /// Update all files within a directory to correct varible names
+        /// Update all files within a directory to correct variable names
         /// </summary>
         /// <param name="folderPath">In folder path</param>
         /// <param name="keyVars">dictionary of words to replace within files</param>
