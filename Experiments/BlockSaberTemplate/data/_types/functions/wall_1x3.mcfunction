@@ -1,1 +1,0 @@
-execute at @s run summon armor_stand ~ ~ ~ {Tags:[wall_1x3,node,blocksaber],DisabledSlots:4096,Invisible:1b,NoGravity:1b,ArmorItems:[{},{},{},{Count:1b,id:"minecraft:stick",tag:{CustomModelData:21,Enchantments:[{lvl:3,id:"minecraft:unbreaking"}]}}],Marker:1b,Invulnerable:1b,Small:1b}

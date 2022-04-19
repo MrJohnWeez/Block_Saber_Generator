@@ -1,1 +1,0 @@
-execute at @e[type=marker,tag=origin,limit=1] positioned ~-28 ~-25 ~-100 as @a[dx=50,dy=10,dz=150,gamemode=!spectator] run function _root_class:reset_player_position
