@@ -26,14 +26,14 @@ namespace Minecraft
         public const string SPAWN_NOTES_BASE_FUNCTION = "spawn_notes_base.mcfunction";
         public const string INIT_FUNCTION = "init.mcfunction";
         public const string DIFFICULTIES = "difficulties.mcfunction";
-        public const string SET_SPAWN_ORIGIN = "set_spawn_orgin.mcfunction";
+        public const string SET_SPAWN_ORIGIN = "set_spawn_origin.mcfunction";
         public const string TEMPLATE_STRINGS = "TemplateStrings.json";
         public const string MAP_DIFFICULTY_COMPLETED = "map_difficulty_completed.mcfunction";
         public const string TICK = "tick.mcfunction";
 
         // Sub words
         public const string LEVEL_NOTE_NAME = "_lvl_note_";
-        public const string LEVEL_OBSTACLE_NAME = "_lvl_obsicle_";
+        public const string LEVEL_OBSTACLE_NAME = "_lvl_obstacle_";
         public const string LEVEL_EVENT_NAME = "_lvl_event_";
 
         // Folder Names

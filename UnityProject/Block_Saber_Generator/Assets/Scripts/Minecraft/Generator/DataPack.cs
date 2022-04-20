@@ -119,6 +119,10 @@ namespace Minecraft.Generator
             foreach (var key in mapDataInfos.Keys)
             {
                 var mapDataInfo = mapDataInfos[key];
+                if (mapDataInfo.MapData == null)
+                {
+                    return ConversionError.NoMapData;
+                }
                 if (mapDataInfo.MapData.Notes.Length > 0 || mapDataInfo.MapData.Obstacles.Length > 0)
                 {
                     string difficultyName = mapDataInfo.DifficultyBeatmapInfo.Difficulty.MakeMinecraftSafe();
@@ -357,7 +361,6 @@ namespace Minecraft.Generator
                 {
                     if (prevNodeTime != notes[noteIndex].Time)
                     {
-                        prevNodeTime = notes[noteIndex].Time;
                         nodeRowID++;
                     }
 
@@ -401,8 +404,7 @@ namespace Minecraft.Generator
                                                     dpd.folder_uuid,
                                                     commandLevelName);
                 SafeFileManagement.AppendFile(commandBasePath, baseCommand);
-                currentCommands.AppendFormat(Globals.templateStrings._finishedNotes,
-                                            currentTick);
+                currentCommands.AppendFormat(Globals.templateStrings._finishedNotes, currentTick);
             }
         }
 
@@ -459,11 +461,7 @@ namespace Minecraft.Generator
                 }
 
                 SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands.ToString());
-                string baseCommand = string.Format(Globals.templateStrings._baseCommand,
-                                                    minTick,
-                                                    maxTick,
-                                                    dpd.folder_uuid,
-                                                    commandLevelName);
+                string baseCommand = string.Format(Globals.templateStrings._baseCommand, minTick, maxTick, dpd.folder_uuid, commandLevelName);
                 SafeFileManagement.AppendFile(commandBasePath, baseCommand);
                 currentCommandLimit = currentNumberOfCommands + Globals.COMMAND_LIMIT;
                 minTick = 0;
