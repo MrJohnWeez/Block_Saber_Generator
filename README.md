@@ -6,7 +6,7 @@ ___
 
 ## Play Beat Saber in Minecraft
 
-A unity 3d program that converts any Beat Saber map into a minecraft data/resource pack, allowing you to play Beat Saber in Minecraft!
+A unity 3d program that converts **any** Beat Saber map into a minecraft data/resource pack, allowing you to play Beat Saber in Minecraft!
 
 ## Trailer
 
@@ -16,11 +16,9 @@ ___
 
 ## Downloads
 
-Conversion tool: [[Exe](https://github.com/MrJohnWeez/Block_Saber_Generator/releases/download/v1.2/BlockSaberGenSetup.exe)] [[Zip](https://github.com/MrJohnWeez/Block_Saber_Generator/releases/download/v1.2/Block_Saber_Generator_v1.2.Unzip_This.zip)]
+[[Conversion Program](https://github.com/MrJohnWeez/Block_Saber_Generator/releases)] Note: When downloading you may have to click "Keep" on some browsers
 
-* Note: When downloading you may have to click "Keep" on some browsers
-
-Minecraft Demo World: [Download](https://github.com/MrJohnWeez/Block_Saber_Generator/releases/download/v1.2/Block_Saber_Demo_World.zip)
+[[Minecraft Demo World](https://github.com/MrJohnWeez/Block_Saber_Generator/releases)]
 
 ___
 
@@ -52,7 +50,7 @@ ___
 
 ## About
 
-I have worked on this over the past few summer months. Over about 80 hours of work I was able to create a program to convert Beat Saber maps into Minecraft 1.16+ Data/Resource packs. I think it turned out good for a just for fun project.
+    The project was started over the summer back in may 2020 for Minecraft 1.16 and then updated in 2022 for Minecraft 1.18.2 along with some beat saber data changes. This repo contains an application that converts beat saber maps into a fully emulated map within Minecraft. Using datapacks and resource packs the recreation of beat saber (known as block saber) can be played in vanilla (no mods) Minecraft. This little project turned out good for a just for fun project.
 
 ## Logo
 
