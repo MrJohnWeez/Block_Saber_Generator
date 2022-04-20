@@ -17,35 +17,35 @@ namespace BeatSaber
         /// <param name="pathToUnzip">path to unzip map data</param>
         /// <param name="cancellationToken">token to cancel action</param>
         /// <returns></returns>
-        public static Task<BeatSaberMap> GetDataFromMapZip(string fileToUnzip, string pathToUnzip, CancellationToken cancellationToken)
+        public static async Task<BeatSaberMap> GetDataFromMapZip(string fileToUnzip, string pathToUnzip, CancellationToken cancellationToken)
         {
-            return Task.Run(async () =>
+            string tempUnZipPath = Path.Combine(pathToUnzip, "MapLoader", SafeFileManagement.GetFolderName(fileToUnzip));
+            if (Directory.Exists(tempUnZipPath))
             {
-                string tempUnZipPath = Path.Combine(pathToUnzip, "MapLoader", SafeFileManagement.GetFolderName(fileToUnzip));
-                if (Directory.Exists(tempUnZipPath))
-                {
-                    SafeFileManagement.DeleteDirectory(tempUnZipPath);
-                }
-                Directory.CreateDirectory(tempUnZipPath);
-                await Archive.DecompressAsync(fileToUnzip, tempUnZipPath, cancellationToken);
+                SafeFileManagement.DeleteDirectory(tempUnZipPath);
+            }
+            Directory.CreateDirectory(tempUnZipPath);
+            await Archive.DecompressAsync(fileToUnzip, tempUnZipPath, cancellationToken);
 
-                string infoPath = Path.Combine(tempUnZipPath, "info.dat");
-                Info info = JsonUtility.FromJson<Info>(SafeFileManagement.GetFileContents(infoPath));
-                info = ConvertSoundFile(tempUnZipPath, info);
-                info = ConvertImageFiles(tempUnZipPath, info);
+            string infoPath = Path.Combine(tempUnZipPath, "info.dat");
+            Info info = JsonUtility.FromJson<Info>(SafeFileManagement.GetFileContents(infoPath));
+            if (info == null) { return null; }
+            info = ConvertSoundFile(tempUnZipPath, info);
+            if (info == null) { return null; }
+            info = ConvertImageFiles(tempUnZipPath, info);
+            if (info == null) { return null; }
 
-                Dictionary<string, MapDataInfo> mapDataInfos = new Dictionary<string, MapDataInfo>();
-                foreach (var beatMapSets in info.DifficultyBeatmapSets)
+            Dictionary<string, MapDataInfo> mapDataInfos = new Dictionary<string, MapDataInfo>();
+            foreach (var beatMapSets in info.DifficultyBeatmapSets)
+            {
+                foreach (var beatMap in beatMapSets.DifficultyBeatmaps)
                 {
-                    foreach (var beatMap in beatMapSets.DifficultyBeatmaps)
-                    {
-                        string mapPath = Path.Combine(tempUnZipPath, beatMap.BeatmapFilename);
-                        MapData mapData = JsonUtility.FromJson<MapData>(SafeFileManagement.GetFileContents(mapPath));
-                        mapDataInfos.Add(beatMap.BeatmapFilename, new MapDataInfo(beatMap, mapData));
-                    }
+                    string mapPath = Path.Combine(tempUnZipPath, beatMap.BeatmapFilename);
+                    MapData mapData = JsonUtility.FromJson<MapData>(SafeFileManagement.GetFileContents(mapPath));
+                    mapDataInfos.Add(beatMap.BeatmapFilename, new MapDataInfo(beatMap, mapData));
                 }
-                return new BeatSaberMap(info, mapDataInfos, tempUnZipPath);
-            });
+            }
+            return new BeatSaberMap(info, mapDataInfos, tempUnZipPath);
         }
 
         /// <summary>
@@ -58,6 +58,10 @@ namespace BeatSaber
         {
             string[] files = Directory.GetFiles(rootFilePath, "*.egg*", SearchOption.AllDirectories);
             string[] alreadyConvertedfiles = Directory.GetFiles(rootFilePath, "*.ogg*", SearchOption.AllDirectories);
+            if (string.IsNullOrEmpty(info.SongFilename))
+            {
+                return null;
+            }
             info.SongFilename = info.SongFilename.Replace(".egg", ".ogg");
             if (files.Length == 0 && alreadyConvertedfiles.Length == 0)
             {
@@ -80,6 +84,10 @@ namespace BeatSaber
         public static Info ConvertImageFiles(string rootFilePath, Info packInfo)
         {
             string[] files = Directory.GetFiles(rootFilePath, "*.jpg*", SearchOption.AllDirectories);
+            if (string.IsNullOrEmpty(packInfo.CoverImageFilename))
+            {
+                return null;
+            }
             packInfo.CoverImageFilename = packInfo.CoverImageFilename.Replace(".jpg", ".png");
             foreach (string path in files)
             {

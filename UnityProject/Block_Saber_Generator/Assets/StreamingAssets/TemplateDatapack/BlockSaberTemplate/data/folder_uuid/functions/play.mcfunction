@@ -2,5 +2,5 @@
 execute as @e[type=item,nbt={Item:{tag:{display:{Name:"{\"text\":\"Red Saber\",\"italic\":false}"}}}}] run kill @s
 execute as @s run function _root_class:play
 execute run kill @e[tag=nodeSpawnOrigin]
-execute as @s run function folder_uuid:set_spawn_orgin
+execute as @s run function folder_uuid:set_spawn_origin
 scoreboard players set #BlockSaberGlobal SongID SONGID

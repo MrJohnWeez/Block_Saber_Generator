@@ -366,3 +366,6 @@ dotnet_diagnostic.CA1070.severity = none # Do not declare event fields as virtua
 [/Assets/{Plugins/StandaloneFileBrowser,Plugins/TextMesh Pro,Plugins/UnityWindowsFileDrag-Drop,AssetStore}/**/*.cs]
 generated_code = true
 dotnet_analyzer_diagnostic.severity = none
+[/Packages/**/*.cs]
+generated_code = true
+dotnet_analyzer_diagnostic.severity = none

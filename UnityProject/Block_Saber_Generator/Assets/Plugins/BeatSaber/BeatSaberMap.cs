@@ -24,10 +24,10 @@ namespace BeatSaber
 
         public BeatSaberMap(Info info, Dictionary<string, MapDataInfo> mapDataInfos, string filePath)
         {
-            this.infoData = info;
+            infoData = info;
             this.mapDataInfos = mapDataInfos;
-            this.extractedFilePath = filePath;
-            this.guidId = Guid.NewGuid();
+            extractedFilePath = filePath;
+            guidId = Guid.NewGuid();
         }
 
 

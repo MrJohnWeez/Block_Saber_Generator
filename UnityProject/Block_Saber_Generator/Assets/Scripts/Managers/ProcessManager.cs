@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using MJW.Conversion;
 using UnityEngine;
 
 /// <summary>
@@ -21,7 +22,6 @@ public class ProcessManager : MonoBehaviour
     private List<ConversionObject> _finishedConvert = new List<ConversionObject>();
 
 
-    #region UnityCallbacks
     private void Start()
     {
         temporaryPath = Application.temporaryCachePath;
@@ -38,7 +38,7 @@ public class ProcessManager : MonoBehaviour
             await nextToConvert.ConvertAsync();
         }
     }
-    #endregion UnityCallbacks
+
 
     /// <summary>
     /// Add file for conversion
@@ -50,14 +50,14 @@ public class ProcessManager : MonoBehaviour
         ConversionObject conversionManager = newConversion.GetComponent<ConversionObject>();
         if (conversionManager)
         {
-            conversionManager.OnObjectFinished += ConversionFinished;
-            conversionManager.OnObjectDeleted += ConversionDeleted;
+            conversionManager.ObjectFinished += ConversionFinished;
+            conversionManager.ObjectDeleted += ConversionDeleted;
             _waitingConvert.Add(conversionManager);
             conversionManager.Setup(filePath, _selectionManager.OutputPath);
         }
     }
 
-    #region Callbacks
+
     private void ConversionFinished(ConversionObject conversionObject)
     {
         _currentConvert.Remove(conversionObject);
@@ -69,7 +69,6 @@ public class ProcessManager : MonoBehaviour
         RemoveConversion(conversionObject);
         Debug.Log("Deleted item with path: " + conversionObject.InputPath);
     }
-    #endregion Callbacks
 
     private void RemoveConversion(ConversionObject conversionObject)
     {
