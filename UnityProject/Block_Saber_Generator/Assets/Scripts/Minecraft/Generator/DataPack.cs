@@ -49,29 +49,29 @@ namespace Minecraft.Generator
                 return Task.FromResult(ConversionError.NoMapData);
             }
             // Copying Template
-            string copiedTemplatePath = Path.Combine(unzippedFolderPath, Globals.C_TemplateDataPackName);
-            if (!SafeFileManagement.DirectoryCopy(Globals.pathOfDatapackTemplate, unzippedFolderPath, true, Globals.excludeExtensions, Globals.C_numberOfIORetryAttempts))
+            string copiedTemplatePath = Path.Combine(unzippedFolderPath, Globals.TEMPLATE_DATA_PACK_NAME);
+            if (!SafeFileManagement.DirectoryCopy(Globals.pathOfDatapackTemplate, unzippedFolderPath, true, Globals.excludeExtensions, Globals.NUMBER_OF_IO_RETRY_ATTEMPTS))
             {
                 return Task.FromResult(ConversionError.FailedToCopyFile);
             }
             try
             {
-                if (SafeFileManagement.MoveDirectory(copiedTemplatePath, dataPackData.datapackRootPath, Globals.C_numberOfIORetryAttempts))
+                if (SafeFileManagement.MoveDirectory(copiedTemplatePath, dataPackData.datapackRootPath, Globals.NUMBER_OF_IO_RETRY_ATTEMPTS))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
                     // Must change the folder names before searching for keys
-                    string songname_uuidFolder = Path.Combine(dataPackData.datapackRootPath, Globals.C_Data, Globals.C_FolderUUID);
-                    string newPath = Path.Combine(dataPackData.datapackRootPath, Globals.C_Data, dataPackData.folder_uuid);
-                    SafeFileManagement.MoveDirectory(songname_uuidFolder, newPath, Globals.C_numberOfIORetryAttempts);
+                    string songname_uuidFolder = Path.Combine(dataPackData.datapackRootPath, Globals.DATA, Globals.FOLDER_UUID);
+                    string newPath = Path.Combine(dataPackData.datapackRootPath, Globals.DATA, dataPackData.folder_uuid);
+                    SafeFileManagement.MoveDirectory(songname_uuidFolder, newPath, Globals.NUMBER_OF_IO_RETRY_ATTEMPTS);
 
                     // Updating Copied files
                     Filemanagement.UpdateAllCopiedFiles(dataPackData.datapackRootPath, dataPackData.keyVars, true, Globals.excludeKeyVarExtensions);
 
                     // Copying Image Icon
                     string mapIcon = Path.Combine(unzippedFolderPath, beatSaberMap.InfoData.CoverImageFilename);
-                    string packIcon = Path.Combine(dataPackData.datapackRootPath, Globals.C_PackIcon);
-                    SafeFileManagement.CopyFileTo(mapIcon, packIcon, true, Globals.C_numberOfIORetryAttempts);
+                    string packIcon = Path.Combine(dataPackData.datapackRootPath, Globals.PACK_ICON);
+                    SafeFileManagement.CopyFileTo(mapIcon, packIcon, true, Globals.NUMBER_OF_IO_RETRY_ATTEMPTS);
 
                     cancellationToken.ThrowIfCancellationRequested();
 
@@ -133,15 +133,15 @@ namespace Minecraft.Generator
 
                     // Write difficulty-specific-file commands
                     string playCommands = string.Format(Globals.templateStrings._playCommands, difficultyNumber, dpd.folder_uuid);
-                    string playPath = Path.Combine(dpd.folder_uuidFunctionsPath, difficultyName + "_play" + Globals.C_McFunction);
+                    string playPath = Path.Combine(dpd.folder_uuidFunctionsPath, difficultyName + "_play" + Globals.MCFUNCTION);
                     SafeFileManagement.SetFileContents(playPath, playCommands);
 
                     string playSongCommand = string.Format(Globals.templateStrings._playSongCommand, dpd.ticksStartOffset - 1, dpd.folder_uuid);
-                    string commandBasePath = Path.Combine(dpd.folder_uuidFunctionsPath, difficultyName + Globals.C_McFunction);
+                    string commandBasePath = Path.Combine(dpd.folder_uuidFunctionsPath, difficultyName + Globals.MCFUNCTION);
                     SafeFileManagement.AppendFile(commandBasePath, playSongCommand);
 
                     string completedSongCommand = string.Format(Globals.templateStrings._completedSong, difficultyNumber, songDifficultyID);
-                    string completedSongPath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_MapDifficultyCompleted);
+                    string completedSongPath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.MAP_DIFFICULTY_COMPLETED);
                     SafeFileManagement.AppendFile(completedSongPath, completedSongCommand);
 
                     // Generate main note/obstacle data/light data
@@ -154,9 +154,9 @@ namespace Minecraft.Generator
             }
 
             // Write collected commands to files
-            string difficultiesFunctionPath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_Difficulties);
-            string initFunctionPath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_InitFunction);
-            string setSpawnOrginFunctionPath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.C_SetSpawnOrgin);
+            string difficultiesFunctionPath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.DIFFICULTIES);
+            string initFunctionPath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.INIT_FUNCTION);
+            string setSpawnOrginFunctionPath = Path.Combine(dpd.folder_uuidFunctionsPath, Globals.SET_SPAWN_ORIGIN);
 
             SafeFileManagement.AppendFile(dpd.spawnNotesBasePath, spawnNotesBaseCommands.ToString());
             SafeFileManagement.AppendFile(setSpawnOrginFunctionPath, spawnOriginCommands.ToString());
@@ -175,7 +175,7 @@ namespace Minecraft.Generator
             int prevCurrentTick = 0;
             int currentNumberOfCommands = 0;
             int noteIndex = 0;
-            int currentCommandLimit = Globals.C_CommandLimit;
+            int currentCommandLimit = Globals.COMMAND_LIMIT;
 
             var bEvents = song.Events.Where(x => x.Value >= 0 && x.Value <= 11).ToArray();
 
@@ -187,8 +187,8 @@ namespace Minecraft.Generator
             // Main note generation
             while (noteIndex < bEvents.Length)
             {
-                string commandLevelName = difficultyName + Globals.C_LvlEventName + currentLevel;
-                string commandLevelFileName = commandLevelName + Globals.C_McFunction;
+                string commandLevelName = difficultyName + Globals.LEVEL_EVENT_NAME + currentLevel;
+                string commandLevelFileName = commandLevelName + Globals.MCFUNCTION;
                 string commandLevelFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, commandLevelFileName);
                 StringBuilder currentCommands = new StringBuilder();
 
@@ -213,7 +213,7 @@ namespace Minecraft.Generator
                                                     commandLevelName);
                 SafeFileManagement.AppendFile(commandBasePath, baseCommand);
                 prevCurrentTick = currentTick + 1;
-                currentCommandLimit = currentNumberOfCommands + Globals.C_CommandLimit;
+                currentCommandLimit = currentNumberOfCommands + Globals.COMMAND_LIMIT;
                 currentLevel++;
             }
 
@@ -222,8 +222,8 @@ namespace Minecraft.Generator
             if (bEvents.Length == 0)
             {
                 currentTick += (int)(dpd.ticksStartOffset + 1); ;
-                string commandLevelName = difficultyName + Globals.C_LvlEventName + currentLevel;
-                string commandLevelFileName = commandLevelName + Globals.C_McFunction;
+                string commandLevelName = difficultyName + Globals.LEVEL_EVENT_NAME + currentLevel;
+                string commandLevelFileName = commandLevelName + Globals.MCFUNCTION;
                 string commandLevelFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, commandLevelFileName);
                 StringBuilder currentCommands = new StringBuilder();
                 SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands.ToString());
@@ -341,14 +341,14 @@ namespace Minecraft.Generator
             int prevCurrentTick = 0;
             int currentNumberOfCommands = 0;
             int noteIndex = 0;
-            int currentCommandLimit = Globals.C_CommandLimit;
+            int currentCommandLimit = Globals.COMMAND_LIMIT;
 
             var notes = song.Notes;
             // Main note generation
             while (noteIndex < notes.Length)
             {
-                string commandLevelName = difficultyName + Globals.C_LvlNoteName + currentLevel;
-                string commandLevelFileName = commandLevelName + Globals.C_McFunction;
+                string commandLevelName = difficultyName + Globals.LEVEL_NOTE_NAME + currentLevel;
+                string commandLevelFileName = commandLevelName + Globals.MCFUNCTION;
                 string commandLevelFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, commandLevelFileName);
                 StringBuilder currentCommands = new StringBuilder();
 
@@ -382,7 +382,7 @@ namespace Minecraft.Generator
                                                     commandLevelName);
                 SafeFileManagement.AppendFile(commandBasePath, baseCommand);
                 prevCurrentTick = currentTick + 1;
-                currentCommandLimit = currentNumberOfCommands + Globals.C_CommandLimit;
+                currentCommandLimit = currentNumberOfCommands + Globals.COMMAND_LIMIT;
                 currentLevel++;
             }
 
@@ -390,8 +390,8 @@ namespace Minecraft.Generator
             if (notes.Length == 0)
             {
                 currentTick += (int)(dpd.ticksStartOffset + 1); ;
-                string commandLevelName = difficultyName + Globals.C_LvlNoteName + currentLevel;
-                string commandLevelFileName = commandLevelName + Globals.C_McFunction;
+                string commandLevelName = difficultyName + Globals.LEVEL_NOTE_NAME + currentLevel;
+                string commandLevelFileName = commandLevelName + Globals.MCFUNCTION;
                 string commandLevelFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, commandLevelFileName);
                 StringBuilder currentCommands = new StringBuilder();
                 SafeFileManagement.SetFileContents(commandLevelFilePath, currentCommands.ToString());
@@ -423,13 +423,13 @@ namespace Minecraft.Generator
             int maxTick = 0;
             int minTick = -1;
             int currentNumberOfCommands = 0;
-            int currentCommandLimit = Globals.C_CommandLimit;
+            int currentCommandLimit = Globals.COMMAND_LIMIT;
 
             // Main note generation
             while (obstacleIndex < obstacles.Length)
             {
-                string commandLevelName = difficultyName + Globals.C_LvlObstacleName + currentLevel;
-                string commandLevelFileName = commandLevelName + Globals.C_McFunction;
+                string commandLevelName = difficultyName + Globals.LEVEL_OBSTACLE_NAME + currentLevel;
+                string commandLevelFileName = commandLevelName + Globals.MCFUNCTION;
                 string commandLevelFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, commandLevelFileName);
                 StringBuilder currentCommands = new StringBuilder();
                 int maxNewTick = 0;
@@ -465,7 +465,7 @@ namespace Minecraft.Generator
                                                     dpd.folder_uuid,
                                                     commandLevelName);
                 SafeFileManagement.AppendFile(commandBasePath, baseCommand);
-                currentCommandLimit = currentNumberOfCommands + Globals.C_CommandLimit;
+                currentCommandLimit = currentNumberOfCommands + Globals.COMMAND_LIMIT;
                 minTick = 0;
                 maxTick = 0;
                 currentLevel++;
@@ -473,8 +473,8 @@ namespace Minecraft.Generator
 
             if (obstacles.Length == 0)
             {
-                string commandLevelName = difficultyName + Globals.C_LvlObstacleName + currentLevel;
-                string commandLevelFileName = commandLevelName + Globals.C_McFunction;
+                string commandLevelName = difficultyName + Globals.LEVEL_OBSTACLE_NAME + currentLevel;
+                string commandLevelFileName = commandLevelName + Globals.MCFUNCTION;
                 string commandLevelFilePath = Path.Combine(dpd.folder_uuidFunctionsPath, commandLevelFileName);
                 StringBuilder currentCommands = new StringBuilder();
                 currentTick++;

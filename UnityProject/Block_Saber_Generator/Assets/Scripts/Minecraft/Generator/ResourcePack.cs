@@ -33,16 +33,16 @@ namespace Minecraft.Generator
             Dictionary<string, string> keyVars = new Dictionary<string, string>();
 
             string folder_uuid = SafeFileManagement.GetFileName(Path.GetFileName(unzippedFolderPath)).MakeMinecraftSafe();
-            string packName = Globals.C_ResourcePack + folder_uuid;
+            string packName = Globals.RESOURCEPACK + folder_uuid;
 
             // Paths
-            string fullOutputPath = Path.Combine(datapackOutputPath, packName + Globals.C_Zip);
+            string fullOutputPath = Path.Combine(datapackOutputPath, packName + Globals.ZIP);
             string rootFolderPath = Path.Combine(unzippedFolderPath, packName);
-            string minecraftNamespace = Path.Combine(rootFolderPath, Globals.C_Assets, Globals.C_Minecraft);
+            string minecraftNamespace = Path.Combine(rootFolderPath, Globals.ASSETS, Globals.MINECRAFT);
             string mapSong = Path.Combine(unzippedFolderPath, packInfo.SongFilename);
-            string packSong = Path.Combine(minecraftNamespace, Globals.C_Sounds, Globals.C_Custom, folder_uuid + Globals.C_Ogg);
+            string packSong = Path.Combine(minecraftNamespace, Globals.SOUNDS, Globals.CUSTOM, folder_uuid + Globals.OGG);
             string mapIcon = Path.Combine(unzippedFolderPath, packInfo.CoverImageFilename);
-            string packIcon = Path.Combine(rootFolderPath, Globals.C_PackIcon);
+            string packIcon = Path.Combine(rootFolderPath, Globals.PACK_ICON);
 
             // Replaced vars
             keyVars["SONGUUID"] = folder_uuid;
@@ -50,21 +50,21 @@ namespace Minecraft.Generator
             keyVars["AUTHORNAME"] = packInfo.SongAuthorName;
 
             // Copying Template
-            string copiedTemplatePath = Path.Combine(unzippedFolderPath, Globals.C_TemplateResourcePackName);
+            string copiedTemplatePath = Path.Combine(unzippedFolderPath, Globals.TEMPLATE_RESOURCES_PACK_NAME);
 
-            if (SafeFileManagement.DirectoryCopy(Globals.pathOfResourcepackTemplate, unzippedFolderPath, true, Globals.excludeExtensions, Globals.C_numberOfIORetryAttempts))
+            if (SafeFileManagement.DirectoryCopy(Globals.pathOfResourcepackTemplate, unzippedFolderPath, true, Globals.excludeExtensions, Globals.NUMBER_OF_IO_RETRY_ATTEMPTS))
             {
-                if (SafeFileManagement.MoveDirectory(copiedTemplatePath, rootFolderPath, Globals.C_numberOfIORetryAttempts))
+                if (SafeFileManagement.MoveDirectory(copiedTemplatePath, rootFolderPath, Globals.NUMBER_OF_IO_RETRY_ATTEMPTS))
                 {
                     Filemanagement.UpdateAllCopiedFiles(rootFolderPath, keyVars);
 
                     // Copying Image Icon
-                    SafeFileManagement.CopyFileTo(mapIcon, packIcon, true, Globals.C_numberOfIORetryAttempts);
+                    SafeFileManagement.CopyFileTo(mapIcon, packIcon, true, Globals.NUMBER_OF_IO_RETRY_ATTEMPTS);
 
                     // Copying Song
-                    if (SafeFileManagement.CopyFileTo(mapSong, packSong, true, Globals.C_numberOfIORetryAttempts))
+                    if (SafeFileManagement.CopyFileTo(mapSong, packSong, true, Globals.NUMBER_OF_IO_RETRY_ATTEMPTS))
                     {
-                        Filemanagement.UpdateFileWithKeys(Path.Combine(minecraftNamespace, Globals.C_SoundsJson), keyVars);
+                        Filemanagement.UpdateFileWithKeys(Path.Combine(minecraftNamespace, Globals.SOUNDS_JSON), keyVars);
                     }
 
                     // Creating Zip

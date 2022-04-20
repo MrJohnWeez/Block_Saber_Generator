@@ -22,7 +22,7 @@ namespace Minecraft
         {
             if (checkSubDirectories)
             {
-                string[] dirs = SafeFileManagement.GetDirectoryPaths(folderPath, Globals.C_numberOfIORetryAttempts);
+                string[] dirs = SafeFileManagement.GetDirectoryPaths(folderPath, Globals.NUMBER_OF_IO_RETRY_ATTEMPTS);
                 foreach (string dir in dirs)
                 {
                     UpdateAllCopiedFiles(dir, keyVars, checkSubDirectories, excludeExtensions);
@@ -31,7 +31,7 @@ namespace Minecraft
 
             if (Directory.Exists(folderPath))
             {
-                string[] files = SafeFileManagement.GetFilesPaths(folderPath, Globals.C_numberOfIORetryAttempts);
+                string[] files = SafeFileManagement.GetFilesPaths(folderPath, Globals.NUMBER_OF_IO_RETRY_ATTEMPTS);
                 foreach (string file in files)
                 {
                     if (excludeExtensions != null)

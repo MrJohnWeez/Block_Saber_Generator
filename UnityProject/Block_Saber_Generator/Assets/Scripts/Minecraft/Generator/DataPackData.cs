@@ -31,15 +31,15 @@ namespace Minecraft.Generator
             var packInfo = beatSaberMap.InfoData;
             keyVars = new Dictionary<string, string>();
             folder_uuid = SafeFileManagement.GetFileName(Path.GetFileName(unzippedFolderPath)).MakeMinecraftSafe();
-            packName = Globals.C_Datapack + folder_uuid;
+            packName = Globals.DATAPACK + folder_uuid;
             songGuid = beatSaberMap.GuidId.ToString();
 
             // Paths
             datapackRootPath = Path.Combine(unzippedFolderPath, packName);
-            fullOutputPath = Path.Combine(datapackOutputPath, packName + Globals.C_Zip);
-            blockSaberBaseFunctionsPath = Path.Combine(datapackRootPath, Globals.C_Data, Globals.C_BlockSaberBase, Globals.C_Functions);
-            folder_uuidFunctionsPath = Path.Combine(datapackRootPath, Globals.C_Data, folder_uuid, Globals.C_Functions);
-            spawnNotesBasePath = Path.Combine(folder_uuidFunctionsPath, Globals.C_SpawnNotesBaseFunction);
+            fullOutputPath = Path.Combine(datapackOutputPath, packName + Globals.ZIP);
+            blockSaberBaseFunctionsPath = Path.Combine(datapackRootPath, Globals.DATA, Globals.BLOCK_SABER_BASE, Globals.FUNCTIONS);
+            folder_uuidFunctionsPath = Path.Combine(datapackRootPath, Globals.DATA, folder_uuid, Globals.FUNCTIONS);
+            spawnNotesBasePath = Path.Combine(folder_uuidFunctionsPath, Globals.SPAWN_NOTES_BASE_FUNCTION);
 
             // Values
             metersPerTick = packInfo.BeatsPerMinute / 60.0d * 24 * 0.21 / 20;
