@@ -10,7 +10,7 @@ A unity 3d program that converts **any** Beat Saber map into a minecraft data/re
 
 ## Trailer
 
-[![Trailer Demo Video](Created_Assets/Art/YouTubeThumb.jpg)](http://www.youtube.com/watch?v=z2UJlzIfijM "Block Saber Demo Video")
+[![Trailer Demo Video](Created_Assets/Art/YouTubeThumb.jpg)](https://www.youtube.com/watch?v=3ZwQZQAAY4k "Block Saber Demo Video v2.0")
 
 ___
 
@@ -50,7 +50,7 @@ ___
 
 ## About
 
-    The project was started over the summer back in may 2020 for Minecraft 1.16 and then updated in 2022 for Minecraft 1.18.2 along with some beat saber data changes. This repo contains an application that converts beat saber maps into a fully emulated map within Minecraft. Using datapacks and resource packs the recreation of beat saber (known as block saber) can be played in vanilla (no mods) Minecraft. This little project turned out good for a just for fun project.
+The project was started over the summer back in may 2020 for Minecraft 1.16 and then updated in 2022 for Minecraft 1.18.2 along with some beat saber data changes. This repo contains an application that converts beat saber maps into a fully emulated map within Minecraft. Using datapacks and resource packs the recreation of beat saber (known as block saber) can be played in vanilla (no mods) Minecraft. This little project turned out good for a just for fun project.
 
 ## Logo
 
