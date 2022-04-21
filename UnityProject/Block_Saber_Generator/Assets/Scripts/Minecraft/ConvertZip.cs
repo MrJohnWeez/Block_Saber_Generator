@@ -33,8 +33,8 @@ namespace Minecraft
             var tempFolder = beatSaberMap.ExtractedFilePath;
             try
             {
-                beatSaberMap = ConvertFilesEggToOgg(beatSaberMap);
-                beatSaberMap = ConvertFilesJpgToPng(beatSaberMap);
+                beatSaberMap = await ConvertFilesEggToOggAsync(beatSaberMap);
+                beatSaberMap = await ConvertFilesJpgToPngAsync(beatSaberMap);
                 cancellationToken.ThrowIfCancellationRequested();
                 if (beatSaberMap.InfoData.DifficultyBeatmapSets.Length == 0)
                 {
@@ -68,33 +68,39 @@ namespace Minecraft
             return ConversionError.None;
         }
 
-        public static BeatSaberMap ConvertFilesEggToOgg(BeatSaberMap beatSaberMap)
+        public static async Task<BeatSaberMap> ConvertFilesEggToOggAsync(BeatSaberMap beatSaberMap)
         {
-            string[] files = Directory.GetFiles(beatSaberMap.ExtractedFilePath, "*.egg*", SearchOption.AllDirectories);
-            string[] alreadyConvertedfiles = Directory.GetFiles(beatSaberMap.ExtractedFilePath, "*.ogg*", SearchOption.AllDirectories);
-            if (files.Length == 0 && alreadyConvertedfiles.Length == 0)
+            return await Task.Run(() =>
             {
+                string[] files = Directory.GetFiles(beatSaberMap.ExtractedFilePath, "*.egg*", SearchOption.AllDirectories);
+                string[] alreadyConvertedfiles = Directory.GetFiles(beatSaberMap.ExtractedFilePath, "*.ogg*", SearchOption.AllDirectories);
+                if (files.Length == 0 && alreadyConvertedfiles.Length == 0)
+                {
+                    return beatSaberMap;
+                }
+                beatSaberMap.InfoData.SongFilename = beatSaberMap.InfoData.SongFilename.Replace(".egg", ".ogg");
+                foreach (string path in files)
+                {
+                    string newName = path.Replace(".egg", ".ogg");
+                    SafeFileManagement.MoveFile(path, newName);
+                }
                 return beatSaberMap;
-            }
-            beatSaberMap.InfoData.SongFilename = beatSaberMap.InfoData.SongFilename.Replace(".egg", ".ogg");
-            foreach (string path in files)
-            {
-                string newName = path.Replace(".egg", ".ogg");
-                SafeFileManagement.MoveFile(path, newName);
-            }
-            return beatSaberMap;
+            });
         }
 
-        public static BeatSaberMap ConvertFilesJpgToPng(BeatSaberMap beatSaberMap)
+        public static async Task<BeatSaberMap> ConvertFilesJpgToPngAsync(BeatSaberMap beatSaberMap)
         {
-            string[] files = Directory.GetFiles(beatSaberMap.ExtractedFilePath, "*.jpg*", SearchOption.AllDirectories);
-            beatSaberMap.InfoData.CoverImageFilename = beatSaberMap.InfoData.CoverImageFilename.Replace(".jpg", ".png");
-            foreach (string path in files)
+            return await Task.Run(() =>
             {
-                string newName = path.Replace(".jpg", ".png");
-                SafeFileManagement.MoveFile(path, newName);
-            }
-            return beatSaberMap;
+                string[] files = Directory.GetFiles(beatSaberMap.ExtractedFilePath, "*.jpg*", SearchOption.AllDirectories);
+                beatSaberMap.InfoData.CoverImageFilename = beatSaberMap.InfoData.CoverImageFilename.Replace(".jpg", ".png");
+                foreach (string path in files)
+                {
+                    string newName = path.Replace(".jpg", ".png");
+                    SafeFileManagement.MoveFile(path, newName);
+                }
+                return beatSaberMap;
+            });
         }
     }
 }
