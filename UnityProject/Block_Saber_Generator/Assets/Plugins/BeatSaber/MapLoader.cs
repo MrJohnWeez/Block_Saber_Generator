@@ -27,25 +27,28 @@ namespace BeatSaber
             Directory.CreateDirectory(tempUnZipPath);
             await Archive.DecompressAsync(fileToUnzip, tempUnZipPath, cancellationToken);
 
-            string infoPath = Path.Combine(tempUnZipPath, "info.dat");
-            Info info = JsonUtility.FromJson<Info>(SafeFileManagement.GetFileContents(infoPath));
-            if (info == null) { return null; }
-            info = ConvertSoundFile(tempUnZipPath, info);
-            if (info == null) { return null; }
-            info = ConvertImageFiles(tempUnZipPath, info);
-            if (info == null) { return null; }
-
-            Dictionary<string, MapDataInfo> mapDataInfos = new Dictionary<string, MapDataInfo>();
-            foreach (var beatMapSets in info.DifficultyBeatmapSets)
+            return await Task.Run(() =>
             {
-                foreach (var beatMap in beatMapSets.DifficultyBeatmaps)
+                string infoPath = Path.Combine(tempUnZipPath, "info.dat");
+                Info info = JsonUtility.FromJson<Info>(SafeFileManagement.GetFileContents(infoPath));
+                if (info == null) { return null; }
+                info = ConvertSoundFile(tempUnZipPath, info);
+                if (info == null) { return null; }
+                info = ConvertImageFiles(tempUnZipPath, info);
+                if (info == null) { return null; }
+
+                Dictionary<string, MapDataInfo> mapDataInfos = new Dictionary<string, MapDataInfo>();
+                foreach (var beatMapSets in info.DifficultyBeatmapSets)
                 {
-                    string mapPath = Path.Combine(tempUnZipPath, beatMap.BeatmapFilename);
-                    MapData mapData = JsonUtility.FromJson<MapData>(SafeFileManagement.GetFileContents(mapPath));
-                    mapDataInfos.Add(beatMap.BeatmapFilename, new MapDataInfo(beatMap, mapData));
+                    foreach (var beatMap in beatMapSets.DifficultyBeatmaps)
+                    {
+                        string mapPath = Path.Combine(tempUnZipPath, beatMap.BeatmapFilename);
+                        MapData mapData = JsonUtility.FromJson<MapData>(SafeFileManagement.GetFileContents(mapPath));
+                        mapDataInfos.Add(beatMap.BeatmapFilename, new MapDataInfo(beatMap, mapData));
+                    }
                 }
-            }
-            return new BeatSaberMap(info, mapDataInfos, tempUnZipPath);
+                return new BeatSaberMap(info, mapDataInfos, tempUnZipPath);
+            });
         }
 
         /// <summary>

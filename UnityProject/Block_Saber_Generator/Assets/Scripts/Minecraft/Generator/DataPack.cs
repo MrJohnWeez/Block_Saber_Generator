@@ -36,67 +36,70 @@ namespace Minecraft.Generator
         /// <param name="beatMapSongList">List of Beat Saber song data</param>
         /// <param name="cancellationToken">Token that allows async function to be canceled</param>
         /// <returns></returns>
-        public static Task<ConversionError> FromBeatSaberData(string datapackOutputPath, BeatSaberMap beatSaberMap, CancellationToken cancellationToken)
+        public static async Task<ConversionError> FromBeatSaberData(string datapackOutputPath, BeatSaberMap beatSaberMap, CancellationToken cancellationToken)
         {
-            var unzippedFolderPath = beatSaberMap.ExtractedFilePath;
-            if (!Directory.Exists(unzippedFolderPath))
+            return await Task.Run(() =>
             {
-                return Task.FromResult(ConversionError.UnzipError);
-            }
-            DataPackData dataPackData = new DataPackData(unzippedFolderPath, datapackOutputPath, beatSaberMap);
-            if (beatSaberMap.InfoData.DifficultyBeatmapSets.Length == 0)
-            {
-                return Task.FromResult(ConversionError.NoMapData);
-            }
-            // Copying Template
-            string copiedTemplatePath = Path.Combine(unzippedFolderPath, Globals.TEMPLATE_DATA_PACK_NAME);
-            if (!SafeFileManagement.DirectoryCopy(Globals.pathOfDatapackTemplate, unzippedFolderPath, true, Globals.excludeExtensions, Globals.NUMBER_OF_IO_RETRY_ATTEMPTS))
-            {
-                return Task.FromResult(ConversionError.FailedToCopyFile);
-            }
-            try
-            {
-                if (SafeFileManagement.MoveDirectory(copiedTemplatePath, dataPackData.datapackRootPath, Globals.NUMBER_OF_IO_RETRY_ATTEMPTS))
+                var unzippedFolderPath = beatSaberMap.ExtractedFilePath;
+                if (!Directory.Exists(unzippedFolderPath))
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    // Must change the folder names before searching for keys
-                    string songname_uuidFolder = Path.Combine(dataPackData.datapackRootPath, Globals.DATA, Globals.FOLDER_UUID);
-                    string newPath = Path.Combine(dataPackData.datapackRootPath, Globals.DATA, dataPackData.folder_uuid);
-                    SafeFileManagement.MoveDirectory(songname_uuidFolder, newPath, Globals.NUMBER_OF_IO_RETRY_ATTEMPTS);
-
-                    // Updating Copied files
-                    Filemanagement.UpdateAllCopiedFiles(dataPackData.datapackRootPath, dataPackData.keyVars, true, Globals.excludeKeyVarExtensions);
-
-                    // Copying Image Icon
-                    string mapIcon = Path.Combine(unzippedFolderPath, beatSaberMap.InfoData.CoverImageFilename);
-                    string packIcon = Path.Combine(dataPackData.datapackRootPath, Globals.PACK_ICON);
-                    SafeFileManagement.CopyFileTo(mapIcon, packIcon, true, Globals.NUMBER_OF_IO_RETRY_ATTEMPTS);
-
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    // Generating main datapack files
-                    var mcBeatDataError = GenerateMCBeatData(beatSaberMap, dataPackData);
-                    if (mcBeatDataError != ConversionError.None)
-                    {
-                        return Task.FromResult(mcBeatDataError);
-                    }
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    // Zipping files
-                    Archive.Compress(dataPackData.datapackRootPath, dataPackData.fullOutputPath);
-                    return Task.FromResult(ConversionError.None);
+                    return Task.FromResult(ConversionError.UnzipError);
                 }
-            }
-            catch (OperationCanceledException wasCanceled)
-            {
-                throw wasCanceled;
-            }
-            catch (ObjectDisposedException wasAreadyCanceled)
-            {
-                throw wasAreadyCanceled;
-            }
-            return Task.FromResult(ConversionError.OtherFail);
+                DataPackData dataPackData = new DataPackData(unzippedFolderPath, datapackOutputPath, beatSaberMap);
+                if (beatSaberMap.InfoData.DifficultyBeatmapSets.Length == 0)
+                {
+                    return Task.FromResult(ConversionError.NoMapData);
+                }
+                // Copying Template
+                string copiedTemplatePath = Path.Combine(unzippedFolderPath, Globals.TEMPLATE_DATA_PACK_NAME);
+                if (!SafeFileManagement.DirectoryCopy(Globals.pathOfDatapackTemplate, unzippedFolderPath, true, Globals.excludeExtensions, Globals.NUMBER_OF_IO_RETRY_ATTEMPTS))
+                {
+                    return Task.FromResult(ConversionError.FailedToCopyFile);
+                }
+                try
+                {
+                    if (SafeFileManagement.MoveDirectory(copiedTemplatePath, dataPackData.datapackRootPath, Globals.NUMBER_OF_IO_RETRY_ATTEMPTS))
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        // Must change the folder names before searching for keys
+                        string songname_uuidFolder = Path.Combine(dataPackData.datapackRootPath, Globals.DATA, Globals.FOLDER_UUID);
+                        string newPath = Path.Combine(dataPackData.datapackRootPath, Globals.DATA, dataPackData.folder_uuid);
+                        SafeFileManagement.MoveDirectory(songname_uuidFolder, newPath, Globals.NUMBER_OF_IO_RETRY_ATTEMPTS);
+
+                        // Updating Copied files
+                        Filemanagement.UpdateAllCopiedFiles(dataPackData.datapackRootPath, dataPackData.keyVars, true, Globals.excludeKeyVarExtensions);
+
+                        // Copying Image Icon
+                        string mapIcon = Path.Combine(unzippedFolderPath, beatSaberMap.InfoData.CoverImageFilename);
+                        string packIcon = Path.Combine(dataPackData.datapackRootPath, Globals.PACK_ICON);
+                        SafeFileManagement.CopyFileTo(mapIcon, packIcon, true, Globals.NUMBER_OF_IO_RETRY_ATTEMPTS);
+
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        // Generating main datapack files
+                        var mcBeatDataError = GenerateMCBeatData(beatSaberMap, dataPackData);
+                        if (mcBeatDataError != ConversionError.None)
+                        {
+                            return Task.FromResult(mcBeatDataError);
+                        }
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        // Zipping files
+                        Archive.Compress(dataPackData.datapackRootPath, dataPackData.fullOutputPath);
+                        return Task.FromResult(ConversionError.None);
+                    }
+                }
+                catch (OperationCanceledException wasCanceled)
+                {
+                    throw wasCanceled;
+                }
+                catch (ObjectDisposedException wasAreadyCanceled)
+                {
+                    throw wasAreadyCanceled;
+                }
+                return Task.FromResult(ConversionError.OtherFail);
+            });
         }
 
         /// <summary>
