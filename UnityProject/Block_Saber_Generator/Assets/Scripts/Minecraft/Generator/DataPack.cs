@@ -125,7 +125,7 @@ namespace Minecraft.Generator
             for (int i = 0; i < mapDataInfosKeys.Length; i++)
             {
                 var mapDataInfo = mapDataInfos[mapDataInfosKeys[i]];
-                if (mapDataInfo.MapData == null)
+                if (mapDataInfo.MapData == null || mapDataInfo.MapData.Notes == null || mapDataInfo.MapData.Obstacles == null)
                 {
                     return ConversionError.NoMapData;
                 }

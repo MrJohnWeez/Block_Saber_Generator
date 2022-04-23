@@ -65,7 +65,10 @@ namespace Minecraft.Generator
                         // Copying Song
                         if (SafeFileManagement.CopyFileTo(mapSong, packSong, true, Globals.NUMBER_OF_IO_RETRY_ATTEMPTS))
                         {
-                            Filemanagement.UpdateFileWithKeys(Path.Combine(minecraftNamespace, Globals.SOUNDS_JSON), keyVars);
+                            if (!Filemanagement.UpdateFileWithKeys(Path.Combine(minecraftNamespace, Globals.SOUNDS_JSON), keyVars))
+                            {
+                                return ConversionError.OtherFail;
+                            }
                         }
 
                         // Creating Zip
