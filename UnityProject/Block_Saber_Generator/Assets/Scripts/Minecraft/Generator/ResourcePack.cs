@@ -19,7 +19,6 @@ namespace Minecraft.Generator
         /// <param name="unzippedFolderPath">Path to unzipped beat saber pack</param>
         /// <param name="datapackOutputPath">Folder path that Resourcepack will be generated in</param>
         /// <param name="packInfo">Beat Saber Infomation</param>
-        /// <param name="cancellationToken">Token that allows async function to be canceled</param>
         /// <returns>-1 if successful</returns>
         public static async Task<ConversionError> FromBeatSaberData(string datapackOutputPath, BeatSaberMap beatSaberMap)
         {
@@ -70,7 +69,7 @@ namespace Minecraft.Generator
                         }
 
                         // Creating Zip
-                        Archive.Compress(rootFolderPath, fullOutputPath);
+                        Archive.Compress(rootFolderPath, fullOutputPath, true);
                         return ConversionError.None;
                     }
                 }

@@ -36,7 +36,7 @@ namespace Minecraft.Generator
         /// <param name="beatMapSongList">List of Beat Saber song data</param>
         /// <param name="cancellationToken">Token that allows async function to be canceled</param>
         /// <returns></returns>
-        public static async Task<ConversionError> FromBeatSaberData(string datapackOutputPath, BeatSaberMap beatSaberMap, CancellationToken cancellationToken)
+        public static async Task<ConversionError> FromBeatSaberData(string datapackOutputPath, BeatSaberMap beatSaberMap, IProgress<ConversionProgress> progress, CancellationToken cancellationToken)
         {
             return await Task.Run(() =>
             {
@@ -77,16 +77,16 @@ namespace Minecraft.Generator
 
                         cancellationToken.ThrowIfCancellationRequested();
 
-                        // Generating main datapack files
-                        var mcBeatDataError = GenerateMCBeatData(beatSaberMap, dataPackData);
+                        progress.Report(new ConversionProgress(0.4f, "Generating main datapack files"));
+                        var mcBeatDataError = GenerateMCBeatData(beatSaberMap, dataPackData, progress, cancellationToken);
                         if (mcBeatDataError != ConversionError.None)
                         {
                             return Task.FromResult(mcBeatDataError);
                         }
                         cancellationToken.ThrowIfCancellationRequested();
 
-                        // Zipping files
-                        Archive.Compress(dataPackData.datapackRootPath, dataPackData.fullOutputPath);
+                        progress.Report(new ConversionProgress(0.9f, "Zipping files"));
+                        Archive.Compress(dataPackData.datapackRootPath, dataPackData.fullOutputPath, true);
                         return Task.FromResult(ConversionError.None);
                     }
                 }
@@ -109,7 +109,7 @@ namespace Minecraft.Generator
         /// <param name="packInfo">Beat Saber Parsed info</param>
         /// <param name="dpd">Data used for datapack generation</param>
         /// <returns></returns>
-        public static ConversionError GenerateMCBeatData(BeatSaberMap beatSaberMap, DataPackData dpd)
+        public static ConversionError GenerateMCBeatData(BeatSaberMap beatSaberMap, DataPackData dpd, IProgress<ConversionProgress> progress, CancellationToken cancellationToken)
         {
             StringBuilder difficultyDisplayCommands = new StringBuilder();
             StringBuilder scoreboardCommands = new StringBuilder();
@@ -119,13 +119,17 @@ namespace Minecraft.Generator
 
             // Iterate though each song difficulty
             var mapDataInfos = beatSaberMap.MapDataInfos;
-            foreach (var key in mapDataInfos.Keys)
+            var progressPercent = 0.4f;
+            var mapDataInfosKeys = mapDataInfos.Keys.ToArray();
+            var progressIncrament = mapDataInfosKeys.Length * 0.5f;
+            for (int i = 0; i < mapDataInfosKeys.Length; i++)
             {
-                var mapDataInfo = mapDataInfos[key];
+                var mapDataInfo = mapDataInfos[mapDataInfosKeys[i]];
                 if (mapDataInfo.MapData == null)
                 {
                     return ConversionError.NoMapData;
                 }
+                progress.Report(new ConversionProgress(progressPercent + progressIncrament, "Generating minecraft commands"));
                 if (mapDataInfo.MapData.Notes.Length > 0 || mapDataInfo.MapData.Obstacles.Length > 0)
                 {
                     string difficultyName = mapDataInfo.DifficultyBeatmapInfo.Difficulty.MakeMinecraftSafe();
