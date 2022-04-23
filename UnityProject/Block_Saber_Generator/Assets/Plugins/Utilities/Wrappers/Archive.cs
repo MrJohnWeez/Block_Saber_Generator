@@ -1,8 +1,8 @@
-﻿using LightBuzz.Archiver;
+﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System;
-using System.IO;
+using LightBuzz.Archiver;
 
 namespace Utilities.Wrappers
 {
@@ -28,9 +28,13 @@ namespace Utilities.Wrappers
                     if (deleteAfterArchiving)
                     {
                         if (Directory.Exists(source))
+                        {
                             Directory.Delete(source, true);
+                        }
                         else if (File.Exists(source))
+                        {
                             File.Delete(source);
+                        }
                     }
                 }
                 catch (OperationCanceledException wasCanceled)
@@ -61,9 +65,13 @@ namespace Utilities.Wrappers
                     if (deleteAfterArchiving)
                     {
                         if (Directory.Exists(source))
+                        {
                             Directory.Delete(source, true);
+                        }
                         else if (File.Exists(source))
+                        {
                             File.Delete(source);
+                        }
                     }
                 }
                 catch (OperationCanceledException wasCanceled)
@@ -83,9 +91,13 @@ namespace Utilities.Wrappers
         /// <param name="source">File path of folder or file</param>
         /// <param name="destination">Folder path of output with zip name</param>
         /// <returns></returns>
-        public static void Compress(string source, string destinationWithZipName)
+        public static void Compress(string source, string destinationWithZipName, bool overwrite)
         {
-            Archiver.Compress(source, destinationWithZipName);
+            if (overwrite && File.Exists(destinationWithZipName))
+            {
+                SafeFileManagement.DeleteFile(destinationWithZipName);
+            }
+            Archiver.Compress(source, destinationWithZipName, overwrite);
         }
 
         /// <summary>

@@ -26,7 +26,7 @@ namespace BeatSaber
             }
             Directory.CreateDirectory(tempUnZipPath);
             await Archive.DecompressAsync(fileToUnzip, tempUnZipPath, cancellationToken);
-
+            cancellationToken.ThrowIfCancellationRequested();
             return await Task.Run(() =>
             {
                 string infoPath = Path.Combine(tempUnZipPath, "info.dat");
@@ -36,6 +36,8 @@ namespace BeatSaber
                 if (info == null) { return null; }
                 info = ConvertImageFiles(tempUnZipPath, info);
                 if (info == null) { return null; }
+
+                cancellationToken.ThrowIfCancellationRequested();
 
                 Dictionary<string, MapDataInfo> mapDataInfos = new Dictionary<string, MapDataInfo>();
                 foreach (var beatMapSets in info.DifficultyBeatmapSets)

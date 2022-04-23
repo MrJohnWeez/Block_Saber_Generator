@@ -52,15 +52,18 @@ namespace Minecraft
         /// </summary>
         /// <param name="filePath">path of file to replace keys in</param>
         /// <param name="keyVars">dictionary of words to replace within files</param>
-        public static void UpdateFileWithKeys(string filePath, Dictionary<string, string> keyVars)
+        public static bool UpdateFileWithKeys(string filePath, Dictionary<string, string> keyVars)
         {
             string textInfo = SafeFileManagement.GetFileContents(filePath);
+            if (textInfo == null)
+            {
+                return false;
+            }
             foreach (string key in keyVars.Keys)
             {
                 textInfo = textInfo.Replace(key, keyVars[key]);
             }
-
-            SafeFileManagement.SetFileContents(filePath, textInfo);
+            return SafeFileManagement.SetFileContents(filePath, textInfo);
         }
     }
 }

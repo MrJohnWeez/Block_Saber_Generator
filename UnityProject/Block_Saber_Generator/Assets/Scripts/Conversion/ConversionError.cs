@@ -12,6 +12,7 @@ namespace MJW.Conversion
         FailedToCopyFile,
         NoMapData,
         UnzipError,
-        OtherFail
+        OtherFail,
+        Canceled
     }
 }

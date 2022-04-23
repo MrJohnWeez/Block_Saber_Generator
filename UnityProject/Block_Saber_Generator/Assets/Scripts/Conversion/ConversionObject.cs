@@ -54,67 +54,81 @@ namespace MJW.Conversion
 
         public async Task ConvertAsync()
         {
-            _progressBar.value = _progressBar.maxValue;
-            _status.text = "Converting...";
+            _progressBar.value = _progressBar.minValue;
+            _status.text = "";
             _asyncSourceCancel = new CancellationTokenSource();
             int uuid = UnityEngine.Random.Range(-99999999, 99999999);
-            ConversionError error = await ConvertZip.ConvertAsync(InputPath, OutputPath, uuid, _asyncSourceCancel.Token);
-            if (error != ConversionError.None)
+            ConversionError conversionError;
+            try
             {
-                _progressBar.value = _progressBar.maxValue;
-                _progressFill.color = _finishFail;
-                switch (error)
-                {
-                    case ConversionError.None:
-                        break;
-                    case ConversionError.MissingInfo:
-                        _status.text = "Failed: missing info.dat";
-                        break;
-                    case ConversionError.MissingSongData:
-                        _status.text = "Failed: missing song data";
-                        break;
-                    case ConversionError.MissingSongFile:
-                        _status.text = "Failed: missing song file";
-                        break;
-                    case ConversionError.OtherFail:
-                        _status.text = "Failed!";
-                        break;
-                    case ConversionError.InvalidZipFile:
-                        _status.text = "Failed: invalid zip file";
-                        break;
-                    case ConversionError.InvalidBeatMap:
-                        _status.text = "Failed: invalid beat map";
-                        break;
-                    case ConversionError.FailedToCopyFile:
-                        _status.text = "Failed: unable to copy files";
-                        break;
-                    case ConversionError.NoMapData:
-                        _status.text = "Failed: no map data";
-                        break;
-                    case ConversionError.UnzipError:
-                        _status.text = "Failed: unzip error";
-                        break;
-                    default:
-                        _status.text = "Failed: unknown error!";
-                        break;
-                }
+                var progressIndicator = new Progress<ConversionProgress>(UpdateProgress);
+                conversionError = await ConvertZip.ConvertAsync(InputPath, OutputPath, uuid, progressIndicator, _asyncSourceCancel.Token);
             }
-            else
+            catch (OperationCanceledException)
             {
-                _progressBar.value = _progressBar.maxValue;
-                _progressFill.color = _finishSuccess;
-                _status.text = "Done!";
+                conversionError = ConversionError.Canceled;
+            }
+            _progressFill.color = _finishFail;
+            switch (conversionError)
+            {
+                case ConversionError.None:
+                    _progressBar.value = _progressBar.maxValue;
+                    _progressFill.color = _finishSuccess;
+                    _status.text = "Done!";
+                    break;
+                case ConversionError.MissingInfo:
+                    _status.text = "Failed: missing info.dat";
+                    break;
+                case ConversionError.MissingSongData:
+                    _status.text = "Failed: missing song data";
+                    break;
+                case ConversionError.MissingSongFile:
+                    _status.text = "Failed: missing song file";
+                    break;
+                case ConversionError.OtherFail:
+                    _status.text = "Failed!";
+                    break;
+                case ConversionError.InvalidZipFile:
+                    _status.text = "Failed: invalid zip file";
+                    break;
+                case ConversionError.InvalidBeatMap:
+                    _status.text = "Failed: invalid beat map";
+                    break;
+                case ConversionError.FailedToCopyFile:
+                    _status.text = "Failed: unable to copy files";
+                    break;
+                case ConversionError.NoMapData:
+                    _status.text = "Failed: no map data";
+                    break;
+                case ConversionError.UnzipError:
+                    _status.text = "Failed: unzip error";
+                    break;
+                case ConversionError.Canceled:
+                    _status.text = "Canceled";
+                    break;
+                default:
+                    _status.text = "Failed: unknown error!";
+                    break;
             }
             _asyncSourceCancel.Dispose();
             _asyncSourceCancel = null;
             ObjectFinished?.Invoke(this);
         }
 
+        private void OnDestroy()
+        {
+            if (_asyncSourceCancel != null)
+            {
+                _asyncSourceCancel.Dispose();
+            }
+            _asyncSourceCancel = null;
+        }
+
         public void DeleteSelf()
         {
             if (_asyncSourceCancel != null)
             {
-                _asyncSourceCancel?.Cancel();
+                _asyncSourceCancel.Cancel();
             }
             ObjectDeleted?.Invoke(this);
             Destroy(gameObject);
@@ -128,6 +142,12 @@ namespace MJW.Conversion
         public void TrashClosed()
         {
             _trash.sprite = _trashClosed;
+        }
+
+        private void UpdateProgress(ConversionProgress conversionProgress)
+        {
+            _progressBar.value = conversionProgress.value;
+            _status.text = conversionProgress.message;
         }
     }
 }
