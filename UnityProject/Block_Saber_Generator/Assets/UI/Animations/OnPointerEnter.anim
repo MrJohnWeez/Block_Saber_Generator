@@ -40,7 +40,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: DragDropText
+    path: Background/Text/DragDropText
   m_FloatCurves:
   - curve:
       serializedVersion: 2
@@ -163,7 +163,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 2222236993
+      path: 956083559
       attribute: 3
       script: {fileID: 0}
       typeID: 4
@@ -356,7 +356,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.x
-    path: DragDropText
+    path: Background/Text/DragDropText
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -384,7 +384,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.y
-    path: DragDropText
+    path: Background/Text/DragDropText
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -412,7 +412,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.z
-    path: DragDropText
+    path: Background/Text/DragDropText
     classID: 224
     script: {fileID: 0}
   m_EulerEditorCurves: []
