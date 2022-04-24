@@ -1,34 +1,18 @@
-﻿using System.Text.RegularExpressions;
-using UnityEngine;
+﻿using System;
+using System.Text.RegularExpressions;
 
 namespace Utilities
 {
     /// <summary>
-    /// Some functions to extend the string class
+    /// Functions to extend the string class
     /// </summary>
     public static class StringExtensions
     {
-        /// <summary>
-        /// Used to trim a string from the front or the back
-        /// </summary>
-        /// <param name="value">The string to use</param>
-        /// <param name="newLength">The new length of the string. Negative value truncates starting at the end</param>
-        /// <returns></returns>
-        public static string Truncate(this string value, int newLength)
+        public static string Truncate(this string value, int maxLength)
         {
-            int positiveLength = Mathf.Abs(newLength);
-            if (!string.IsNullOrEmpty(value) && value.Length > positiveLength && newLength != 0)
-            {
-                if (newLength > 0)
-                {
-                    return value.Substring(0, newLength);
-                }
-                else
-                {
-                    return value.Substring(value.Length - positiveLength, positiveLength);
-                }
-            }
-            return value;
+            if (string.IsNullOrEmpty(value)) { return value; }
+
+            return value[..Math.Min(value.Length, maxLength)];
         }
 
         /// <summary>
