@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using MJW.Conversion;
 using UnityEngine;
@@ -17,6 +18,9 @@ public class ProcessManager : MonoBehaviour
     [SerializeField] private GameObject _processingRoot = null;
 
 
+    private char _driveLetter;
+
+
     private List<ConversionObject> _waitingConvert = new List<ConversionObject>();
     private List<ConversionObject> _currentConvert = new List<ConversionObject>();
     private List<ConversionObject> _finishedConvert = new List<ConversionObject>();
@@ -24,8 +28,22 @@ public class ProcessManager : MonoBehaviour
 
     private void Start()
     {
-        temporaryPath = Application.temporaryCachePath;
+        temporaryPath = GetTempPath();
         streamingAssets = Path.Combine(Application.dataPath, "StreamingAssets");
+    }
+
+    private void OnApplicationQuit()
+    {
+#if UNITY_STANDALONE_WIN
+        try
+        {
+            DriveMapper.UnmapDrive(_driveLetter);
+        }
+        catch
+        {
+
+        }
+#endif
     }
 
     private async void Update()
@@ -75,5 +93,24 @@ public class ProcessManager : MonoBehaviour
         _waitingConvert.Remove(conversionObject);
         _currentConvert.Remove(conversionObject);
         _finishedConvert.Remove(conversionObject);
+    }
+
+    private string GetTempPath()
+    {
+#if UNITY_STANDALONE_WIN
+        try
+        {
+            _driveLetter = DriveMapper.SafeMapDrive(Application.temporaryCachePath);
+            return $"{_driveLetter}:";
+        }
+        catch (Win32Exception e)
+        {
+            Debug.Log("Mapping failed: " + e.Message);
+            Debug.Log("Using long temp path. Long song names may not convert correctly due to path size.");
+            return Application.temporaryCachePath;
+        }
+#else
+        return Application.temporaryCachePath;
+#endif
     }
 }
